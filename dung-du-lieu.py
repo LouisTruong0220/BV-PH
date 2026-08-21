@@ -698,16 +698,44 @@ CHUA_CO = [
 #       Không thêm dữ kiện nào bệnh viện chưa cung cấp. Bệnh viện muốn đổi chữ thì sửa
 #       ở đây rồi chạy lại hai script — KHÔNG phải build lại APK.
 # ════════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════
+#  BIỂU CẢM ROBOT
+#
+#  Mười clip gốc của OrionStar, nguồn 02-media/bieu-cam-robot/orionstar-nova-goc.
+#  Anh Trường chốt 21/08/2026: DÙNG HẾT, không chỉ một clip nháy mắt như trước.
+#  Dùng chung cho cả ba chỗ có biểu cảm: màn chờ · lúc dẫn đường · màn Trò chuyện.
+#
+#  Thứ tự trong danh sách không quan trọng — app tự xáo, chỉ giữ cho hai clip liền
+#  nhau không trùng.
+#
+#  ⚠ Bốn clip cuối mang sắc thái KHÔNG VUI (giận, chóng mặt, ngủ gật, sốt ruột).
+#    Anh Trường chốt dùng hết nên để nguyên. Muốn bỏ clip nào trước buổi lễ thì xoá
+#    dòng đó ở đây rồi chạy lại hai script — KHÔNG phải build lại APK.
+# ════════════════════════════════════════════════════════════════════
+BIEU_CAM = [
+    "emoji_happy",
+    "emoji_laugh",
+    "emoji_blink",
+    "emoji_wink_1",
+    "emoji_wink_2",
+    "emoji_wink_3",
+    "emoji_angry",
+    "emoji_dizzy",
+    "emoji_fallasleep",
+    "emoji_impatient",
+]
+
 DI_VONG = {
-    # Tính năng có sẵn hay không. Robot KHÔNG tự đi — anh Trường chốt 21/08/2026 (bản 2):
-    # phải bấm nút "Đi du hành" ở màn chọn thì robot mới lăn bánh, bấm lần nữa thì dừng.
+    # Tính năng có sẵn hay không. Robot KHÔNG tự đi — anh Trường chốt 21/08/2026:
+    # phải bấm một trong ba nút "Du hành" ở màn chọn thì robot mới lăn bánh.
     "bat": True,
 
     # Thứ tự trong danh sách CHÍNH LÀ LỘ TRÌNH: 1→2→3→4→5 rồi quay về 1.
     # Đặt điểm thành vòng khép kín quanh sảnh, đừng đặt kiểu đi rồi quay đầu.
+    # ⚠ CẢ BA chế độ du hành đi CHUNG lộ trình này — chúng chỉ khác nhau ở câu nói.
     "diem": ["Diem 1", "Diem 2", "Diem 3", "Diem 4", "Diem 5"],
 
-    "cach_chao_giay": 10,     # khoảng nghỉ giữa hai câu, tính TỪ LÚC ĐỌC XONG
+    "cach_chao_giay": 10,     # nghỉ bao lâu rồi đọc lại, tính TỪ LÚC ĐỌC XONG
     "cho_khach_giay": 30,     # không ai thao tác bao lâu thì robot đi tiếp
     "dem_di_tiep_giay": 8,    # đếm ngược hiện trên màn hình sau khi khách bấm "Xong"
 
@@ -721,44 +749,40 @@ DI_VONG = {
     # Để 0,2 như dẫn đường khách là mỗi điểm robot khựng lại một nhịp thấy rõ.
     "sai_so_met": 1.0,
 
-    # ── BA CÂU ROBOT ĐỌC LÚC ĐI DU HÀNH ──────────────────────────────────────────
-    # Anh Trường gửi ảnh chốt nội dung 21/08/2026 (bản 2). Hai câu đầu là NGUYÊN VĂN
-    # lời chào đại biểu bệnh viện soạn ở PHẦN A — giống hệt CHAO['dai-bieu']['cau'],
-    # không phải bản rút gọn như lần trước.
+    # ── BA CHẾ ĐỘ DU HÀNH ────────────────────────────────────────────────────────
+    # Anh Trường chốt 21/08/2026: ba nút riêng, MỖI CHẾ ĐỘ CHỈ ĐỌC ĐÚNG MỘT CÂU, lặp
+    # đi lặp lại suốt chuyến. Không xoay vòng nhiều câu như bản trước — người vận hành
+    # chọn thẳng thông điệp muốn phát theo từng lúc trong buổi.
     #
-    # Câu thứ ba anh Trường gửi riêng — dài hơn hẳn hai câu kia (khoảng hai mươi lăm
-    # giây đọc) và nhắc CẢ HAI sự kiện trong ngày, nên dùng chung cho cả sáng lẫn chiều.
-    "chao": [
-        "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự Lễ đón nhận "
-        "danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị điều trị HIFU. "
-        "Kính chúc Quý vị một ngày thật nhiều niềm vui!",
-
-        "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! "
-        "Hôm nay là ngày hội lớn của bệnh viện chúng tôi. Rất hân hạnh được phục vụ Quý vị!",
-
-        "Dạ, tôi xin thưa với Quý vị. Hôm nay bệnh viện Hùng Vương tổ chức Lễ đón nhận danh "
-        "hiệu Anh hùng Lao động và Lễ khai trương Đơn vị HIFU, buổi chiều có Hội thảo khoa học. "
-        "Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, "
-        "Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do "
-        "Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng "
-        "sóng siêu âm hội tụ HIFU.",
-    ],
-
-    # Buổi chiều là Hội thảo khoa học — ba câu tương ứng, nguyên văn bản s2 (20/08/2026).
-    # App tự chọn theo giờ máy, xem buoiHienTai() trong khung-app.html.
-    "chao_chieu": [
-        "Bệnh viện Hùng Vương trân trọng kính chào Quý đại biểu! Chào mừng Quý vị đến tham dự "
-        "Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ.",
-
-        "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương. "
-        "Rất hân hạnh được phục vụ Quý vị!",
-
-        "Dạ, tôi xin thưa với Quý vị. Hôm nay bệnh viện Hùng Vương tổ chức Lễ đón nhận danh "
-        "hiệu Anh hùng Lao động và Lễ khai trương Đơn vị HIFU, buổi chiều có Hội thảo khoa học. "
-        "Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, "
-        "Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do "
-        "Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng "
-        "sóng siêu âm hội tụ HIFU.",
+    # ⚠ Chữ số trong câu đã chuyển sang chữ: robot đọc "22/8/2026" thành ra sai nhịp.
+    #   Cổng chất lượng ở cuối file chặn mọi câu còn chữ số, đừng gõ số vào đây.
+    "che_do": [
+        {
+            "ma": "1",
+            "ten": "Du hành 1",
+            "mo_ta": "Chào mừng Hội thảo khoa học",
+            "cau": "Bệnh viện Hùng Vương trân trọng kính chào quý đại biểu. Chào mừng quý vị "
+                   "đến tham dự Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ.",
+        },
+        {
+            "ma": "2",
+            "ten": "Du hành 2",
+            "mo_ta": "Giới thiệu hai sự kiện trong ngày",
+            "cau": "Hôm nay, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh "
+                   "hùng Lao động và Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu "
+                   "âm hội tụ HIFU. Buổi chiều có hội thảo khoa học. Hôm nay, thứ Bảy ngày hai "
+                   "mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng "
+                   "Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và "
+                   "Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn "
+                   "bằng sóng siêu âm hội tụ HIFU.",
+        },
+        {
+            "ma": "3",
+            "ten": "Du hành 3",
+            "mo_ta": "Mời tham quan Đơn vị HIFU",
+            "cau": "Bệnh viện Hùng Vương trân trọng kính mời quý đại biểu, quý khách cùng di "
+                   "chuyển tham quan Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU.",
+        },
     ],
 }
 
@@ -853,25 +877,28 @@ def kiem_tra():
             if "  " in v or v != v.strip():
                 loi.append("Điểm đi vòng '%s' có khoảng trắng thừa" % v)
 
-        for khoa in ("chao", "chao_chieu"):
-            cs = dv.get(khoa) or []
-            if len(cs) < 2:
-                loi.append("DI_VONG['%s'] cần ít nhất hai câu, đang có %d" % (khoa, len(cs)))
-            for i, cau in enumerate(cs):
-                soi_so("Câu chào đi vòng %s [%d]" % (khoa, i), cau)
-                # eleven_v3 và giọng robot đều đọc ~18 ký tự/giây. Câu dài hơn 220 ký tự
-                # là robot nói hơn mười hai giây liền trong lúc đang di chuyển — quá dài,
-                # khách đi ngang chỉ nghe được nửa câu.
-                # eleven_v3 và giọng robot đọc ~18 ký tự/giây.
-                # Trần 500 ký tự ~ hai mươi tám giây đọc. Câu thứ ba anh Trường chốt dài
-                # khoảng bốn trăm năm mươi ký tự nên trần cũ (220) chặn nhầm.
-                if len(cau) > 500:
-                    loi.append("Câu chào đi vòng %s [%d] dài %d ký tự, quá hai mươi tám giây đọc: %s…"
-                               % (khoa, i, len(cau), cau[:50]))
-                elif len(cau) > 260:
-                    print("  ! Câu chào đi vòng %s [%d] dài %d ký tự (~%d giây đọc) — "
-                          "robot đang đi, câu dài thì khách đi ngang chỉ nghe được nửa câu."
-                          % (khoa, i, len(cau), len(cau) // 18))
+        cds = dv.get("che_do") or []
+        if len(cds) < 1:
+            loi.append("DI_VONG['che_do'] rỗng — không có chế độ du hành nào")
+        mas = set()
+        for cd in cds:
+            nhan = "Chế độ du hành '%s'" % cd.get("ten", "?")
+            if cd.get("ma") in mas:
+                loi.append("%s trùng mã '%s'" % (nhan, cd.get("ma")))
+            mas.add(cd.get("ma"))
+            cau = (cd.get("cau") or "").strip()
+            if not cau:
+                loi.append("%s chưa có câu để đọc" % nhan)
+                continue
+            soi_so(nhan, cau)
+            # eleven_v3 và giọng robot đọc ~18 ký tự/giây.
+            # Trần 500 ký tự ~ hai mươi tám giây đọc.
+            if len(cau) > 500:
+                loi.append("%s dài %d ký tự, quá hai mươi tám giây đọc: %s…"
+                           % (nhan, len(cau), cau[:50]))
+            elif len(cau) > 260:
+                print("  ! %s dài %d ký tự (~%d giây đọc) — robot đang đi, câu dài thì "
+                      "khách đi ngang chỉ nghe được nửa câu." % (nhan, len(cau), len(cau) // 18))
 
         if dv.get("cach_chao_giay", 0) < 5:
             loi.append("cach_chao_giay phải từ năm giây trở lên")
@@ -887,6 +914,19 @@ def kiem_tra():
         trung = set(ds) & (set(DIEM.values()) | {DIEM_VE_CHO, DIEM_TRAM_SAC})
         if trung:
             loi.append("Điểm đi vòng trùng tên điểm dẫn đường: %s" % ", ".join(sorted(trung)))
+
+    # ── Biểu cảm ──
+    # Thiếu file là hỏng IM LẶNG: video không nạp được, máy biểu cảm nhảy sang clip kế,
+    # màn hình đen một nhịp mà không báo gì. Soi ở đây rẻ hơn nhiều so với soi trên robot.
+    if not BIEU_CAM:
+        loi.append("BIEU_CAM rỗng — màn chờ sẽ là một khung đen")
+    thu_bc = os.path.join(HERE, "bieu-cam")
+    for ten in BIEU_CAM:
+        f = os.path.join(thu_bc, ten + ".mp4")
+        if not os.path.exists(f):
+            loi.append("Biểu cảm '%s' không có file %s.mp4 trong bieu-cam/" % (ten, ten))
+    if len(set(BIEU_CAM)) != len(BIEU_CAM):
+        loi.append("Danh sách BIEU_CAM có tên trùng nhau")
 
     if loi:
         print("DỪNG — dữ liệu chưa đạt:")
@@ -919,6 +959,7 @@ def main():
         "hoi_dap": HOI_DAP,
         "quy_trinh": QUY_TRINH,
         "chua_co": CHUA_CO,
+        "bieu_cam": BIEU_CAM,
         "di_vong": DI_VONG,
 
         # Nút "Mời khách vào hội trường" phát LẶP cho tới khi bấm lần nữa
@@ -941,10 +982,15 @@ def main():
         print("  Điểm cần đặt trên bản đồ robot — ĐI VÒNG (đúng thứ tự lộ trình):")
         for v in DI_VONG["diem"]:
             print("     •", v)
-        print("     %d câu chào sáng · %d câu chào chiều · cách nhau %d giây · "
-              "vắng người %d giây thì đi tiếp"
-              % (len(DI_VONG["chao"]), len(DI_VONG["chao_chieu"]),
-                 DI_VONG["cach_chao_giay"], DI_VONG["cho_khach_giay"]))
+        print("     %d chế độ du hành, mỗi chế độ đọc lặp ĐÚNG MỘT câu:"
+              % len(DI_VONG["che_do"]))
+        for cd in DI_VONG["che_do"]:
+            print("       · %s — %s (%d ký tự, ~%d giây đọc)"
+                  % (cd["ten"], cd["mo_ta"], len(cd["cau"]), len(cd["cau"]) // 18))
+        print("     Đọc lại sau %d giây · vắng người %d giây thì đi tiếp"
+              % (DI_VONG["cach_chao_giay"], DI_VONG["cho_khach_giay"]))
+    print("  %d clip biểu cảm dùng chung cho màn chờ · dẫn đường · trò chuyện"
+          % len(BIEU_CAM))
 
 
 if __name__ == "__main__":

@@ -95,7 +95,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .den-vong span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ═══════════ Màn CHỌN — hai lựa chọn lớn ═══════════ */
-.chon-boc{flex:1;min-height:0;display:flex;flex-direction:column;padding:1.75rem 2.25rem 1.5rem}
+.chon-boc{flex:1;min-height:0;display:flex;flex-direction:column;padding:1.5rem 2.25rem 2rem}  /* đáy 2rem: hàng ba nút du hành nằm sát mép màn hình thì bấm dễ trượt */
 .chon-tren{flex:1;min-height:0;display:flex;gap:1.75rem}
 .the-lon{
   flex:1;border-radius:1.5rem;padding:2.5rem 2.25rem;display:flex;flex-direction:column;
@@ -109,6 +109,22 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .the-dan{background:linear-gradient(135deg,var(--navy),var(--navy-tuoi))}
 .the-ai{background:linear-gradient(135deg,#7A2F4E,var(--hong))}
 .chon-duoi{flex:none;display:flex;gap:1.25rem;margin-top:1.5rem}
+/* Hàng ba nút du hành — thấp hơn hàng trên vì chữ ngắn, để hai thẻ lớn ở trên
+   không bị co lại. Nút bị co về chiều cao 0 là lỗi kinh điển trên Nova. */
+.chon-vong{flex:none;display:flex;gap:1.25rem;margin-top:1rem}
+.nut-vong{
+  flex:1;display:flex;align-items:center;gap:.85rem;padding:1rem 1.35rem;border-radius:1rem;
+  background:var(--the);border:.125rem solid var(--vien);box-shadow:var(--bong);
+  font-size:1.2rem;font-weight:700;text-align:left;min-height:4.25rem;
+  transition:border-color .15s;
+}
+.nut-vong:hover{border-color:var(--vang)}
+.nut-vong .ic{font-size:2rem;line-height:1;flex:none}
+.nut-vong i{display:block;font-style:normal;font-size:.95rem;font-weight:500;
+  color:var(--chu-nhat);margin-top:.15rem}
+.nut-vong.dang{background:var(--navy);border-color:var(--navy);color:#fff}
+.nut-vong.dang i{color:rgba(255,255,255,.75)}
+.nut-vong.dang .ic{animation:tho 1.6s ease-in-out infinite}
 .nut-phu-lon{
   flex:1;display:flex;align-items:center;gap:1rem;padding:1.35rem 1.75rem;border-radius:1rem;
   background:var(--the);border:.125rem solid var(--vien);box-shadow:var(--bong);
@@ -393,15 +409,14 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
         <span class="ic" id="nut-moi-ic">📣</span>
         <span id="nut-moi-chu">Mời khách vào hội trường<i>Đọc lặp lại cho tới khi bấm dừng</i></span>
       </button>
-      <button class="nut-phu-lon" id="nut-vong" onclick="bamNutDuHanh()">
-        <span class="ic" id="nut-vong-ic">🚶</span>
-        <span id="nut-vong-chu">Đi du hành<i>Robot đi vòng quanh sảnh và chào khách</i></span>
-      </button>
       <button class="nut-phu-lon" onclick="moTuVan()">
         <span class="ic">🔬</span>
         <span>Tư vấn thực hiện HIFU<i>Dành cho người bệnh đến làm dịch vụ</i></span>
       </button>
     </div>
+    <!-- Ba chế độ du hành. Cùng một lộ trình, khác câu robot đọc dọc đường.
+         Dựng bằng JS từ app-data.json → di_vong.che_do, xem veNutDuHanh(). -->
+    <div class="chon-vong" id="chon-vong"></div>
   </div>
 </div>
 
@@ -1395,6 +1410,18 @@ window.DU_LIEU={
     "vị trí căn tin",
     "giá dịch vụ HIFU"
   ],
+  "bieu_cam": [
+    "emoji_happy",
+    "emoji_laugh",
+    "emoji_blink",
+    "emoji_wink_1",
+    "emoji_wink_2",
+    "emoji_wink_3",
+    "emoji_angry",
+    "emoji_dizzy",
+    "emoji_fallasleep",
+    "emoji_impatient"
+  ],
   "di_vong": {
     "bat": true,
     "diem": [
@@ -1410,15 +1437,25 @@ window.DU_LIEU={
     "toc_do_thang": 0.5,
     "toc_do_xoay": 0.8,
     "sai_so_met": 1.0,
-    "chao": [
-      "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị điều trị HIFU. Kính chúc Quý vị một ngày thật nhiều niềm vui!",
-      "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! Hôm nay là ngày hội lớn của bệnh viện chúng tôi. Rất hân hạnh được phục vụ Quý vị!",
-      "Dạ, tôi xin thưa với Quý vị. Hôm nay bệnh viện Hùng Vương tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị HIFU, buổi chiều có Hội thảo khoa học. Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU."
-    ],
-    "chao_chieu": [
-      "Bệnh viện Hùng Vương trân trọng kính chào Quý đại biểu! Chào mừng Quý vị đến tham dự Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ.",
-      "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị!",
-      "Dạ, tôi xin thưa với Quý vị. Hôm nay bệnh viện Hùng Vương tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị HIFU, buổi chiều có Hội thảo khoa học. Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU."
+    "che_do": [
+      {
+        "ma": "1",
+        "ten": "Du hành 1",
+        "mo_ta": "Chào mừng Hội thảo khoa học",
+        "cau": "Bệnh viện Hùng Vương trân trọng kính chào quý đại biểu. Chào mừng quý vị đến tham dự Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ."
+      },
+      {
+        "ma": "2",
+        "ten": "Du hành 2",
+        "mo_ta": "Giới thiệu hai sự kiện trong ngày",
+        "cau": "Hôm nay, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU. Buổi chiều có hội thảo khoa học. Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU."
+      },
+      {
+        "ma": "3",
+        "ten": "Du hành 3",
+        "mo_ta": "Mời tham quan Đơn vị HIFU",
+        "cau": "Bệnh viện Hùng Vương trân trọng kính mời quý đại biểu, quý khách cùng di chuyển tham quan Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU."
+      }
     ]
   },
   "moi_lap_nghi_giay": 5
@@ -1947,9 +1984,15 @@ const D = window.DU_LIEU;
 const $ = s => document.querySelector(s);
 
 /* ═══════════ Biểu cảm ═══════════ */
-/* Anh Trường chốt: màn chờ lặp emoji_wink_2. Muốn xoay vòng nhiều clip thì thêm tên vào mảng. */
-const BIEU_CAM_CHO = ['emoji_wink_2'];
-const BIEU_CAM_DAN = ['emoji_happy','emoji_wink_1','emoji_laugh','emoji_wink_2'];
+/* Anh Trường chốt 21/08/2026: DÙNG HẾT mười clip gốc của OrionStar, ở CẢ BA chỗ —
+   màn chờ · lúc dẫn đường · màn Trò chuyện. Bản trước màn chờ chỉ lặp một clip nháy mắt.
+
+   ⚠ Danh sách lấy từ app-data.json (bảng BIEU_CAM trong dung-du-lieu.py), KHÔNG ghi cứng
+     ở đây nữa. Muốn bỏ bớt clip nào thì xoá một dòng bên đó rồi chạy lại hai script —
+     không phải build lại APK. Cổng chất lượng bên đó cũng soi luôn xem file .mp4 có thật
+     không: thiếu file là video im lặng không nạp được, màn hình đen một nhịp mà không báo. */
+const BIEU_CAM_CHO = (D.bieu_cam && D.bieu_cam.length) ? D.bieu_cam : ['emoji_wink_2'];
+const BIEU_CAM_DAN = BIEU_CAM_CHO;
 
 function mayBieuCam(idA, idB, ds){
   const vA = $('#'+idA), vB = $('#'+idB);
@@ -2125,52 +2168,78 @@ function xongLuot(){
      câu chào của lượt trước, hai giọng chồng lên nhau.
    ═══════════════════════════════════════════════════════════════════ */
 const DV = D.di_vong || {};
+const DV_CHE_DO = DV.che_do || [];
 
-let dvHang = [];          /* túi câu đã xáo, bốc dần cho hết mới xáo lại */
-let dvChaoCuoi = '';      /* câu vừa đọc — để túi mới không mở đầu trùng câu cũ */
 let dvHenChao = null;
 let dvDangDi = false;     /* Kotlin đã nhận lệnh đi chưa */
 let dvCanhGac = null;
 
-/* NGƯỜI ĐÃ BẤM NÚT "ĐI DU HÀNH" HAY CHƯA — anh Trường chốt 21/08/2026 (bản 2):
-   robot KHÔNG tự đi. Bản trước cứ về màn chờ là robot lăn bánh; ở một buổi lễ có
-   nghi thức, robot tự dưng đi ngang sân khấu là chuyện không đùa được.
-   Cờ này sống suốt buổi: khách chạm màn hình thì robot dừng phục vụ, xong ba mươi
-   giây vắng người là đi tiếp — nhưng chỉ khi người vận hành đã bật nó. */
-let dvBat = false;
+/* CHẾ ĐỘ DU HÀNH ĐANG BẬT — null nghĩa là robot đứng yên.
+   Anh Trường chốt 21/08/2026: robot KHÔNG tự đi, và có BA nút, mỗi nút phát đúng
+   MỘT câu lặp đi lặp lại. Người vận hành chọn thẳng thông điệp muốn phát theo từng
+   lúc trong buổi — đón khách, giới thiệu sự kiện, hay mời tham quan Đơn vị HIFU.
+   Cờ này sống suốt buổi: khách chạm màn hình thì robot dừng phục vụ, ba mươi giây
+   vắng người là đi tiếp — nhưng chỉ khi người vận hành đã bật một chế độ. */
+let dvCheDo = null;
+
+function dvTimCheDo(ma){
+  for(let i = 0; i < DV_CHE_DO.length; i++) if(DV_CHE_DO[i].ma === ma) return DV_CHE_DO[i];
+  return null;
+}
 
 /* Có sẵn tính năng không (dữ liệu đủ + đang chạy trên robot thật). */
 function dvSanSang(){
-  return !!(DV.bat && DV.diem && DV.diem.length >= 2
+  return !!(DV.bat && DV.diem && DV.diem.length >= 2 && DV_CHE_DO.length
             && coCau() && typeof CAU.batDauDiVong === 'function');
 }
-/* Có được phép đi lúc này không = có sẵn VÀ người đã bấm nút. */
-function dvCoBat(){ return dvSanSang() && dvBat; }
+/* Có được phép đi lúc này không = có sẵn VÀ người đã bật một chế độ. */
+function dvCoBat(){ return dvSanSang() && !!dvCheDo; }
 
-/* ── Nút "Đi du hành" ở màn chọn ── */
-function bamNutDuHanh(){
+/* ── Ba nút du hành ở màn chọn ── */
+function bamNutDuHanh(ma){
   if(!dvSanSang()){
     /* Không giấu nút đi — người vận hành cần biết VÌ SAO nó không chạy. */
-    $('#nut-vong-chu').innerHTML =
+    const n = $('#nut-vong-' + ma);
+    if(n) n.querySelector('span:last-child').innerHTML =
       'Chưa đi được<i>' + thoat(lyDoChuaDanDuoc() || 'Bản xem trên máy tính, không có robot') + '</i>';
     return;
   }
-  if(dvBat){ dvBat = false; dvDung('người vận hành bấm dừng'); veNutDuHanh(); return; }
-  dvBat = true;
-  dungMoiLap();          /* không vừa đi vừa lặp lời mời */
+  /* Bấm đúng nút đang sáng = tắt. Bấm nút khác = ĐỔI câu, không phải bật thêm một
+     chuyến nữa — robot chỉ có một cái thân. */
+  if(dvCheDo === ma){
+    dvCheDo = null;
+    dvDung('người vận hành bấm dừng');
+    veNutDuHanh();
+    return;
+  }
+  const doiCau = !!dvCheDo;
+  dvCheDo = ma;
+  dungMoiLap();              /* không vừa đi vừa lặp lời mời */
+  clearTimeout(dvHenChao); dvHenChao = null;
+  dungDoc();                 /* cắt câu của chế độ cũ đang đọc dở */
   veNutDuHanh();
+  if(doiCau){
+    /* Đang đi rồi thì giữ nguyên chuyến, chỉ đổi câu — không dừng rồi đi lại, vì
+       dừng là robot phanh giữa sảnh rồi mới lăn bánh tiếp, nhìn như máy trục trặc. */
+    if(dvDangDi) dvHenChaoSau(1200);
+    veManCho();
+    return;
+  }
   /* Về màn chờ luôn: robot chỉ được đi khi màn hình đang ở màn chờ (xem dvNhipCanhGac),
      nên đứng lại ở màn chọn thì bấm nút xong chẳng thấy gì xảy ra. */
   veManCho();
 }
 
 function veNutDuHanh(){
-  const n = $('#nut-vong'); if(!n) return;
-  n.classList.toggle('dang', dvBat);
-  $('#nut-vong-ic').textContent = dvBat ? '⏹' : '🚶';
-  $('#nut-vong-chu').innerHTML = dvBat
-    ? 'Đang du hành — bấm để dừng<i>Robot đi vòng và chào khách</i>'
-    : 'Đi du hành<i>Robot đi vòng quanh sảnh và chào khách</i>';
+  const boc = $('#chon-vong'); if(!boc) return;
+  boc.innerHTML = DV_CHE_DO.map(function(cd){
+    const dang = (dvCheDo === cd.ma);
+    return '<button class="nut-vong' + (dang ? ' dang' : '') + '" id="nut-vong-' + thoat(cd.ma) +
+           '" onclick="bamNutDuHanh(\'' + thoat(cd.ma) + '\')">' +
+           '<span class="ic">' + (dang ? '⏹' : '🚶') + '</span>' +
+           '<span>' + (dang ? 'Đang chạy — bấm để dừng' : thoat(cd.ten)) +
+           '<i>' + thoat(cd.mo_ta) + '</i></span></button>';
+  }).join('');
 }
 
 /* ── Bật / tắt ── */
@@ -2214,29 +2283,13 @@ function dvNhipCanhGac(){
 /* Gọi khi vừa về màn chờ — khỏi phải đợi hết nhịp canh gác. */
 function dvThuChayNgay(){ setTimeout(dvNhipCanhGac, 400); }
 
-/* ── Câu chào dọc đường ── */
-/* Sáng là buổi lễ, chiều là hội thảo — hai bộ câu khác nhau, chọn theo giờ máy. */
-function dvKhoChao(){
-  const ds = (buoiHienTai() === 'chieu' ? DV.chao_chieu : DV.chao) || DV.chao || [];
-  return ds;
-}
-function dvKeChao(){
-  const ds = dvKhoChao();
-  if(!ds.length) return '';
-  if(!dvHang.length){
-    dvHang = ds.slice();
-    for(let i = dvHang.length - 1; i > 0; i--){
-      const j = (Math.random() * (i + 1)) | 0;
-      const t = dvHang[i]; dvHang[i] = dvHang[j]; dvHang[j] = t;
-    }
-    /* Xáo ngẫu nhiên nhưng không để câu đầu túi mới trùng câu cuối túi cũ — nghe hai
-       lần liền cùng một câu thì khách tưởng robot hỏng. */
-    if(dvHang.length > 1 && dvHang[0] === dvChaoCuoi){
-      const t = dvHang[0]; dvHang[0] = dvHang[1]; dvHang[1] = t;
-    }
-  }
-  dvChaoCuoi = dvHang.shift();
-  return dvChaoCuoi;
+/* ── Câu robot đọc dọc đường ──
+   MỖI CHẾ ĐỘ CHỈ MỘT CÂU, lặp đi lặp lại suốt chuyến. Bản trước xoay vòng nhiều câu;
+   anh Trường đổi lại 21/08/2026 — người vận hành muốn biết chắc lúc này robot đang
+   phát thông điệp nào, không phải đoán xem tới lượt câu nào. */
+function dvCauDangPhat(){
+  const cd = dvTimCheDo(dvCheDo);
+  return cd ? (cd.cau || '') : '';
 }
 function dvHenChaoSau(ms){
   clearTimeout(dvHenChao);
@@ -2244,10 +2297,10 @@ function dvHenChaoSau(ms){
 }
 function dvChaoMotCau(){
   if(!dvDangDi || manDang !== 'mh-cho'){ return; }
-  const cau = dvKeChao();
+  const cau = dvCauDangPhat();
   if(!cau) return;
   /* Đếm mười giây TỪ LÚC ĐỌC XONG, không phải từ lúc bắt đầu đọc. Đếm từ lúc bắt đầu
-     thì câu dài mười hai giây sẽ bị câu sau chồng lên. */
+     thì câu Du hành 2 (hai mươi sáu giây) sẽ bị lượt sau chồng lên. */
   doc(cau, ()=> dvHenChaoSau((DV.cach_chao_giay || 10) * 1000));
 }
 
@@ -2259,7 +2312,10 @@ function dvVeDen(){
   try{ mo = (CAU.moTaDiVong && CAU.moTaDiVong()) || ''; }catch(e){}
   el.classList.add('hien');
   el.classList.toggle('nghi', !dvDangDi);
-  $('#den-vong-chu').textContent = dvDangDi ? ('Đang đi vòng — ' + mo) : 'Chưa đi được';
+  const cd = dvTimCheDo(dvCheDo);
+  $('#den-vong-chu').textContent = dvDangDi
+    ? ((cd ? cd.ten : 'Du hành') + ' — ' + mo)
+    : 'Chưa đi được';
 }
 
 /* Kotlin báo diễn biến vòng đi về đây — xem Cau.baoDiVong(). */
@@ -3026,7 +3082,7 @@ window.addEventListener('resize', datCoChu);
   /* Đồng hồ canh gác vòng đi — thứ duy nhất ra lệnh cho robot đi. Chạy suốt buổi.
      Đặt ở đây, sau ve('mh-cho'), để nhịp đầu tiên đã thấy đúng màn hình đang hiện. */
   /* ⚠ Điều kiện là dvSanSang() chứ KHÔNG phải dvCoBat(): đồng hồ phải chạy sẵn từ đầu
-     buổi, còn việc có cho robot lăn bánh hay không thì mỗi nhịp nó tự hỏi lại cờ dvBat.
+     buổi, còn việc có cho robot lăn bánh hay không thì mỗi nhịp nó tự hỏi lại cờ dvCheDo.
      Viết dvCoBat() ở đây là đồng hồ không bao giờ được dựng (lúc khởi động chưa ai bấm
      nút), rồi bấm nút xong robot đứng im mà không có lấy một dòng log. */
   if(dvSanSang()){

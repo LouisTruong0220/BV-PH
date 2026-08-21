@@ -77,8 +77,13 @@ const nguonBc = await trang.evaluate(() => {
   const v = document.querySelector('#bc-a');
   return v ? decodeURIComponent(v.src) : '';
 });
-kiem(nguonBc.includes('emoji_wink_2'), 'Màn chờ chiếu emoji_wink_2 (anh Trường chốt) — ' +
-     nguonBc.split('/').pop());
+/* Anh Trường chốt 21/08/2026: màn chờ xoay vòng CẢ MƯỜI clip gốc, không còn khoá
+   cứng vào một clip nháy mắt. Danh sách lấy từ app-data.json nên bộ thử soi luôn
+   xem clip đang chiếu có nằm trong danh sách khai báo không. */
+const khoBc = await trang.evaluate(() => window.DU_LIEU.bieu_cam || []);
+kiem(khoBc.length >= 5, 'Kho biểu cảm có ' + khoBc.length + ' clip (không phải một clip duy nhất)');
+kiem(khoBc.some(t => nguonBc.includes(t)),
+     'Màn chờ chiếu một clip trong kho — ' + nguonBc.split('/').pop());
 await anh('01-man-cho');
 
 console.log('\n═══ 2. HAI LỰA CHỌN ═══');
@@ -89,11 +94,18 @@ const nutLon = await trang.$$eval('.the-lon b', ns => ns.map(n => n.textContent.
 kiem(nutLon.length === 2 && nutLon.includes('Dẫn đường') && nutLon.includes('Giao tiếp AI'),
      'Có ĐÚNG hai lựa chọn lớn: ' + nutLon.join(' · '));
 const nutPhu = await trang.$$eval('.nut-phu-lon', ns => ns.length);
-kiem(nutPhu === 3, 'Có ba nút hàng dưới (mời khách · đi du hành · tư vấn HIFU)');
+kiem(nutPhu === 2, 'Hàng dưới có hai nút (mời khách · tư vấn HIFU)');
+const nutVong = await trang.$$eval('.nut-vong', ns => ns.length);
+kiem(nutVong === 3, 'Có ĐÚNG ba nút du hành (đang có ' + nutVong + ')');
 /* Nút bị co về chiều cao 0 là lỗi kinh điển trên Nova — không báo lỗi, chỉ biến mất. */
-const beDep = await trang.$$eval('.the-lon, .nut-phu-lon', ns =>
+const beDep = await trang.$$eval('.the-lon, .nut-phu-lon, .nut-vong', ns =>
   ns.filter(n => { const r = n.getBoundingClientRect(); return r.height < 40 || r.width < 40; }).length);
 kiem(beDep === 0, 'Không nút nào bị co về kích thước 0');
+/* Hàng nút du hành ở cuối màn — tràn xuống dưới 1080 là bấm không tới, mà trên
+   robot không cuộn trang được để kéo lên. */
+const tranDay = await trang.$$eval('.nut-vong', ns =>
+  ns.filter(n => n.getBoundingClientRect().bottom > 1080).length);
+kiem(tranDay === 0, 'Ba nút du hành nằm trọn trong màn hình');
 await anh('02-hai-lua-chon');
 
 console.log('\n═══ 3. DẪN ĐƯỜNG ═══');
@@ -317,10 +329,18 @@ kiem(dsDiem.every(t => /^[\x20-\x7E]+$/.test(t)),
 /* Bấm nút "Đi du hành" ở màn chọn — robot mới lăn bánh. */
 await trang.click('#mh-cho'); await trang.waitForTimeout(200);
 kiem(await manDang() === 'mh-chon', 'Chạm màn chờ vào được màn chọn');
-await trang.click('#nut-vong');
+const cheDo = await trang.evaluate(() => (window.DU_LIEU.di_vong || {}).che_do || []);
+kiem(cheDo.length === 3, 'Có ĐÚNG ba chế độ du hành trong dữ liệu');
+kiem(cheDo.every(c => (c.cau || '').trim().length > 20),
+     'Mỗi chế độ có đúng MỘT câu để đọc');
+kiem(!cheDo.some(c => /[0-9]/.test(c.cau)),
+     'Không câu nào còn chữ số (robot đọc chữ số sai nhịp)');
+
+await trang.click('#nut-vong-1');
 await trang.waitForTimeout(3000);
-kiem(await manDang() === 'mh-cho', 'Bấm "Đi du hành" thì tự về màn chờ');
+kiem(await manDang() === 'mh-cho', 'Bấm "Du hành 1" thì tự về màn chờ');
 kiem(await dangDiVong(), 'Bấm nút xong robot BẮT ĐẦU đi vòng');
+kiem(await trang.evaluate(() => dvCheDo) === '1', 'Đang chạy đúng chế độ 1');
 
 /* Robot phải ĐỔI ĐIỂM chứ không đứng lại ở điểm đầu — đây là cả cái yêu cầu
    "đi liên tục, không dừng ở mỗi điểm". */
@@ -331,13 +351,28 @@ kiem(diem1 !== diem2, 'Tới điểm rồi ĐI TIẾP ngay, không dừng lại 
      diem1 + ' → ' + diem2 + ')');
 
 /* Câu chào dọc đường: phải nằm trong đúng bộ câu bệnh viện soạn cho buổi đang diễn ra */
-const khoChao = await trang.evaluate(() => {
-  const d = window.DU_LIEU.di_vong || {};
-  return (window.buoiHienTai() === 'chieu' ? d.chao_chieu : d.chao) || d.chao || [];
-});
-kiem(khoChao.length >= 2, 'Có kho câu chào đi vòng (' + khoChao.length + ' câu)');
+const khoChao = cheDo.map(c => c.cau);
 const daChao = (await daDoc()).filter(c => khoChao.indexOf(c) >= 0);
 kiem(daChao.length >= 1, 'Vừa đi vừa phát lời chào (đã nghe ' + daChao.length + ' câu)');
+kiem(daChao.every(c => c === cheDo[0].cau),
+     'Chế độ 1 CHỈ đọc câu của nó, không lẫn câu chế độ khác');
+
+/* Bấm nút khác khi đang chạy = ĐỔI CÂU, không phải bật thêm một chuyến nữa */
+await trang.click('#mh-cho'); await trang.waitForTimeout(250);
+await trang.evaluate(() => { window.GIA_LAP.cauDaDoc.length = 0; });
+await trang.click('#nut-vong-3');
+await trang.waitForTimeout(3500);
+kiem(await trang.evaluate(() => dvCheDo) === '3', 'Bấm nút khác thì ĐỔI sang chế độ 3');
+kiem(await dangDiVong(), 'Đổi chế độ mà robot vẫn đang đi (không phanh giữa sảnh)');
+const sauDoi = await daDoc();
+kiem(sauDoi.indexOf(cheDo[0].cau) < 0, 'Đổi rồi thì KHÔNG còn đọc câu chế độ cũ');
+
+/* Bấm đúng nút đang sáng = tắt */
+await trang.click('#mh-cho'); await trang.waitForTimeout(250);
+await trang.click('#nut-vong-3'); await trang.waitForTimeout(600);
+kiem(await trang.evaluate(() => dvCheDo) === null, 'Bấm lại đúng nút đó thì TẮT du hành');
+kiem(!(await dangDiVong()), 'Tắt rồi robot đứng yên');
+await trang.click('#nut-vong-1'); await trang.waitForTimeout(3000);   /* bật lại để kiểm tiếp */
 await anh('11-di-vong');
 
 /* Khách chạm màn hình → robot phải DỪNG NGAY */

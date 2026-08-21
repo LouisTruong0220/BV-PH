@@ -20,11 +20,11 @@ Hùng Vương, TP. Hồ Chí Minh:
 
 **Chỉ cần cài lên robot, không cần build:**
 
-1. Tải `apk/le-tan-benh-vien-hung-vuong-v1.2.apk`
+1. Tải `apk/le-tan-benh-vien-hung-vuong-v1.3.apk`
 2. Nối cáp USB vào **đầu robot**, dùng **adb 1.0.41** của Android SDK
    (⚠ **không** dùng `C:\Windows\adb.exe` bản 1.0.39 của PUDU — hai bản giết tiến trình của nhau)
    ```powershell
-   adb install -r le-tan-benh-vien-hung-vuong-v1.2.apk
+   adb install -r le-tan-benh-vien-hung-vuong-v1.3.apk
    ```
    Hoặc để script làm hết (tự tìm adb, tự tìm APK, tự kiểm tra lại):
    ```powershell
@@ -43,8 +43,8 @@ có giả lập robot, bấm được nút dẫn đường.
 
 | | |
 |---|---|
-| Trạng thái | **Bản demo + APK xong, 91/91 phép kiểm tự động đạt. CHƯA chạy trên robot thật, CHƯA khảo sát mặt bằng.** |
-| APK | `apk/le-tan-benh-vien-hung-vuong-v1.2.apk` (6,8 MB) — bản 1.2 |
+| Trạng thái | **Bản demo + APK xong, 103/103 phép kiểm tự động đạt. CHƯA chạy trên robot thật, CHƯA khảo sát mặt bằng.** |
+| APK | `apk/le-tan-benh-vien-hung-vuong-v1.3.apk` (6,8 MB) — bản 1.3 |
 | Package | `vn.roboworld.hungvuong` — khác app Uông Bí (`vn.roboworld.benhvien`), hai app cài chung một máy được |
 | appId OrionStar | `app_70eef22c4a6d4777af413ac942ea0153` |
 | Ngày | 21/08/2026 |
@@ -60,8 +60,8 @@ có giả lập robot, bấm được nút dẫn đường.
 
 ```
 MÀN CHỜ  ·  chiếu biểu cảm emoji_wink_2.mp4, robot ĐỨNG YÊN
-   │  ⟳ nếu đã bấm nút "Đi du hành": robot đi liên tục Diem 1 → 2 → 3 → 4 → 5 → 1 …
-   │     KHÔNG dừng ở điểm nào · vừa đi vừa đọc 3 câu bệnh viện soạn, cách nhau 10 giây
+   │  ⟳ nếu đã bấm một trong ba nút "Du hành": robot đi liên tục Diem 1 → 2 → … → 1
+   │     KHÔNG dừng ở điểm nào · đọc lặp ĐÚNG MỘT câu của chế độ đang bật, cách 10 giây
    │  khách chạm bất kỳ đâu  → robot DỪNG ngay
    ▼
 HAI LỰA CHỌN ─────────────────────────────────────────────┐
@@ -80,8 +80,12 @@ HAI LỰA CHỌN ─────────────────────
                                                            │
    Ba nút ở hàng dưới ─────────────────────────────────────┘
      📣 Mời khách vào hội trường  → đọc LẶP LẠI tới khi bấm lần nữa
-     🚶 Đi du hành                → bật/tắt vòng đi. Robot KHÔNG tự đi
      🔬 Tư vấn thực hiện HIFU     → 2 nhánh → hỏi có dẫn đường không → dẫn
+
+   Ba nút du hành, hàng cuối ──────────────────────────────
+     🚶 Du hành 1 → chào mừng Hội thảo khoa học
+     🚶 Du hành 2 → giới thiệu hai sự kiện trong ngày
+     🚶 Du hành 3 → mời tham quan Đơn vị HIFU
 
    ⟵ 30 GIÂY không ai thao tác → về màn chờ và ĐI TIẾP
 ```
@@ -89,8 +93,14 @@ HAI LỰA CHỌN ─────────────────────
 **Lời chào đại biểu luân phiên hai câu.** Bệnh viện cung cấp hai biến thể; app đổi qua lại
 để hai người đứng cạnh nhau không nghe y hệt một câu — robot phát băng nghe rất giả.
 
-**Màn chờ dùng `emoji_wink_2.mp4`** theo anh Trường chốt. Muốn xoay vòng nhiều clip thì
-thêm tên vào mảng `BIEU_CAM_CHO` trong `khung-app.html`.
+**Biểu cảm: dùng hết mười clip gốc** của OrionStar, ở cả ba chỗ — màn chờ, lúc dẫn đường,
+màn Trò chuyện. Danh sách nằm ở bảng `BIEU_CAM` trong `dung-du-lieu.py`, không ghi cứng
+trong HTML nữa; cổng chất lượng soi luôn xem file `.mp4` có thật không (thiếu file là
+video không nạp được, màn hình đen một nhịp mà không báo gì).
+
+> ⚠ Bốn clip mang sắc thái không vui — giận, chóng mặt, ngủ gật, sốt ruột. Anh Trường
+> chốt dùng hết nên để nguyên. Muốn bỏ trước buổi lễ thì xoá dòng đó trong `BIEU_CAM`
+> rồi chạy lại hai script, **không phải build lại APK**.
 
 **Sáng khác chiều.** Ngày 22/08 có HAI sự kiện, và bệnh viện soạn lời riêng cho từng cái.
 App tự chọn theo **giờ máy** (mốc 12 giờ), lễ tân không phải bấm gì:
@@ -159,16 +169,18 @@ quanh sảnh và chào khách dọc đường.
 | `toc_do_thang` | 0,5 m/s | Mặc định hãng là 0,7 — nhanh so với sảnh đông người đứng nói chuyện |
 | `toc_do_xoay` | 0,8 rad/s | Mặc định hãng là 1,2 |
 | `sai_so_met` | 1,0 | Chỉ dùng cho lối dự phòng. Để 0,2 như dẫn khách là mỗi điểm robot khựng một nhịp thấy rõ |
-| `chao` / `chao_chieu` | 3 câu mỗi bộ | Nguyên văn lời bệnh viện, anh Trường gửi ảnh chốt 21/08. Bốc **ngẫu nhiên**, hết một lượt mới xáo lại, không để hai câu giống nhau liền nhau |
+| `che_do` | 3 chế độ | Ba nút riêng. **Mỗi chế độ đọc lặp ĐÚNG MỘT câu** — người vận hành chọn thẳng thông điệp muốn phát, không phải đoán xem tới lượt câu nào |
 | `bat` | `True` | Chỉ nghĩa là **có sẵn tính năng**. Robot vẫn chỉ đi khi người vận hành bấm nút |
 
 ### ⚠ Robot KHÔNG tự đi
 
 Bản đầu ngày 21/08 cứ về màn chờ là robot lăn bánh. Anh Trường đổi lại ngay hôm đó: phải
-**bấm nút Đi du hành** ở màn chọn thì robot mới đi, bấm lần nữa thì dừng. Ở một buổi lễ có
+**bấm một trong ba nút Du hành** ở màn chọn thì robot mới đi. Bấm đúng nút đang sáng
+thì dừng; bấm nút khác thì **đổi câu ngay giữa chuyến**, robot không phanh lại rồi mới
+lăn bánh tiếp — phanh giữa sảnh nhìn như máy trục trặc. Ở một buổi lễ có
 nghi thức, robot tự dưng đi ngang sân khấu là chuyện không sửa được bằng lời xin lỗi.
 
-Cờ `dvBat` sống suốt buổi: khách chạm màn hình thì robot dừng phục vụ, ba mươi giây vắng
+Cờ `dvCheDo` sống suốt buổi: khách chạm màn hình thì robot dừng phục vụ, ba mươi giây vắng
 người là đi tiếp — nhưng chỉ khi người vận hành đã bật nó. Nút đổi hẳn màu nền khi đang
 bật, nhìn từ hai mét là biết.
 
@@ -400,7 +412,7 @@ docDapAn(10)                              // → định nghĩa HIFU nguyên vă
 
 ## ⚠ Việc còn treo
 
-1. **Chưa chạy trên robot thật, chưa khảo sát mặt bằng.** Toàn bộ 91 phép kiểm chạy trên
+1. **Chưa chạy trên robot thật, chưa khảo sát mặt bằng.** Toàn bộ 103 phép kiểm chạy trên
    giả lập — nó dựng lại đúng chữ ký hàm và trình tự báo trạng thái của `Cau.kt`, nhưng
    **không thay được một lần chạy thật**.
 2. **Chưa biết `startCruise` có chạy trên máy Nova không.** Đây là việc đầu tiên phải làm
