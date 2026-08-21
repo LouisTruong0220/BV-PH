@@ -10,6 +10,14 @@ Hùng Vương, TP. Hồ Chí Minh:
 
 ## 🚀 Kỹ thuật viên bắt đầu từ đây
 
+> ### 📘 Chưa từng làm việc với robot?
+> Đọc **[`huong-dan-cai-dat.html`](huong-dan-cai-dat.html)** — hướng dẫn 8 bước, từ cài adb
+> tới đặt tên điểm bản đồ, viết cho người không phải lập trình viên.
+>
+> ⚠ GitHub **không hiển thị** file HTML, nó chỉ hiện mã nguồn. Bấm nút **Download raw file**
+> (mũi tên tải xuống ở góc phải) rồi mở bằng Chrome. Hoặc tải cả kho bằng
+> **Code → Download ZIP**, giải nén, nháy đúp file đó.
+
 **Chỉ cần cài lên robot, không cần build:**
 
 1. Tải `apk/le-tan-benh-vien-hung-vuong-v1.0.apk`
@@ -17,6 +25,10 @@ Hùng Vương, TP. Hồ Chí Minh:
    (⚠ **không** dùng `C:\Windows\adb.exe` bản 1.0.39 của PUDU — hai bản giết tiến trình của nhau)
    ```powershell
    adb install -r le-tan-benh-vien-hung-vuong-v1.0.apk
+   ```
+   Hoặc để script làm hết (tự tìm adb, tự tìm APK, tự kiểm tra lại):
+   ```powershell
+   .\tools\cai-len-robot.ps1
    ```
 3. **Mở app từ RobotOS Home**, tuyệt đối không dùng `am start` — dùng `am start` thì
    `RobotApi` trả `handleApiDisabled`, mất cả dẫn đường lẫn giọng nói mà app không báo lỗi gì.

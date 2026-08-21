@@ -1,0 +1,692 @@
+<title>Lắp đặt Robot Nova Hùng Vương</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   Nhận diện Roboworld: Core Red #C13F28.
+   Ba màu ngữ nghĩa (maroon / cam / lục) tách hẳn khỏi màu thương hiệu,
+   để khối cảnh báo còn nổi lên được trên nền một trang vốn đã có đỏ.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --nen:#FAF7F5;          /* nền lệch ấm, không phải trắng tinh */
+  --nen-2:#F2ECE8;
+  --the:#FFFFFF;
+  --muc:#1B1614;          /* mực gần đen, ngả ấm */
+  --muc-2:#6B5D57;
+  --vien:#E2D8D2;
+  --do:#C13F28;           /* Core Red — thương hiệu, cấu trúc */
+  --do-nen:#FBEDE9;
+  --maroon:#5E0F18;       /* TUYỆT ĐỐI KHÔNG */
+  --maroon-chu:#FDE9E1;
+  --cam:#A85D14;          /* cẩn thận */
+  --cam-nen:#FDF2E3;
+  --luc:#2C6E49;          /* đã đạt */
+  --luc-nen:#E9F3ED;
+  --bong:0 1px 2px rgba(27,22,20,.05), 0 8px 24px -12px rgba(27,22,20,.18);
+  --r:10px;
+  /* ⚠ Khối lệnh phải TỐI ở CẢ HAI giao diện — không dùng lại --muc, vì token đó
+     đảo màu ở giao diện tối và khối lệnh sẽ thành chữ sáng trên nền sáng. */
+  --lenh-nen:#1B1614; --lenh-chu:#F6EFEA; --lenh-vien:rgba(255,255,255,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --nen:#17120F; --nen-2:#1F1916; --the:#221B18;
+    --muc:#F2EBE6; --muc-2:#A89890; --vien:#3A2E29;
+    --do:#E4674C; --do-nen:#2E1A16;
+    --maroon:#3E0A10; --maroon-chu:#FBD9CC;
+    --cam:#D99A46; --cam-nen:#2C2013;
+    --luc:#6FBF8F; --luc-nen:#152419;
+    --bong:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+    --lenh-nen:#0D0A08; --lenh-chu:#F2EBE6; --lenh-vien:rgba(255,255,255,.09);
+  }
+}
+:root[data-theme="dark"]{
+  --nen:#17120F; --nen-2:#1F1916; --the:#221B18;
+  --muc:#F2EBE6; --muc-2:#A89890; --vien:#3A2E29;
+  --do:#E4674C; --do-nen:#2E1A16;
+  --maroon:#3E0A10; --maroon-chu:#FBD9CC;
+  --cam:#D99A46; --cam-nen:#2C2013;
+  --luc:#6FBF8F; --luc-nen:#152419;
+  --bong:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  --lenh-nen:#0D0A08; --lenh-chu:#F2EBE6; --lenh-vien:rgba(255,255,255,.09);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--nen); color:var(--muc);
+  font-family:"Be Vietnam Pro",system-ui,-apple-system,Segoe UI,sans-serif;
+  font-size:16.5px; line-height:1.62; letter-spacing:-.003em;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.hoa{font-family:Archivo,"Be Vietnam Pro",system-ui,sans-serif;text-wrap:balance}
+code,kbd,.ma{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+a{color:var(--do)}
+:focus-visible{outline:2.5px solid var(--do);outline-offset:3px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ── Khung trang ── */
+.boc{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+.luoi{display:grid;grid-template-columns:236px minmax(0,1fr);gap:56px;align-items:start}
+@media (max-width:900px){.luoi{grid-template-columns:1fr;gap:0}}
+
+/* ── Đầu trang ── */
+.mao{padding:56px 0 40px;border-bottom:1px solid var(--vien)}
+.nhan{
+  display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:700;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--do);
+}
+.nhan::before{content:"";width:26px;height:2px;background:var(--do)}
+h1{
+  font-size:clamp(34px,5.4vw,54px);font-weight:800;letter-spacing:-.033em;
+  line-height:1.04;margin:16px 0 0;
+}
+.sapo{margin:16px 0 0;font-size:18.5px;color:var(--muc-2);max-width:60ch}
+.that{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.that > div{
+  background:var(--the);border:1px solid var(--vien);border-radius:var(--r);
+  padding:9px 15px;font-size:13.5px;box-shadow:var(--bong);
+}
+.that b{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muc-2);font-weight:700}
+.that span{font-weight:600}
+
+/* ── Thanh mục lục dính ── */
+nav.rail{position:sticky;top:28px;padding-top:44px}
+@media (max-width:900px){nav.rail{position:static;padding:28px 0 0}}
+.rail-tieu{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muc-2);margin-bottom:14px}
+.rail a{
+  display:flex;gap:11px;align-items:baseline;padding:7px 0;
+  text-decoration:none;color:var(--muc-2);font-size:14.5px;line-height:1.35;
+  border-left:2px solid transparent;padding-left:13px;margin-left:-15px;
+  transition:color .15s,border-color .15s;
+}
+.rail a .n{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;opacity:.65;font-variant-numeric:tabular-nums}
+.rail a:hover{color:var(--muc)}
+.rail a.dang{color:var(--do);border-left-color:var(--do);font-weight:600}
+.rail a.dang .n{opacity:1}
+
+/* ── Bước ── */
+.buoc{padding-top:52px;scroll-margin-top:24px}
+.buoc-mao{display:flex;gap:18px;align-items:flex-start;margin-bottom:4px}
+.so{
+  flex:none;width:44px;height:44px;border-radius:11px;background:var(--do);color:#fff;
+  display:grid;place-items:center;font-family:Archivo,sans-serif;font-weight:800;font-size:19px;
+  font-variant-numeric:tabular-nums;box-shadow:var(--bong);
+}
+.buoc h2{font-size:clamp(23px,2.9vw,31px);font-weight:700;letter-spacing:-.024em;margin:5px 0 0;line-height:1.16}
+.buoc-phu{font-size:14px;color:var(--muc-2);margin-top:5px}
+.than{padding-left:62px}
+@media (max-width:640px){.than{padding-left:0}}
+.than > * + *{margin-top:15px}
+.than p{max-width:66ch;margin:0}
+.than ul,.than ol{max-width:66ch;margin:0;padding-left:22px}
+.than li+li{margin-top:7px}
+
+/* ── Khối lệnh ── */
+.lenh{
+  background:var(--lenh-nen);color:var(--lenh-chu);border:1px solid var(--lenh-vien);
+  border-radius:var(--r);padding:15px 17px;
+  font-family:"IBM Plex Mono",monospace;font-size:13.8px;line-height:1.72;
+  overflow-x:auto;position:relative;
+}
+.lenh .nhac{color:#9C8B84}
+.lenh .go{color:#F3B0A0}
+.sao{
+  position:absolute;top:9px;right:9px;background:rgba(255,255,255,.1);color:#F6EFEA;
+  border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:4px 11px;
+  font-family:"Be Vietnam Pro",sans-serif;font-size:12px;font-weight:600;cursor:pointer;
+  transition:background .15s;
+}
+.sao:hover{background:rgba(255,255,255,.2)}
+.sao.xong{background:var(--luc);border-color:var(--luc);color:#fff}
+
+/* ── Khối lưu ý ── */
+.luu{border-radius:var(--r);padding:15px 18px;border-left:4px solid;font-size:15.5px}
+.luu p{max-width:64ch}
+.luu > * + *{margin-top:9px}
+.luu .dau{
+  font-family:Archivo,sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.1em;
+  text-transform:uppercase;display:block;margin-bottom:6px;
+}
+.luu-can{background:var(--cam-nen);border-color:var(--cam)}
+.luu-can .dau{color:var(--cam)}
+.luu-ok{background:var(--luc-nen);border-color:var(--luc)}
+.luu-ok .dau{color:var(--luc)}
+.luu-tin{background:var(--do-nen);border-color:var(--do)}
+.luu-tin .dau{color:var(--do)}
+.luu-cam{background:var(--maroon);border-color:var(--maroon);color:var(--maroon-chu)}
+.luu-cam .dau{color:#F7A98F}
+.luu-cam code{background:rgba(255,255,255,.14);color:#FFDCCF}
+
+/* ── Bảng ── */
+.bang-boc{overflow-x:auto;border:1px solid var(--vien);border-radius:var(--r);background:var(--the);box-shadow:var(--bong)}
+table{border-collapse:collapse;width:100%;font-size:14.8px}
+th,td{text-align:left;padding:11px 15px;border-bottom:1px solid var(--vien);vertical-align:top}
+thead th{
+  background:var(--nen-2);font-family:Archivo,sans-serif;font-size:11.5px;font-weight:700;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--muc-2);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+td.stt{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;color:var(--muc-2);width:1%}
+.ten-diem{
+  font-family:"IBM Plex Mono",monospace;font-size:14.5px;font-weight:600;
+  background:var(--do-nen);color:var(--do);padding:3px 9px;border-radius:6px;
+  white-space:nowrap;display:inline-block;
+}
+
+/* ── Thẻ hai phương án ── */
+.doi{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.doi{grid-template-columns:1fr}}
+.pa{background:var(--the);border:1px solid var(--vien);border-radius:var(--r);padding:17px 19px;box-shadow:var(--bong)}
+.pa h3{margin:0 0 3px;font-size:17.5px;font-weight:700;letter-spacing:-.015em}
+.pa .tag{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--do)}
+.pa p{font-size:14.5px;color:var(--muc-2);margin:9px 0 0}
+.pa ul{font-size:14px;margin:9px 0 0;padding-left:19px;color:var(--muc-2)}
+
+kbd{
+  background:var(--nen-2);border:1px solid var(--vien);border-bottom-width:2px;border-radius:5px;
+  padding:1px 6px;font-size:13px;font-weight:500;
+}
+code:not(.lenh code){background:var(--nen-2);border-radius:5px;padding:1.5px 6px;font-size:14px}
+hr{border:0;border-top:1px solid var(--vien);margin:0}
+
+.cuoi{margin-top:64px;padding-top:26px;border-top:1px solid var(--vien);font-size:14px;color:var(--muc-2)}
+.cuoi b{color:var(--muc)}
+
+@media print{
+  nav.rail,.sao{display:none}
+  .luoi{grid-template-columns:1fr}
+  body{font-size:11pt;background:#fff}
+  .buoc{page-break-inside:avoid;padding-top:26px}
+  .lenh{background:#f4f4f4;color:#000;border:1px solid #ccc}
+}
+</style>
+
+<div class="boc">
+
+<header class="mao">
+  <div class="nhan">Roboworld · Tài liệu kỹ thuật nội bộ</div>
+  <h1>Lắp đặt Robot Nova<br>Bệnh viện Hùng Vương</h1>
+  <p class="sapo">
+    Hướng dẫn cài app lên robot và đặt điểm bản đồ, cho sự kiện ngày 22/08/2026.
+    Viết cho người <strong>chưa từng làm việc với robot</strong> — cứ làm lần lượt từ bước 1
+    đến bước 8, không bỏ bước nào.
+  </p>
+  <div class="that">
+    <div><b>Thời gian</b><span>Khoảng 15 phút cài + 45 phút quét bản đồ</span></div>
+    <div><b>Cần</b><span>Máy tính Windows · cáp USB · robot Nova</span></div>
+    <div><b>Nguồn tải</b><span>github.com/LouisTruong0220/BV-PH</span></div>
+  </div>
+</header>
+
+<div class="luoi">
+
+<nav class="rail" aria-label="Mục lục">
+  <div class="rail-tieu">Tám bước</div>
+  <a href="#b1"><span class="n">01</span><span>Chuẩn bị dụng cụ</span></a>
+  <a href="#b2"><span class="n">02</span><span>Cài adb lên máy tính</span></a>
+  <a href="#b3"><span class="n">03</span><span>Tải app từ GitHub</span></a>
+  <a href="#b4"><span class="n">04</span><span>Bật gỡ lỗi trên robot</span></a>
+  <a href="#b5"><span class="n">05</span><span>Nối máy tính với robot</span></a>
+  <a href="#b6"><span class="n">06</span><span>Cài app</span></a>
+  <a href="#b7"><span class="n">07</span><span>Mở app đúng cách</span></a>
+  <a href="#b8"><span class="n">08</span><span>Quét bản đồ &amp; đặt điểm</span></a>
+  <div class="rail-tieu" style="margin-top:22px">Tra cứu</div>
+  <a href="#kiem"><span class="n">✓</span><span>Tự kiểm trước khi bàn giao</span></a>
+  <a href="#loi"><span class="n">?</span><span>Robot không chịu chạy</span></a>
+</nav>
+
+<main>
+
+<!-- ══════════ BƯỚC 1 ══════════ -->
+<section class="buoc" id="b1">
+  <div class="buoc-mao">
+    <div class="so">1</div>
+    <div><h2>Chuẩn bị dụng cụ</h2><div class="buoc-phu">Làm ở nhà, trước khi ra hiện trường</div></div>
+  </div>
+  <div class="than">
+    <p>Bốn thứ phải có đủ. Thiếu một là ra tới nơi mới phát hiện, rất mất thời gian.</p>
+    <div class="bang-boc"><table>
+      <thead><tr><th>Thứ cần có</th><th>Lưu ý</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Máy tính Windows</strong></td><td>Laptop cho tiện. Cần quyền cài phần mềm.</td></tr>
+        <tr><td><strong>Cáp USB</strong></td><td>Phải là <strong>cáp truyền dữ liệu</strong>. Cáp chỉ để sạc thì cắm vào máy tính sẽ không nhận robot — đây là lỗi hay gặp nhất.</td></tr>
+        <tr><td><strong>Robot GreetingBot Nova</strong></td><td>Đã sạc trên 50%. Quét bản đồ tốn pin.</td></tr>
+        <tr><td><strong>Mạng Internet</strong></td><td>Để tải app về. Robot cũng cần Wi-Fi tại hiện trường cho phần trò chuyện AI.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="luu luu-can">
+      <span class="dau">Cổng USB nằm ở đầu robot</span>
+      <p>Không phải ở thân máy. Cổng ở <strong>phần đầu robot</strong>, chỗ có màn hình.
+      Cắm nhầm chỗ khác thì máy tính không thấy gì cả.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BƯỚC 2 ══════════ -->
+<section class="buoc" id="b2">
+  <div class="buoc-mao">
+    <div class="so">2</div>
+    <div><h2>Cài adb lên máy tính</h2><div class="buoc-phu">Chỉ làm một lần duy nhất cho mỗi máy tính</div></div>
+  </div>
+  <div class="than">
+    <p><strong>adb</strong> là công cụ để máy tính nói chuyện với robot. Không có nó thì không cài app được.</p>
+    <ol>
+      <li>Mở trình duyệt, vào <a href="https://developer.android.com/tools/releases/platform-tools" target="_blank" rel="noopener">developer.android.com/tools/releases/platform-tools</a></li>
+      <li>Bấm <strong>“Download SDK Platform-Tools for Windows”</strong>, đồng ý điều khoản, tải file ZIP về</li>
+      <li>Giải nén file ZIP đó</li>
+      <li>Chép thư mục <code>platform-tools</code> vừa giải nén vào đúng đường dẫn này:</li>
+    </ol>
+    <div class="lenh"><button class="sao">Sao chép</button>%LOCALAPPDATA%\Android\Sdk\</div>
+    <p>Chép xong thì phải có file <code>adb.exe</code> nằm ở
+      <code>C:\Users\&lt;tên bạn&gt;\AppData\Local\Android\Sdk\platform-tools\adb.exe</code></p>
+    <div class="luu luu-cam">
+      <span class="dau">Tuyệt đối không dùng adb có sẵn trong Windows</span>
+      <p>Trên một số máy đã có sẵn <code>C:\Windows\adb.exe</code> — đó là bản <strong>1.0.39 cũ của PUDU</strong>,
+      lệch phiên bản với bản chúng ta cần. Hai bản chạy cùng lúc sẽ <strong>giết tiến trình của nhau</strong>,
+      kết nối rớt liên tục và không có thông báo lỗi nào giải thích vì sao.</p>
+      <p>Nếu máy đã có sẵn file đó, cứ để nguyên, nhưng khi gõ lệnh phải gõ <strong>đủ đường dẫn</strong>
+      tới bản mới như hướng dẫn ở bước 5 và 6.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BƯỚC 3 ══════════ -->
+<section class="buoc" id="b3">
+  <div class="buoc-mao">
+    <div class="so">3</div>
+    <div><h2>Tải app từ GitHub</h2><div class="buoc-phu">Không cần biết dùng Git</div></div>
+  </div>
+  <div class="than">
+    <p>Toàn bộ app nằm ở kho: <a href="https://github.com/LouisTruong0220/BV-PH" target="_blank" rel="noopener">github.com/LouisTruong0220/BV-PH</a></p>
+    <p>Có hai cách tải. <strong>Cách A nhanh hơn</strong> nếu bạn chỉ cần cài app.</p>
+    <div class="doi">
+      <div class="pa">
+        <div class="tag">Cách A — nhanh</div>
+        <h3>Chỉ tải file APK</h3>
+        <ol style="font-size:14.5px;padding-left:19px;margin-top:9px">
+          <li>Mở link kho ở trên</li>
+          <li>Bấm vào thư mục <code>apk</code></li>
+          <li>Bấm vào file <code>le-tan-benh-vien-hung-vuong-v1.0.apk</code></li>
+          <li>Bấm nút <strong>Download</strong> (mũi tên tải xuống, góc phải)</li>
+        </ol>
+      </div>
+      <div class="pa">
+        <div class="tag">Cách B — đầy đủ</div>
+        <h3>Tải cả kho về</h3>
+        <ol style="font-size:14.5px;padding-left:19px;margin-top:9px">
+          <li>Mở link kho ở trên</li>
+          <li>Bấm nút xanh <strong>Code</strong></li>
+          <li>Chọn <strong>Download ZIP</strong></li>
+          <li>Giải nén ra một thư mục dễ tìm, ví dụ <code>D:\BV-PH</code></li>
+        </ol>
+        <p>Có thêm script cài tự động và bản demo xem thử trên máy tính.</p>
+      </div>
+    </div>
+    <div class="luu luu-can">
+      <span class="dau">GitHub không mở được file HTML</span>
+      <p>Bấm vào một file <code>.html</code> trên GitHub thì nó chỉ hiện <em>mã nguồn</em>, chữ chi chít
+      khó đọc. Muốn xem đúng thì bấm nút <strong>Download raw file</strong> rồi mở file tải về bằng Chrome.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BƯỚC 4 ══════════ -->
+<section class="buoc" id="b4">
+  <div class="buoc-mao">
+    <div class="so">4</div>
+    <div><h2>Bật gỡ lỗi trên robot</h2><div class="buoc-phu">Làm trên màn hình robot</div></div>
+  </div>
+  <div class="than">
+    <p>Robot mặc định không cho máy tính cài phần mềm vào. Phải mở khoá trước.</p>
+    <ol>
+      <li>Trên màn hình robot, <strong>vuốt ba ngón tay</strong> để mở Cài đặt</li>
+      <li>Vào mục <strong>Cài đặt nhà phát triển</strong></li>
+      <li>Bật <strong>“Gỡ lỗi lâu dài”</strong></li>
+      <li><strong>Khởi động lại robot</strong></li>
+    </ol>
+    <div class="luu luu-cam">
+      <span class="dau">Phải là “Gỡ lỗi lâu dài”, không phải “Bật gỡ lỗi”</span>
+      <p>Hai mục này nằm cạnh nhau và tên gần giống nhau. Bật nhầm mục <strong>“Bật gỡ lỗi”</strong>
+      thì nó <strong>mất ngay sau khi tắt máy</strong> — bạn cài xong, khởi động lại robot ở hiện trường,
+      rồi ngồi thắc mắc vì sao máy tính không còn thấy robot nữa.</p>
+    </div>
+    <div class="luu luu-can">
+      <span class="dau">Nhớ khởi động lại</span>
+      <p>Bật xong mà chưa khởi động lại thì adb vẫn không thấy robot.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BƯỚC 5 ══════════ -->
+<section class="buoc" id="b5">
+  <div class="buoc-mao">
+    <div class="so">5</div>
+    <div><h2>Nối máy tính với robot</h2><div class="buoc-phu">Kiểm tra máy tính đã “thấy” robot chưa</div></div>
+  </div>
+  <div class="than">
+    <p>Cắm cáp USB vào <strong>đầu robot</strong> và vào máy tính. Rồi mở <strong>PowerShell</strong>
+    trên máy tính (bấm nút Start, gõ “PowerShell”, bấm Enter) và gõ lệnh:</p>
+    <div class="lenh"><button class="sao">Sao chép</button>&amp; "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" devices</div>
+    <p>Nếu mọi thứ đúng, màn hình hiện ra kiểu như thế này:</p>
+    <div class="lenh"><span class="nhac">List of devices attached</span>
+8BR075801070003    device</div>
+    <div class="luu luu-ok">
+      <span class="dau">Dấu hiệu đã đạt</span>
+      <p>Có <strong>một dòng kết thúc bằng chữ <code>device</code></strong>. Dãy chữ số phía trước là
+      số máy của robot, mỗi máy một khác — không cần để ý.</p>
+    </div>
+    <div class="luu luu-can">
+      <span class="dau">Nếu thấy chữ khác</span>
+      <p><code>unauthorized</code> — nhìn lên màn hình robot, có hộp thoại xin phép, bấm <strong>Cho phép</strong>.</p>
+      <p><code>offline</code> hoặc không có dòng nào — xem mục <a href="#loi">Robot không chịu chạy</a> ở cuối trang.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BƯỚC 6 ══════════ -->
+<section class="buoc" id="b6">
+  <div class="buoc-mao">
+    <div class="so">6</div>
+    <div><h2>Cài app</h2><div class="buoc-phu">Một lệnh, khoảng 30 giây</div></div>
+  </div>
+  <div class="than">
+    <p>Vẫn trong cửa sổ PowerShell đó, gõ lệnh dưới đây. Thay
+    <code>D:\Downloads\...</code> bằng đúng chỗ bạn để file APK.</p>
+    <div class="lenh"><button class="sao">Sao chép</button>&amp; "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r "D:\Downloads\le-tan-benh-vien-hung-vuong-v1.0.apk"</div>
+    <p>Chờ khoảng nửa phút. Xong sẽ hiện chữ <code>Success</code>.</p>
+    <div class="luu luu-tin">
+      <span class="dau">Cách nhanh hơn nếu bạn tải cả kho về</span>
+      <p>Nếu làm theo <strong>Cách B</strong> ở bước 3, có sẵn script làm hết mọi việc.
+      Mở PowerShell, chuyển vào thư mục kho rồi chạy:</p>
+      <div class="lenh" style="margin-top:9px"><button class="sao">Sao chép</button>.\tools\cai-len-robot.ps1</div>
+      <p>Script tự tìm adb, tự tìm file APK, tự kiểm tra lại sau khi cài, và báo lỗi bằng tiếng Việt
+      nếu có gì đó chưa đúng.</p>
+    </div>
+    <div class="luu luu-can">
+      <span class="dau">Chữ <code>-r</code> trong lệnh là cố ý</span>
+      <p>Nó nghĩa là “cài đè lên bản cũ”. Thiếu chữ này, robot đã có app rồi thì lệnh sẽ báo lỗi
+      <code>INSTALL_FAILED_ALREADY_EXISTS</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BƯỚC 7 ══════════ -->
+<section class="buoc" id="b7">
+  <div class="buoc-mao">
+    <div class="so">7</div>
+    <div><h2>Mở app đúng cách</h2><div class="buoc-phu">Bước dễ làm sai nhất trong cả quy trình</div></div>
+  </div>
+  <div class="than">
+    <div class="luu luu-cam">
+      <span class="dau">Phải mở từ màn hình chính của robot</span>
+      <p>Trên màn hình robot, tìm biểu tượng
+      <strong>“Robot lễ tân Bệnh viện Hùng Vương”</strong> và <strong>bấm vào đó</strong>.</p>
+      <p>Đừng mở bằng lệnh <code>am start</code>, cũng đừng mở bằng nút Run của Android Studio.
+      Mở theo hai cách đó thì <strong>robot không uỷ quyền cho app</strong>: bấm nút dẫn đường sẽ
+      <strong>không có phản ứng gì cả</strong>, robot cũng không nói được — mà app <strong>không hề
+      báo lỗi</strong>. Nhìn bên ngoài y hệt như app bị hỏng.</p>
+    </div>
+    <p>Mở đúng cách thì bạn sẽ thấy <strong>màn hình chờ</strong>: khuôn mặt robot nháy mắt,
+    phía trên là tên bệnh viện và tên sự kiện, phía dưới là dòng chữ
+    <em>“Chạm vào màn hình để bắt đầu”</em>.</p>
+    <p>Chạm thử vào màn hình. Phải hiện ra <strong>hai ô lớn</strong>:
+    <strong>Dẫn đường</strong> (màu xanh) và <strong>Giao tiếp AI</strong> (màu đỏ tía),
+    cùng hai nút nhỏ hơn ở hàng dưới.</p>
+    <div class="luu luu-ok">
+      <span class="dau">Tới đây là app đã chạy</span>
+      <p>Phần trò chuyện và các nút bấm dùng được ngay. Nhưng <strong>dẫn đường thì chưa</strong> —
+      robot chưa biết đường đi. Đó là việc của bước 8.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BƯỚC 8 ══════════ -->
+<section class="buoc" id="b8">
+  <div class="buoc-mao">
+    <div class="so">8</div>
+    <div><h2>Quét bản đồ và đặt tên điểm</h2><div class="buoc-phu">Phần quan trọng nhất — làm tại hiện trường</div></div>
+  </div>
+  <div class="than">
+    <p>Robot chỉ đi được tới những chỗ đã được <strong>đặt tên sẵn trên bản đồ</strong>.
+    Tên phải trùng <strong>từng ký tự</strong> với bảng bên dưới.</p>
+
+    <div class="luu luu-cam">
+      <span class="dau">Phải hỏi bệnh viện trước khi đi</span>
+      <p>Hội trường ở <strong>lầu 11</strong>. Robot Nova <strong>không tự đi thang máy</strong> —
+      nghĩa là nó chỉ hoạt động được <strong>trong một tầng duy nhất</strong>. Không có cách nào phủ
+      cả hai tầng bằng một con robot.</p>
+      <p>Phải chốt với bệnh viện <strong>đặt robot ở tầng nào</strong> trước khi ra hiện trường.
+      Quyết định này thay đổi hẳn danh sách điểm cần đặt.</p>
+    </div>
+
+    <div class="doi">
+      <div class="pa">
+        <div class="tag">Phương án A</div>
+        <h3>Robot ở tầng trệt</h3>
+        <p>Đón khách ở sảnh, chỉ đường lên lầu 11.</p>
+        <ul>
+          <li>Đặt được: các phòng ở toà Cát Tường, Đơn vị HIFU, quầy CSKH</li>
+          <li><strong>Không đặt được</strong> điểm Hội trường lầu 11</li>
+        </ul>
+      </div>
+      <div class="pa">
+        <div class="tag">Phương án B</div>
+        <h3>Robot ở lầu 11</h3>
+        <p>Đón khách ngay trước cửa hội trường.</p>
+        <ul>
+          <li>Đặt được: Hội trường lầu 11, bàn tiếp đón</li>
+          <li><strong>Không đặt được</strong> các phòng ở toà Cát Tường</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:19px;margin-top:26px;letter-spacing:-.015em">Thứ tự làm tại hiện trường</h3>
+    <ol>
+      <li><strong>Chờ dựng xong mặt bằng đã.</strong> Bàn ghi danh, standee, backdrop, bàn ghế phải
+        kê đúng chỗ trước. Quét bản đồ trước rồi mới kê đồ thì robot sẽ đâm vào những thứ nó chưa biết.</li>
+      <li>Quét bản đồ toàn khu vực robot sẽ đi</li>
+      <li>Đặt các điểm theo bảng bên dưới</li>
+      <li><strong>Định vị robot</strong> — chưa định vị thì mọi lệnh dẫn đường đều lỗi</li>
+      <li>Tự kiểm bằng chính app (xem mục tiếp theo)</li>
+      <li>Chạy thử ít nhất một lượt dẫn đường thật, đi hết quãng đường</li>
+    </ol>
+
+    <h3 style="font-size:19px;margin-top:26px;letter-spacing:-.015em">Mười điểm cần đặt — gõ đúng từng ký tự</h3>
+    <div class="bang-boc"><table>
+      <thead><tr><th>#</th><th>Gõ đúng tên này</th><th>Đặt ở đâu</th></tr></thead>
+      <tbody>
+        <tr><td class="stt">1</td><td><span class="ten-diem">Le tan</span></td><td>Chỗ robot đứng đợi khách giữa hai lượt</td></tr>
+        <tr><td class="stt">2</td><td><span class="ten-diem">Tram sac</span></td><td>Vị trí trạm sạc</td></tr>
+        <tr><td class="stt">3</td><td><span class="ten-diem">Hoi truong L11</span></td><td>Trước cửa Hội trường lầu 11, toà Bách Hợp</td></tr>
+        <tr><td class="stt">4</td><td><span class="ten-diem">Don vi HIFU</span></td><td>Đơn vị HIFU — tầng trệt toà Cát Tường</td></tr>
+        <tr><td class="stt">5</td><td><span class="ten-diem">Quay CSKH</span></td><td>Quầy chăm sóc khách hàng</td></tr>
+        <tr><td class="stt">6</td><td><span class="ten-diem">Phong MRI</span></td><td>Phòng chụp cộng hưởng từ</td></tr>
+        <tr><td class="stt">7</td><td><span class="ten-diem">Phong 12 khu B</span></td><td>Phòng 12, Khu B — nơi xét nghiệm</td></tr>
+        <tr><td class="stt">8</td><td><span class="ten-diem">Phong 8 khu B</span></td><td>Phòng 8, Khu B — nơi siêu âm</td></tr>
+        <tr><td class="stt">9</td><td><span class="ten-diem">Dieu tri trong ngay</span></td><td>Khoa điều trị trong ngày</td></tr>
+        <tr><td class="stt">10</td><td><span class="ten-diem">Ban tiep don</span></td><td>Bàn tiếp đón / ghi danh của sự kiện</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="luu luu-cam">
+      <span class="dau">Ba quy tắc gõ tên — sai một ký tự là robot đứng im</span>
+      <p><strong>1. Không dấu tiếng Việt.</strong> Gõ <code>Hoi truong L11</code>,
+        không phải <code>Hội trường L11</code>.</p>
+      <p><strong>2. Đúng chữ hoa chữ thường.</strong> <code>Quay CSKH</code> — chữ Q hoa,
+        <code>uay</code> thường, <code>CSKH</code> hoa hết.</p>
+      <p><strong>3. Đúng một dấu cách</strong> giữa các chữ. Không thừa dấu cách ở đầu hay cuối.</p>
+      <p>Sai bất kỳ điều nào ở trên, robot báo lỗi <code>ERROR_DESTINATION_NOT_EXIST</code> và
+        <strong>đứng im</strong>, không giải thích gì thêm.</p>
+    </div>
+
+    <div class="luu luu-tin">
+      <span class="dau">Muốn đổi tên điểm cho dễ nhớ hơn?</span>
+      <p>Được, nhưng phải sửa trong app chứ không sửa trên bản đồ. Báo lại đội kỹ thuật để sửa
+      bảng <code>DIEM</code> trong file <code>dung-du-lieu.py</code>. Sửa xong <strong>không phải
+      cài lại app</strong>, chỉ cần đẩy lại một file.</p>
+    </div>
+  </div>
+</section>
+
+<hr style="margin-top:56px">
+
+<!-- ══════════ TỰ KIỂM ══════════ -->
+<section class="buoc" id="kiem">
+  <div class="buoc-mao">
+    <div class="so" style="background:var(--luc)">✓</div>
+    <div><h2>Tự kiểm trước khi bàn giao</h2><div class="buoc-phu">Đừng nhìn bằng mắt — hỏi thẳng robot</div></div>
+  </div>
+  <div class="than">
+    <p>App có sẵn một màn hình kiểm tra, hỏi thẳng robot xem đã định vị chưa và điểm nào đã đặt.
+    Nó chính xác hơn nhiều so với việc nhìn bản đồ rồi đoán.</p>
+    <ol>
+      <li>Mở app, chạm vào màn hình chờ để ra <strong>màn hai lựa chọn</strong></li>
+      <li><strong>Bấm giữ biểu tượng bệnh viện ở góc trên bên trái trong 1,2 giây</strong></li>
+      <li>Màn kiểm tra bản đồ hiện ra</li>
+    </ol>
+    <div class="luu luu-ok">
+      <span class="dau">Đọc kết quả thế nào</span>
+      <p>Mỗi dòng có dấu <strong>✔</strong> hoặc <strong>✘</strong>.
+      Dòng nào <strong>✘</strong> nghĩa là điểm đó <strong>chưa có trên bản đồ</strong> — phải quay lại đặt.</p>
+      <p>Dòng đầu tiên là “Robot đã định vị trên bản đồ”. Dòng này ✘ thì mọi thứ còn lại vô nghĩa,
+      phải định vị lại robot trước.</p>
+    </div>
+    <div class="luu luu-can">
+      <span class="dau">Bấm một cái thì không có gì xảy ra</span>
+      <p>Đó là cố ý. Phải <strong>bấm giữ</strong> hơn một giây. Làm vậy để khách tham dự không
+      vô tình mở nhầm màn hình kỹ thuật.</p>
+    </div>
+    <p>Cuối cùng, <strong>chạy thử một lượt dẫn đường thật</strong>: chọn một điểm, bấm
+    “Dẫn tôi tới đó”, đi theo robot hết quãng đường, và nghe xem tới nơi robot có đọc lời
+    giới thiệu không. Chỉ khi bước này chạy trót lọt mới coi là xong.</p>
+  </div>
+</section>
+
+<!-- ══════════ SỰ CỐ ══════════ -->
+<section class="buoc" id="loi">
+  <div class="buoc-mao">
+    <div class="so" style="background:var(--cam)">?</div>
+    <div><h2>Robot không chịu chạy</h2><div class="buoc-phu">Những lỗi hay gặp và cách xử lý</div></div>
+  </div>
+  <div class="than">
+    <div class="bang-boc"><table>
+      <thead><tr><th>Hiện tượng</th><th>Nguyên nhân và cách xử lý</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Máy tính không thấy robot</strong><br><span style="color:var(--muc-2);font-size:13.5px">lệnh <code>devices</code> không ra dòng nào</span></td>
+          <td>Kiểm lần lượt: cáp có phải cáp truyền dữ liệu không · cắm đúng cổng ở <strong>đầu</strong> robot chưa ·
+            đã bật <strong>“Gỡ lỗi lâu dài”</strong> và <strong>khởi động lại</strong> robot chưa.</td>
+        </tr>
+        <tr>
+          <td><strong>Kết nối rớt liên tục</strong></td>
+          <td>Máy đang chạy nhầm bản adb cũ của PUDU. Gõ <strong>đủ đường dẫn</strong> tới
+            <code>%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe</code>, đừng gõ <code>adb</code> trống.</td>
+        </tr>
+        <tr>
+          <td><strong>Bấm nút dẫn đường, robot không phản ứng gì</strong></td>
+          <td>Gần như chắc chắn là app <strong>mở sai cách</strong>. Đóng hẳn app, mở lại
+            bằng cách bấm biểu tượng trên màn hình chính của robot. Xem lại bước 7.</td>
+        </tr>
+        <tr>
+          <td><strong>Màn báo “Chưa có điểm này trên bản đồ”</strong></td>
+          <td>Tên điểm gõ sai. Đối chiếu lại bảng ở bước 8 — chú ý dấu cách và chữ hoa chữ thường.</td>
+        </tr>
+        <tr>
+          <td><strong>Màn báo “Robot chưa định vị được”</strong></td>
+          <td>Sau mỗi lần khởi động phải định vị lại. Làm trên màn hình cài đặt của robot,
+            rồi mở lại app.</td>
+        </tr>
+        <tr>
+          <td><strong>Nút dẫn đường bị mờ, bấm không được</strong></td>
+          <td>App chưa nối được với robot. Đóng app, mở lại từ màn hình chính của robot.</td>
+        </tr>
+        <tr>
+          <td><strong>Robot đi được nửa đường rồi dừng</strong></td>
+          <td>Có vật cản trên tuyến, hoặc bản đồ đã quét <em>trước</em> khi kê bàn ghế.
+            Dọn lối đi, hoặc quét lại bản đồ.</td>
+        </tr>
+        <tr>
+          <td><strong>Nút micro không hiện ra</strong></td>
+          <td>Robot chưa nối được Wi-Fi, hoặc dịch vụ AI của hãng chưa trả lời.
+            App tự ẩn nút micro cho tới khi AI sẵn sàng — phần gõ chữ vẫn dùng bình thường.</td>
+        </tr>
+      </tbody>
+    </table></div>
+
+    <div class="luu luu-tin" style="margin-top:22px">
+      <span class="dau">Vẫn không xong thì gọi ai</span>
+      <p>Chụp màn hình lỗi rồi gửi đội dự án Roboworld — hotline <strong>0866 153 946</strong>.
+      Nhớ nói rõ <strong>đang mắc ở bước số mấy</strong>, sẽ nhanh hơn nhiều.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="cuoi">
+  <p><b>Roboworld</b> · Tài liệu nội bộ · App robot lễ tân Bệnh viện Hùng Vương, sự kiện 22/08/2026<br>
+  Mã nguồn và file cài: <a href="https://github.com/LouisTruong0220/BV-PH" target="_blank" rel="noopener">github.com/LouisTruong0220/BV-PH</a></p>
+</footer>
+
+</main>
+</div>
+</div>
+
+<script>
+/* Thanh mục lục sáng theo mục đang đọc. */
+(function(){
+  var muc = [].slice.call(document.querySelectorAll('main section[id]'));
+  var lien = {};
+  [].forEach.call(document.querySelectorAll('nav.rail a'), function(a){
+    lien[a.getAttribute('href').slice(1)] = a;
+  });
+  if (!('IntersectionObserver' in window)) return;
+  var soi = new IntersectionObserver(function(vao){
+    vao.forEach(function(v){
+      var a = lien[v.target.id];
+      if (!a) return;
+      if (v.isIntersecting){
+        [].forEach.call(document.querySelectorAll('nav.rail a.dang'), function(x){ x.classList.remove('dang'); });
+        a.classList.add('dang');
+      }
+    });
+  }, { rootMargin: '-15% 0px -70% 0px' });
+  muc.forEach(function(s){ soi.observe(s); });
+})();
+
+/* Nút sao chép lệnh. Trong khung nhúng, clipboard API có thể bị chặn —
+   nên có đường lui: tự bôi đen sẵn để người dùng bấm Ctrl+C. */
+[].forEach.call(document.querySelectorAll('.sao'), function(nut){
+  nut.addEventListener('click', function(){
+    var hop = nut.parentNode;
+    var chu = '';
+    [].forEach.call(hop.childNodes, function(n){
+      if (n.nodeType === 3) chu += n.nodeValue;
+      else if (n !== nut) chu += n.textContent;
+    });
+    chu = chu.replace(/^\s+|\s+$/g, '');
+    function bao(t){
+      var cu = nut.textContent;
+      nut.textContent = t; nut.classList.add('xong');
+      setTimeout(function(){ nut.textContent = cu; nut.classList.remove('xong'); }, 1600);
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(chu).then(function(){ bao('Đã chép'); }, function(){ boiDen(hop, nut); });
+        return;
+      }
+    } catch(e){}
+    boiDen(hop, nut);
+  });
+});
+function boiDen(hop, nut){
+  try {
+    var r = document.createRange();
+    r.selectNodeContents(hop);
+    var s = window.getSelection();
+    s.removeAllRanges(); s.addRange(r);
+    nut.textContent = 'Bấm Ctrl+C';
+    setTimeout(function(){ nut.textContent = 'Sao chép'; }, 2600);
+  } catch(e){}
+}
+</script>
