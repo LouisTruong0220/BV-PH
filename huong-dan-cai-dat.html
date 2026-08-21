@@ -10,47 +10,30 @@
    để khối cảnh báo còn nổi lên được trên nền một trang vốn đã có đỏ.
    ═══════════════════════════════════════════════════════════════ */
 :root{
-  --nen:#FAF7F5;          /* nền lệch ấm, không phải trắng tinh */
-  --nen-2:#F2ECE8;
-  --the:#FFFFFF;
+  /* ⚠ Trang này CHỐT MỘT GIAO DIỆN SÁNG, NỀN TRẮNG — cố ý, không phải thiếu sót.
+     Đây là tài liệu quy trình, nhân sự vừa đọc trên màn hình vừa in ra mang theo
+     hiện trường. Nền trắng cho cả hai việc, và không phụ thuộc máy người đọc đang
+     để chế độ sáng hay tối. Vì vậy KHÔNG có khối @media (prefers-color-scheme: dark)
+     và cũng không có [data-theme] — mọi màu đều được sơn thẳng ở đây. */
+  --nen:#FFFFFF;          /* nền trang — trắng */
+  --nen-2:#F4F1EF;        /* nền chìm: đầu bảng, mã trong dòng, phím */
+  --the:#FFFFFF;          /* mặt thẻ — trắng, tách khỏi nền bằng viền và bóng */
   --muc:#1B1614;          /* mực gần đen, ngả ấm */
-  --muc-2:#6B5D57;
-  --vien:#E2D8D2;
+  --muc-2:#665954;
+  --vien:#E3DCD8;
   --do:#C13F28;           /* Core Red — thương hiệu, cấu trúc */
   --do-nen:#FBEDE9;
   --maroon:#5E0F18;       /* TUYỆT ĐỐI KHÔNG */
   --maroon-chu:#FDE9E1;
-  --cam:#A85D14;          /* cẩn thận */
-  --cam-nen:#FDF2E3;
-  --luc:#2C6E49;          /* đã đạt */
-  --luc-nen:#E9F3ED;
-  --bong:0 1px 2px rgba(27,22,20,.05), 0 8px 24px -12px rgba(27,22,20,.18);
+  --cam:#A05711;          /* cẩn thận */
+  --cam-nen:#FDF3E5;
+  --luc:#2A6B46;          /* đã đạt */
+  --luc-nen:#EAF4EE;
+  --bong:0 1px 2px rgba(27,22,20,.05), 0 6px 20px -10px rgba(27,22,20,.16);
   --r:10px;
-  /* ⚠ Khối lệnh phải TỐI ở CẢ HAI giao diện — không dùng lại --muc, vì token đó
-     đảo màu ở giao diện tối và khối lệnh sẽ thành chữ sáng trên nền sáng. */
+  /* Khối lệnh cố tình TỐI để tách hẳn khỏi thân bài — lệnh là thứ phải gõ lại
+     cho đúng, không phải thứ đọc lướt. */
   --lenh-nen:#1B1614; --lenh-chu:#F6EFEA; --lenh-vien:rgba(255,255,255,.10);
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --nen:#17120F; --nen-2:#1F1916; --the:#221B18;
-    --muc:#F2EBE6; --muc-2:#A89890; --vien:#3A2E29;
-    --do:#E4674C; --do-nen:#2E1A16;
-    --maroon:#3E0A10; --maroon-chu:#FBD9CC;
-    --cam:#D99A46; --cam-nen:#2C2013;
-    --luc:#6FBF8F; --luc-nen:#152419;
-    --bong:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
-    --lenh-nen:#0D0A08; --lenh-chu:#F2EBE6; --lenh-vien:rgba(255,255,255,.09);
-  }
-}
-:root[data-theme="dark"]{
-  --nen:#17120F; --nen-2:#1F1916; --the:#221B18;
-  --muc:#F2EBE6; --muc-2:#A89890; --vien:#3A2E29;
-  --do:#E4674C; --do-nen:#2E1A16;
-  --maroon:#3E0A10; --maroon-chu:#FBD9CC;
-  --cam:#D99A46; --cam-nen:#2C2013;
-  --luc:#6FBF8F; --luc-nen:#152419;
-  --bong:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
-  --lenh-nen:#0D0A08; --lenh-chu:#F2EBE6; --lenh-vien:rgba(255,255,255,.09);
 }
 
 *{box-sizing:border-box}
