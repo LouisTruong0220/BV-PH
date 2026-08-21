@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NoActionBar: WebView chiếm trọn màn hình, thanh tiêu đề Android chỉ tổ vướng -->
+    <style name="Theme.LeTanBenhVien" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Nền khớp biến CSS "nen" của giao diện web, để lúc WebView chưa vẽ xong
+             màn hình không chớp trắng một nhịp.
+             (Không viết tên biến CSS kèm hai gạch nối ở đây: XML cấm chuỗi đó trong
+              chú thích, và lỗi chỉ hiện ra lúc mergeDebugResources.) -->
+        <item name="android:windowBackground">#F4F6FA</item>
+    </style>
+</resources>

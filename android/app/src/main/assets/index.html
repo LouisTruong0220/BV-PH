@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<!-- width=1920: ép WebView của robot bố cục ở đúng khung 1920px rồi thu nhỏ cho vừa màn
+     hình. Để device-width thì khung chỉ còn 548px, cỡ chữ tính ra 4,5px và bị Chrome nâng
+     lên sàn 8px — chữ tràn hết ra ngoài thẻ. Trình duyệt máy tính bỏ qua thẻ này. -->
+<meta name="viewport" content="width=1920">
+<title>Robot lễ tân — Bệnh viện Hùng Vương</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   Màn hình NGANG 1920×1080 của GreetingBot Nova.
+
+   MÀU: xanh navy + vàng đồng — tông lễ nghi, hợp Lễ đón nhận danh hiệu Anh hùng
+   Lao động. Cố ý KHÁC tông xanh y tế của app Uông Bí để hai app không lẫn nhau
+   lúc kỹ thuật cài nhầm máy.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{
+  --navy:#1F3864; --navy-dam:#12213C; --navy-tuoi:#2E5296; --navy-nhat:#EAEFF8;
+  --vang:#B8873B; --vang-tuoi:#D9A94E; --vang-nhat:#FBF3E4;
+  --hong:#A8446A; --hong-nhat:#FAEEF3;
+  --nen:#F4F6FA; --the:#fff; --vien:#DCE2EE;
+  --chu:#141B29; --chu-nhat:#5C6880;
+  --bong:0 .25rem 1.25rem rgba(20,30,60,.10);
+  --bong-cao:0 1rem 3rem rgba(20,30,60,.24);
+}
+html{font-size:16px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:"Segoe UI","Be Vietnam Pro",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  background:var(--nen);color:var(--chu);
+  width:100vw;height:100vh;overflow:hidden;font-size:1rem;line-height:1.45;
+}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+::-webkit-scrollbar{width:.75rem}
+::-webkit-scrollbar-thumb{background:#C3CCDE;border-radius:1rem}
+::-webkit-scrollbar-track{background:transparent}
+
+.man-hinh{position:absolute;inset:0;display:none;flex-direction:column}
+.man-hinh.hien{display:flex}
+
+/* ═══════════ Thanh đầu ═══════════ */
+.dau{
+  height:5.25rem;flex:none;display:flex;align-items:center;gap:1rem;
+  padding:0 1.75rem;background:linear-gradient(100deg,var(--navy-dam),var(--navy-tuoi));
+  color:#fff;box-shadow:var(--bong);z-index:5;
+}
+.dau .dau-icon{font-size:2.2rem;line-height:1}
+.dau .ten{flex:1;min-width:0}
+.dau .ten b{display:block;font-size:1.5rem;font-weight:700}
+.dau .ten span{display:block;font-size:.95rem;opacity:.82;margin-top:.1rem}
+.nut-dau{
+  display:flex;align-items:center;gap:.5rem;padding:.6rem 1.15rem;border-radius:2rem;
+  background:rgba(255,255,255,.16);font-size:1rem;font-weight:600;transition:background .15s;
+}
+.nut-dau:hover{background:rgba(255,255,255,.3)}
+.than{flex:1;min-height:0;overflow-y:auto;padding:1.5rem 1.75rem 1.75rem}
+
+/* ═══════════ Màn chờ ═══════════ */
+#mh-cho{background:#000;cursor:pointer}
+.khung-bc{position:absolute;inset:0;overflow:hidden;background:#000}
+.khung-bc video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
+  transition:opacity .28s linear;
+}
+.khung-bc video.tren{opacity:1}
+.moi-cham{
+  position:absolute;left:0;right:0;bottom:3.5rem;text-align:center;color:#fff;
+  font-size:1.9rem;font-weight:600;letter-spacing:.02em;
+  text-shadow:0 .15rem 1.2rem rgba(0,0,0,.85);animation:tho 2.6s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes tho{0%,100%{opacity:.55}50%{opacity:1}}
+.bang-su-kien{
+  position:absolute;left:0;right:0;top:2.5rem;text-align:center;color:#fff;
+  pointer-events:none;text-shadow:0 .15rem 1.2rem rgba(0,0,0,.85);
+}
+.bang-su-kien b{display:block;font-size:2.1rem;font-weight:700;letter-spacing:.01em}
+.bang-su-kien span{display:block;font-size:1.15rem;opacity:.8;margin-top:.35rem}
+
+/* ═══════════ Màn CHỌN — hai lựa chọn lớn ═══════════ */
+.chon-boc{flex:1;min-height:0;display:flex;flex-direction:column;padding:1.75rem 2.25rem 1.5rem}
+.chon-tren{flex:1;min-height:0;display:flex;gap:1.75rem}
+.the-lon{
+  flex:1;border-radius:1.5rem;padding:2.5rem 2.25rem;display:flex;flex-direction:column;
+  align-items:flex-start;justify-content:center;gap:.85rem;color:#fff;
+  box-shadow:var(--bong-cao);transition:transform .12s;text-align:left;
+}
+.the-lon:active{transform:scale(.985)}
+.the-lon .ic{font-size:5rem;line-height:1}
+.the-lon b{font-size:2.75rem;font-weight:800;letter-spacing:-.01em}
+.the-lon span{font-size:1.35rem;opacity:.9;line-height:1.4}
+.the-dan{background:linear-gradient(135deg,var(--navy),var(--navy-tuoi))}
+.the-ai{background:linear-gradient(135deg,#7A2F4E,var(--hong))}
+.chon-duoi{flex:none;display:flex;gap:1.25rem;margin-top:1.5rem}
+.nut-phu-lon{
+  flex:1;display:flex;align-items:center;gap:1rem;padding:1.35rem 1.75rem;border-radius:1rem;
+  background:var(--the);border:.125rem solid var(--vien);box-shadow:var(--bong);
+  font-size:1.35rem;font-weight:700;text-align:left;transition:border-color .15s;
+}
+.nut-phu-lon:hover{border-color:var(--vang)}
+.nut-phu-lon .ic{font-size:2.4rem;line-height:1;flex:none}
+.nut-phu-lon i{display:block;font-style:normal;font-size:1rem;font-weight:500;
+  color:var(--chu-nhat);margin-top:.15rem}
+
+/* ═══════════ Lưới thẻ chung ═══════════ */
+.luoi{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
+.luoi.hai{grid-template-columns:repeat(2,1fr)}
+.the{
+  background:var(--the);border:.125rem solid var(--vien);border-radius:1rem;
+  padding:1.35rem 1.5rem;display:flex;align-items:flex-start;gap:1.1rem;text-align:left;
+  box-shadow:var(--bong);transition:border-color .15s,transform .12s;min-height:6.5rem;
+}
+.the:hover{border-color:var(--navy-tuoi)}
+.the:active{transform:scale(.99)}
+.the .ic{font-size:2.6rem;line-height:1;flex:none}
+.the .noi{flex:1;min-width:0}
+.the .noi b{display:block;font-size:1.45rem;font-weight:700;line-height:1.25}
+.the .noi span{display:block;font-size:1.05rem;color:var(--chu-nhat);margin-top:.3rem;line-height:1.35}
+.the-hoi{min-height:auto;padding:1.15rem 1.35rem}
+.the-hoi .noi b{font-size:1.25rem;font-weight:600}
+
+.nhan-buoi{
+  display:inline-block;padding:.2rem .7rem;border-radius:1rem;font-size:.85rem;
+  font-weight:700;letter-spacing:.02em;margin-top:.45rem;
+}
+.nhan-sang{background:var(--vang-nhat);color:var(--vang)}
+.nhan-chieu{background:var(--navy-nhat);color:var(--navy-tuoi)}
+.nhan-moi{background:#E8F3EC;color:#2C7A4B}
+
+.tieu-muc{
+  display:flex;align-items:center;gap:.75rem;margin:.35rem 0 1rem;
+  font-size:1.15rem;font-weight:700;color:var(--chu-nhat);letter-spacing:.02em;
+}
+.tieu-muc:not(:first-child){margin-top:2rem}
+.tieu-muc::after{content:"";flex:1;height:.0625rem;background:var(--vien)}
+
+/* ═══════════ Chi tiết đích ═══════════ */
+.ct-boc{flex:1;min-height:0;display:flex;gap:1.75rem;padding:1.75rem 2rem}
+.ct-trai{flex:1.15;min-width:0;display:flex;flex-direction:column}
+.ct-phai{flex:1;min-width:0;display:flex;flex-direction:column;gap:1rem}
+.ct-the{
+  background:var(--the);border-radius:1.25rem;box-shadow:var(--bong);
+  padding:2rem 2.25rem;flex:1;min-height:0;display:flex;flex-direction:column;
+}
+.ct-the .ic-to{font-size:4.5rem;line-height:1;margin-bottom:.75rem}
+.ct-the h2{font-size:2.5rem;font-weight:800;line-height:1.15;letter-spacing:-.01em}
+.ct-the .phu{font-size:1.25rem;color:var(--chu-nhat);margin-top:.5rem}
+.ct-loi{
+  margin-top:1.5rem;padding:1.25rem 1.5rem;background:var(--navy-nhat);
+  border-left:.3rem solid var(--navy-tuoi);border-radius:.6rem;
+  font-size:1.2rem;line-height:1.55;flex:1;min-height:0;overflow-y:auto;
+}
+.ct-loi i{display:block;font-style:normal;font-size:.9rem;font-weight:700;
+  color:var(--navy-tuoi);letter-spacing:.06em;margin-bottom:.5rem}
+.nut-to{
+  width:100%;padding:1.5rem;border-radius:1rem;font-size:1.6rem;font-weight:800;
+  background:linear-gradient(135deg,var(--navy),var(--navy-tuoi));color:#fff;
+  box-shadow:var(--bong-cao);display:flex;align-items:center;justify-content:center;gap:.85rem;
+  transition:transform .12s;
+}
+.nut-to:active{transform:scale(.985)}
+.nut-to.lop-phu{
+  background:var(--the);color:var(--navy);border:.15rem solid var(--vien);
+  box-shadow:var(--bong);font-size:1.3rem;padding:1.15rem;
+}
+.nut-to[disabled]{opacity:.45;pointer-events:none}
+.loi-nhac{
+  padding:.9rem 1.15rem;background:var(--vang-nhat);border-radius:.75rem;
+  font-size:1.05rem;color:#7A5A1E;line-height:1.4;
+}
+.loi-nhac.an{display:none}
+
+/* ═══════════ Đang dẫn ═══════════ */
+#mh-dan{background:#000}
+.dan-lop{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-end;padding-bottom:4rem;pointer-events:none;
+}
+.dan-hop{
+  background:rgba(10,16,30,.82);border-radius:1.25rem;padding:1.5rem 2.5rem;
+  color:#fff;text-align:center;max-width:70%;backdrop-filter:blur(.35rem);
+}
+.dan-hop b{display:block;font-size:2.2rem;font-weight:800}
+.dan-hop span{display:block;font-size:1.3rem;opacity:.85;margin-top:.5rem;min-height:1.6rem}
+.dan-nut{
+  position:absolute;right:2rem;top:2rem;pointer-events:auto;
+  padding:1rem 1.75rem;border-radius:2rem;background:rgba(255,255,255,.18);
+  color:#fff;font-size:1.2rem;font-weight:700;backdrop-filter:blur(.35rem);
+}
+
+/* ═══════════ Tới nơi — chữ to nhất app ═══════════ */
+#mh-toi .than{display:flex;flex-direction:column;justify-content:center;padding:2rem 3rem}
+.toi-ic{font-size:5rem;text-align:center;line-height:1}
+.toi-ten{font-size:3.2rem;font-weight:800;text-align:center;margin-top:.5rem;line-height:1.15}
+.toi-loi{
+  margin:1.75rem auto 0;max-width:88%;font-size:1.9rem;line-height:1.5;text-align:center;
+  padding:1.75rem 2rem;background:var(--the);border-radius:1.25rem;box-shadow:var(--bong);
+}
+.toi-nut{display:flex;gap:1.25rem;margin:1.75rem auto 0;max-width:60%;width:100%}
+
+/* ═══════════ Chọn loại khách ═══════════ */
+#mh-loai .than{display:flex;flex-direction:column;justify-content:center}
+.loai-hoi{font-size:2.4rem;font-weight:800;text-align:center;margin-bottom:2.25rem}
+.loai-hang{display:flex;gap:1.75rem;justify-content:center;padding:0 2rem}
+.the-loai{
+  flex:1;max-width:26rem;border-radius:1.5rem;padding:2.75rem 2rem;text-align:center;
+  background:var(--the);border:.2rem solid var(--vien);box-shadow:var(--bong);
+  transition:border-color .15s,transform .12s;
+}
+.the-loai:hover{border-color:var(--vang)}
+.the-loai:active{transform:scale(.985)}
+.the-loai .ic{font-size:5rem;line-height:1}
+.the-loai b{display:block;font-size:2.2rem;font-weight:800;margin-top:.75rem}
+.the-loai span{display:block;font-size:1.2rem;color:var(--chu-nhat);margin-top:.5rem}
+
+/* ═══════════ Trò chuyện AI ═══════════ */
+.chat-boc{flex:1;min-height:0;display:flex;gap:1.5rem;padding:1.25rem 1.75rem 1.5rem}
+.chat-trai{flex:1.25;min-width:0;display:flex;flex-direction:column}
+.chat-phai{flex:1;min-width:0;display:flex;flex-direction:column;gap:.85rem}
+.chat-ds{
+  flex:1;min-height:0;overflow-y:auto;background:var(--the);border-radius:1.25rem;
+  box-shadow:var(--bong);padding:1.35rem 1.5rem;display:flex;flex-direction:column;gap:.85rem;
+}
+.bong-chat{max-width:88%;padding:1rem 1.25rem;border-radius:1rem;font-size:1.2rem;line-height:1.5}
+.bong-chat.nguoi{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:.3rem}
+.bong-chat.robot{align-self:flex-start;background:var(--nen);border-bottom-left-radius:.3rem}
+.bong-chat.dang{opacity:.65}
+.chat-trong{margin:auto;text-align:center;color:var(--chu-nhat);font-size:1.15rem;line-height:1.6}
+.chat-nhap{flex:none;display:flex;gap:.75rem;margin-top:.85rem}
+.chat-nhap input{
+  flex:1;padding:1.1rem 1.35rem;border-radius:2rem;border:.15rem solid var(--vien);
+  font-size:1.2rem;background:var(--the);outline:none;
+}
+.chat-nhap input:focus{border-color:var(--navy-tuoi)}
+.nut-tron{
+  width:4rem;height:4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;background:var(--navy);color:#fff;flex:none;box-shadow:var(--bong);
+}
+.nut-tron.mic{background:var(--hong)}
+.nut-tron.mic.dang{animation:dap 1.2s ease-in-out infinite}
+.nut-tron.an{display:none}
+@keyframes dap{0%,100%{box-shadow:0 0 0 0 rgba(168,68,106,.55)}50%{box-shadow:0 0 0 .9rem rgba(168,68,106,0)}}
+.chat-goi{
+  flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;
+}
+.chat-goi .nhom-ten{
+  font-size:1rem;font-weight:700;color:var(--chu-nhat);letter-spacing:.03em;
+  margin-top:.5rem;
+}
+.chat-goi .nhom-ten:first-child{margin-top:0}
+.the-goi{
+  background:var(--the);border:.125rem solid var(--vien);border-radius:.75rem;
+  padding:.85rem 1.1rem;font-size:1.05rem;text-align:left;line-height:1.35;
+  transition:border-color .15s;
+}
+.the-goi:hover{border-color:var(--navy-tuoi)}
+.khung-bc-nho{
+  flex:none;height:11rem;border-radius:1rem;overflow:hidden;position:relative;background:#000;
+  box-shadow:var(--bong);
+}
+
+/* ═══════════ Tư vấn HIFU ═══════════ */
+#mh-tuvan .than{display:flex;flex-direction:column;justify-content:center}
+.tv-hoi{font-size:2.1rem;font-weight:800;text-align:center;margin-bottom:2rem}
+.tv-hang{display:flex;flex-direction:column;gap:1.25rem;max-width:60rem;margin:0 auto;width:100%}
+.the-tv{
+  display:flex;align-items:center;gap:1.5rem;padding:1.85rem 2.25rem;border-radius:1.25rem;
+  background:var(--the);border:.2rem solid var(--vien);box-shadow:var(--bong);text-align:left;
+  transition:border-color .15s;
+}
+.the-tv:hover{border-color:var(--vang)}
+.the-tv .ic{font-size:3rem;line-height:1;flex:none}
+.the-tv b{font-size:1.8rem;font-weight:700;line-height:1.3}
+
+/* ═══════════ Hỏi xác nhận ═══════════ */
+.hoi-lop{
+  position:absolute;inset:0;background:rgba(15,22,40,.72);display:none;
+  align-items:center;justify-content:center;z-index:40;padding:3rem;
+}
+.hoi-lop.hien{display:flex}
+.hoi-hop{
+  background:var(--the);border-radius:1.5rem;padding:2.75rem 3rem;max-width:56rem;width:100%;
+  box-shadow:var(--bong-cao);text-align:center;
+}
+.hoi-hop p{font-size:1.9rem;line-height:1.5;font-weight:600}
+.hoi-nut{display:flex;gap:1.25rem;margin-top:2rem}
+
+/* ═══════════ Quy trình 8 bước ═══════════ */
+.buoc{
+  display:flex;gap:1.35rem;background:var(--the);border:.125rem solid var(--vien);
+  border-radius:1rem;padding:1.35rem 1.6rem;box-shadow:var(--bong);text-align:left;width:100%;
+  transition:border-color .15s;margin-bottom:.9rem;
+}
+.buoc:hover{border-color:var(--navy-tuoi)}
+.buoc .so{
+  width:3.1rem;height:3.1rem;border-radius:50%;flex:none;display:flex;align-items:center;
+  justify-content:center;background:var(--navy);color:#fff;font-size:1.5rem;font-weight:800;
+}
+.buoc .noi b{display:block;font-size:1.4rem;font-weight:700}
+.buoc .noi span{display:block;font-size:1.05rem;color:var(--chu-nhat);margin-top:.35rem;line-height:1.45}
+
+/* ═══════════ Tự kiểm bản đồ (kỹ thuật) ═══════════ */
+.bd-dong{
+  display:flex;align-items:center;gap:1rem;padding:.9rem 1.25rem;background:var(--the);
+  border:.125rem solid var(--vien);border-radius:.75rem;margin-bottom:.6rem;font-size:1.15rem;
+}
+.bd-dong .kq{font-size:1.4rem;flex:none;width:2rem;text-align:center}
+.bd-dong .ten{flex:1;font-weight:600}
+.bd-dong .ghi{font-size:.95rem;color:var(--chu-nhat)}
+
+/* ═══════════ Thanh robot đang về chỗ ═══════════ */
+.ve-cho{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:1.5rem;display:none;
+  align-items:center;gap:1.25rem;padding:1rem 1.75rem;border-radius:2rem;
+  background:rgba(18,33,60,.92);color:#fff;font-size:1.15rem;z-index:30;box-shadow:var(--bong-cao);
+}
+.ve-cho.hien{display:flex}
+.ve-cho button{padding:.5rem 1.1rem;border-radius:1.5rem;background:rgba(255,255,255,.2);
+  font-size:1rem;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ MÀN CHỜ ══════════════ -->
+<div class="man-hinh hien" id="mh-cho" onclick="thoiCho()">
+  <div class="khung-bc">
+    <video id="bc-a" muted playsinline preload="auto"></video>
+    <video id="bc-b" muted playsinline preload="auto"></video>
+  </div>
+  <div class="bang-su-kien" id="bang-su-kien"></div>
+  <div class="moi-cham">Chạm vào màn hình để bắt đầu</div>
+</div>
+
+<!-- ══════════════ MÀN CHỌN ══════════════ -->
+<div class="man-hinh" id="mh-chon">
+  <div class="dau">
+    <div class="dau-icon">🏥</div>
+    <div class="ten"><b id="dau-donvi">Bệnh viện Hùng Vương</b><span id="dau-sukien"></span></div>
+    <button class="nut-dau" onclick="veManCho()">✕ Kết thúc</button>
+  </div>
+  <div class="chon-boc">
+    <div class="chon-tren">
+      <button class="the-lon the-dan" onclick="moDanDuong()">
+        <span class="ic">🧭</span>
+        <b>Dẫn đường</b>
+        <span>Tôi đưa Quý vị tới hội trường,<br>đơn vị HIFU và các phòng chức năng</span>
+      </button>
+      <button class="the-lon the-ai" onclick="moGiaoTiep()">
+        <span class="ic">💬</span>
+        <b>Giao tiếp AI</b>
+        <span>Hỏi tôi về buổi lễ, về bệnh viện<br>và về kỹ thuật HIFU</span>
+      </button>
+    </div>
+    <div class="chon-duoi">
+      <button class="nut-phu-lon" onclick="moiVaoHoiTruong()">
+        <span class="ic">📣</span>
+        <span>Mời khách vào hội trường<i>Robot đọc lời mời ổn định chỗ ngồi</i></span>
+      </button>
+      <button class="nut-phu-lon" onclick="moTuVan()">
+        <span class="ic">🔬</span>
+        <span>Tư vấn thực hiện HIFU<i>Dành cho người bệnh đến làm dịch vụ</i></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ DANH SÁCH ĐÍCH ══════════════ -->
+<div class="man-hinh" id="mh-dich">
+  <div class="dau">
+    <div class="dau-icon">🧭</div>
+    <div class="ten"><b>Quý vị muốn tôi dẫn tới đâu?</b><span>Chạm vào nơi cần đến</span></div>
+    <button class="nut-dau" onclick="ve('mh-chon')">‹ Quay lại</button>
+  </div>
+  <div class="than" id="dich-than"></div>
+</div>
+
+<!-- ══════════════ CHI TIẾT ĐÍCH ══════════════ -->
+<div class="man-hinh" id="mh-ct">
+  <div class="dau">
+    <div class="dau-icon">📍</div>
+    <div class="ten"><b id="ct-dau">Điểm đến</b><span id="ct-dau-phu"></span></div>
+    <button class="nut-dau" onclick="ve('mh-dich')">‹ Quay lại</button>
+  </div>
+  <div class="ct-boc">
+    <div class="ct-trai">
+      <div class="ct-the">
+        <div class="ic-to" id="ct-ic">📍</div>
+        <h2 id="ct-ten"></h2>
+        <div class="phu" id="ct-phu"></div>
+        <div class="ct-loi"><i>ROBOT SẼ NÓI KHI TỚI NƠI</i><span id="ct-loi"></span></div>
+      </div>
+    </div>
+    <div class="ct-phai">
+      <div class="loi-nhac an" id="ct-nhac"></div>
+      <button class="nut-to" id="ct-nut-dan" onclick="danDuong()">🧭 Dẫn tôi tới đó</button>
+      <button class="nut-to lop-phu" onclick="ngheTruoc()">🔊 Nghe robot đọc giới thiệu</button>
+      <button class="nut-to lop-phu" onclick="ve('mh-dich')">‹ Chọn nơi khác</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ĐANG DẪN ══════════════ -->
+<div class="man-hinh" id="mh-dan">
+  <div class="khung-bc">
+    <video id="bc-c" muted playsinline preload="auto"></video>
+    <video id="bc-d" muted playsinline preload="auto"></video>
+  </div>
+  <div class="dan-lop">
+    <div class="dan-hop">
+      <b id="dan-ten">Xin mời đi theo tôi</b>
+      <span id="dan-tin"></span>
+    </div>
+  </div>
+  <button class="dan-nut" onclick="dungDanDuongNgay()">✕ Dừng lại</button>
+</div>
+
+<!-- ══════════════ TỚI NƠI ══════════════ -->
+<div class="man-hinh" id="mh-toi">
+  <div class="dau">
+    <div class="dau-icon">✅</div>
+    <div class="ten"><b>Đã tới nơi</b><span id="toi-dau-phu"></span></div>
+    <button class="nut-dau" onclick="xongLuot()">✕ Kết thúc</button>
+  </div>
+  <div class="than">
+    <div class="toi-ic" id="toi-ic">📍</div>
+    <div class="toi-ten" id="toi-ten"></div>
+    <div class="toi-loi" id="toi-loi"></div>
+    <div class="toi-nut">
+      <button class="nut-to lop-phu" onclick="ngheLaiToiNoi()">🔊 Nghe lại</button>
+      <button class="nut-to" onclick="xongLuot()">Xong, cảm ơn</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CHỌN LOẠI KHÁCH ══════════════ -->
+<div class="man-hinh" id="mh-loai">
+  <div class="dau">
+    <div class="dau-icon">💬</div>
+    <div class="ten"><b>Xin cho tôi biết Quý khách là</b><span>Để tôi chào đúng cách ạ</span></div>
+    <button class="nut-dau" onclick="ve('mh-chon')">‹ Quay lại</button>
+  </div>
+  <div class="than">
+    <div class="loai-hoi">Quý khách là đại biểu hay khách VIP ạ?</div>
+    <div class="loai-hang" id="loai-hang"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TRÒ CHUYỆN AI ══════════════ -->
+<div class="man-hinh" id="mh-chat">
+  <div class="dau">
+    <div class="dau-icon">💬</div>
+    <div class="ten"><b id="chat-dau">Trò chuyện cùng tôi</b><span id="chat-dau-phu"></span></div>
+    <button class="nut-dau" onclick="moQuyTrinh()">📋 Quy trình HIFU</button>
+    <button class="nut-dau" onclick="ve('mh-chon')">‹ Quay lại</button>
+  </div>
+  <div class="chat-boc">
+    <div class="chat-trai">
+      <div class="chat-ds" id="chat-ds"></div>
+      <div class="chat-nhap">
+        <input id="chat-o" placeholder="Gõ câu hỏi của Quý vị…"
+               onkeydown="if(event.key==='Enter')guiChat()">
+        <button class="nut-tron" onclick="guiChat()" title="Gửi">➤</button>
+        <button class="nut-tron mic an" id="nut-mic" onclick="bamMic()" title="Nói">🎤</button>
+      </div>
+    </div>
+    <div class="chat-phai">
+      <div class="khung-bc-nho">
+        <video id="bc-e" muted playsinline preload="auto"></video>
+        <video id="bc-f" muted playsinline preload="auto"></video>
+      </div>
+      <div class="chat-goi" id="chat-goi"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TƯ VẤN HIFU ══════════════ -->
+<div class="man-hinh" id="mh-tuvan">
+  <div class="dau">
+    <div class="dau-icon">🔬</div>
+    <div class="ten"><b id="tv-dau">Tư vấn thực hiện HIFU</b><span>Chạm vào trường hợp của Quý vị</span></div>
+    <button class="nut-dau" onclick="ve('mh-chon')">‹ Quay lại</button>
+  </div>
+  <div class="than">
+    <div class="tv-hoi" id="tv-hoi"></div>
+    <div class="tv-hang" id="tv-hang"></div>
+  </div>
+</div>
+
+<!-- ══════════════ QUY TRÌNH 8 BƯỚC ══════════════ -->
+<div class="man-hinh" id="mh-quytrinh">
+  <div class="dau">
+    <div class="dau-icon">📋</div>
+    <div class="ten"><b>Quy trình điều trị HIFU</b><span>Tám bước khép kín — chạm vào bước để nghe</span></div>
+    <button class="nut-dau" onclick="ngheTongQuan()">🔊 Nghe tổng quan</button>
+    <button class="nut-dau" onclick="quayTuQuyTrinh()">‹ Quay lại</button>
+  </div>
+  <div class="than" id="qt-than"></div>
+</div>
+
+<!-- ══════════════ TỰ KIỂM BẢN ĐỒ (kỹ thuật) ══════════════ -->
+<div class="man-hinh" id="mh-bando">
+  <div class="dau">
+    <div class="dau-icon">🗺️</div>
+    <div class="ten"><b>Tự kiểm bản đồ</b><span>Dành cho kỹ thuật viên lúc lắp đặt</span></div>
+    <button class="nut-dau" onclick="CAU_kiemTraBanDo()">↻ Hỏi lại robot</button>
+    <button class="nut-dau" onclick="ve('mh-chon')">‹ Quay lại</button>
+  </div>
+  <div class="than" id="bd-than"></div>
+</div>
+
+<!-- ══════════════ HỎI XÁC NHẬN ══════════════ -->
+<div class="hoi-lop" id="hoi-lop">
+  <div class="hoi-hop">
+    <p id="hoi-chu"></p>
+    <div class="hoi-nut">
+      <button class="nut-to lop-phu" onclick="dongHoi()">Không, cảm ơn</button>
+      <button class="nut-to" id="hoi-dong-y" onclick="dongYHoi()">Vâng, mời dẫn đường</button>
+    </div>
+  </div>
+</div>
+
+<!-- Thanh robot đang tự về chỗ -->
+<div class="ve-cho" id="ve-cho">
+  <span id="ve-cho-chu">Tôi đang về chỗ đứng đợi…</span>
+  <button onclick="hoanVeCho()">Tôi còn cần robot</button>
+</div>
+
+<script>
+window.DU_LIEU={
+  "don_vi": "Bệnh viện Hùng Vương",
+  "su_kien": "Lễ đón nhận danh hiệu Anh hùng Lao động · Lễ khai trương Đơn vị HIFU · Hội thảo khoa học HIFU",
+  "ngay": "22/08/2026",
+  "nguon": "Tài liệu bệnh viện cung cấp 20/08/2026 — 10-project/Benh-vien-Hung-Vuong/tu-lieu/",
+  "cap_nhat": "20/08/2026",
+  "diem": {
+    "hoi-truong": "Hoi truong L11",
+    "don-vi-hifu": "Don vi HIFU",
+    "quay-cskh": "Quay CSKH",
+    "phong-mri": "Phong MRI",
+    "phong-12": "Phong 12 khu B",
+    "phong-8": "Phong 8 khu B",
+    "dieu-tri-ngay": "Dieu tri trong ngay",
+    "ban-tiep-don": "Ban tiep don"
+  },
+  "diem_ve_cho": "Le tan",
+  "diem_tram_sac": "Tram sac",
+  "dich": [
+    {
+      "id": 1,
+      "ma_bv": "C1",
+      "buoi": "sang",
+      "ten": "Hội trường lầu 11",
+      "phu": "Lễ đón nhận danh hiệu Anh hùng Lao động",
+      "icon": "🏛️",
+      "diem": "hoi-truong",
+      "tu_khoa": [
+        "hội trường",
+        "hoi truong",
+        "lầu 11",
+        "lau 11",
+        "buổi lễ",
+        "khai mạc",
+        "lễ đón nhận",
+        "anh hùng lao động",
+        "chỗ ngồi",
+        "vào hội trường"
+      ],
+      "doc": "Quý khách đã đến Hội trường lầu mười một Bệnh viện Hùng Vương. Chào mừng Quý vị đến dự Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ. Kính chúc Quý vị một ngày thật nhiều niềm vui!"
+    },
+    {
+      "id": 2,
+      "ma_bv": "C2.1",
+      "buoi": "sang",
+      "ten": "Đơn vị HIFU",
+      "phu": "Buổi sáng — sau khi đón khách xong",
+      "icon": "🔬",
+      "diem": "don-vi-hifu",
+      "tu_khoa": [
+        "đơn vị hifu",
+        "don vi hifu",
+        "hifu",
+        "khai trương đơn vị",
+        "điều trị không xâm lấn",
+        "siêu âm hội tụ"
+      ],
+      "doc": "Xin chào mừng Quý khách đã đến Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ, hay còn gọi là đơn vị HIFU. Xin chào đón Quý khách."
+    },
+    {
+      "id": 3,
+      "ma_bv": "C2.2",
+      "buoi": "chieu",
+      "ten": "Hội trường lầu 11",
+      "phu": "Hội thảo khoa học buổi chiều",
+      "icon": "🏛️",
+      "diem": "hoi-truong",
+      "tu_khoa": [
+        "hội trường",
+        "hoi truong",
+        "lầu 11",
+        "lau 11",
+        "hội thảo",
+        "hoi thao",
+        "chỗ ngồi",
+        "vào hội trường",
+        "hội thảo khoa học"
+      ],
+      "doc": "Quý khách đã đến Hội trường lầu mười một Bệnh viện Hùng Vương! Chào mừng Quý vị đến tham dự Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ. Kính chúc Quý đại biểu có một ngày thật nhiều niềm vui và có những trải nghiệm, kiến thức bổ ích tại Hội thảo!"
+    },
+    {
+      "id": 4,
+      "ma_bv": "C3.1",
+      "buoi": "moi-luc",
+      "ten": "Đơn vị HIFU",
+      "phu": "Tầng trệt toà nhà Cát Tường",
+      "icon": "🔬",
+      "diem": "don-vi-hifu",
+      "tu_khoa": [
+        "đơn vị hifu",
+        "don vi hifu",
+        "hifu",
+        "điều trị hifu",
+        "làm hifu",
+        "khoa phụ nội",
+        "nội tiết"
+      ],
+      "doc": "Đã đến Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ, hay còn gọi là đơn vị HIFU. Xin chào đón Quý đại biểu."
+    },
+    {
+      "id": 5,
+      "ma_bv": "C3.2",
+      "buoi": "moi-luc",
+      "ten": "Quầy chăm sóc khách hàng",
+      "phu": "Hướng dẫn và tư vấn dịch vụ",
+      "icon": "💬",
+      "diem": "quay-cskh",
+      "tu_khoa": [
+        "chăm sóc khách hàng",
+        "cham soc khach hang",
+        "cskh",
+        "tư vấn",
+        "tu van",
+        "hướng dẫn",
+        "hỏi thông tin",
+        "đăng ký",
+        "quầy tư vấn"
+      ],
+      "doc": "Đã đến quầy chăm sóc khách hàng. Bạn sẽ được hướng dẫn và tư vấn dịch vụ tại đây."
+    },
+    {
+      "id": 6,
+      "ma_bv": "C3.3",
+      "buoi": "moi-luc",
+      "ten": "Phòng chụp cộng hưởng từ",
+      "phu": "MRI — toà nhà Cát Tường",
+      "icon": "🧲",
+      "diem": "phong-mri",
+      "tu_khoa": [
+        "cộng hưởng từ",
+        "cong huong tu",
+        "mri",
+        "chụp mri",
+        "chụp phim",
+        "chụp cộng hưởng"
+      ],
+      "doc": "Đã đến Phòng Chụp cộng hưởng từ, hay còn gọi là em e rờ i. Bạn sẽ thực hiện chụp cộng hưởng từ tại đây."
+    },
+    {
+      "id": 7,
+      "ma_bv": "C3.4",
+      "buoi": "moi-luc",
+      "ten": "Phòng 12 – Khu B",
+      "phu": "Xét nghiệm — toà nhà Cát Tường",
+      "icon": "🧪",
+      "diem": "phong-12",
+      "tu_khoa": [
+        "xét nghiệm",
+        "xet nghiem",
+        "phòng 12",
+        "phong 12",
+        "lấy máu",
+        "thử máu",
+        "công thức máu",
+        "khu b"
+      ],
+      "doc": "Đã đến Phòng mười hai, Khu B, toà nhà Cát Tường. Bạn sẽ được thực hiện đầy đủ các xét nghiệm cần thiết tại đây."
+    },
+    {
+      "id": 8,
+      "ma_bv": "C3.5",
+      "buoi": "moi-luc",
+      "ten": "Phòng 8 – Khu B",
+      "phu": "Siêu âm — toà nhà Cát Tường",
+      "icon": "📡",
+      "diem": "phong-8",
+      "tu_khoa": [
+        "siêu âm",
+        "sieu am",
+        "phòng 8",
+        "phong 8",
+        "khu b"
+      ],
+      "doc": "Đã đến Phòng tám, Khu B, toà nhà Cát Tường. Bạn sẽ được thực hiện đầy đủ các siêu âm cần thiết tại đây."
+    },
+    {
+      "id": 9,
+      "ma_bv": "C3.6",
+      "buoi": "moi-luc",
+      "ten": "Khoa điều trị trong ngày",
+      "phu": "Theo dõi sau cận lâm sàng",
+      "icon": "🛏️",
+      "diem": "dieu-tri-ngay",
+      "tu_khoa": [
+        "điều trị trong ngày",
+        "dieu tri trong ngay",
+        "theo dõi",
+        "nằm theo dõi",
+        "khoa điều trị"
+      ],
+      "doc": "Đây là khoa điều trị trong ngày. Bạn sẽ được theo dõi trong vòng hai giờ sau khi đã thực hiện các chỉ định cận lâm sàng."
+    }
+  ],
+  "chao": {
+    "dai-bieu": {
+      "ten": "Đại biểu",
+      "icon": "👥",
+      "mo_ta": "Khách mời dự lễ và hội thảo",
+      "cau": [
+        "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị điều trị HIFU. Kính chúc Quý vị một ngày thật nhiều niềm vui!",
+        "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! Hôm nay là ngày hội lớn của bệnh viện chúng tôi. Rất hân hạnh được phục vụ Quý vị!"
+      ]
+    },
+    "khach-vip": {
+      "ten": "Khách VIP",
+      "icon": "⭐",
+      "mo_ta": "Lãnh đạo, khách mời danh dự",
+      "cau": [
+        "Bệnh viện Hùng Vương trân trọng kính chào Quý lãnh đạo! Kính mời Quý vị di chuyển đến Phòng khánh tiết tại lầu mười để dùng trà và điểm tâm nhẹ trong thời gian chờ buổi lễ bắt đầu."
+      ]
+    }
+  },
+  "cau": {
+    "tu_gioi_thieu": "Xin chào! Tôi là robot lễ tân của Bệnh viện Hùng Vương. Tôi có thể giới thiệu chương trình buổi lễ, hướng dẫn đường đi và cung cấp thông tin về dịch vụ HIFU. Quý vị cần tôi hỗ trợ điều gì ạ?",
+    "huong_dan_check_in": "Kính mời Quý đại biểu ghi danh tại bàn tiếp đón, nhận hoa cài áo và quà tặng của bệnh viện. Sau đó, kính mời Quý vị chụp hình lưu niệm tại khu vực backdrop và di chuyển lên Hội trường lầu mười một bằng thang máy ưu tiên.",
+    "moi_vao_hoi_truong": "Buổi lễ sắp bắt đầu. Kính mời Quý đại biểu di chuyển vào Hội trường lầu mười một và ổn định chỗ ngồi theo hướng dẫn của Ban tổ chức. Xin trân trọng cảm ơn!",
+    "cam_on": "Bệnh viện Hùng Vương xin trân trọng cảm ơn Quý đại biểu đã dành thời gian quý báu đến chung vui cùng bệnh viện trong ngày trọng đại hôm nay!",
+    "moi_tiec_trua": "Kính mời Quý đại biểu di chuyển đến Hội trường lầu sáu để dùng tiệc trưa thân mật cùng bệnh viện, từ mười một giờ ba mươi đến mười ba giờ. Xin trân trọng kính mời!",
+    "tam_biet": "Xin kính chào tạm biệt Quý đại biểu! Kính chúc Quý vị nhiều sức khỏe, hạnh phúc và thành công. Hẹn gặp lại Quý vị tại Bệnh viện Hùng Vương!",
+    "khong_nghe_ro": "Xin lỗi Quý vị, tôi chưa nghe rõ câu hỏi. Quý vị vui lòng hỏi lại giúp tôi, hoặc liên hệ đội lễ tân tại bàn tiếp đón để được hỗ trợ trực tiếp ạ.",
+    "ngoai_pham_vi": "Câu hỏi này nằm ngoài thông tin tôi được cung cấp. Quý vị vui lòng liên hệ Ban tổ chức hoặc gặp đội lễ tân để được giải đáp ạ.",
+    "chuc_mung_su_kien": "Hôm nay Bệnh viện Hùng Vương vinh dự đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng. Xin cảm ơn Quý vị đã đến chung vui cùng tập thể bệnh viện!",
+    "thuyet_minh_quy_trinh": "Kính thưa Quý đại biểu, hành trình điều trị HIFU tại Bệnh viện Hùng Vương được chuẩn hóa qua tám bước khép kín: từ đăng ký khám, xét nghiệm và chụp cộng hưởng từ lập kế hoạch, hội chẩn xác định chỉ định, chuẩn bị chu đáo, đến điều trị không xâm lấn dưới hướng dẫn siêu âm thời gian thực và tái khám định kỳ. Người bệnh hoàn toàn không có vết mổ, bảo tồn nguyên vẹn tử cung, thường xuất viện ngay ngày hôm sau và có thể mang thai sau điều trị ba tháng."
+  },
+  "tu_van_hifu": {
+    "tieu_de": "Tư vấn thực hiện HIFU",
+    "hoi": "Bạn đến đây thực hiện dịch vụ HIFU theo trường hợp nào ạ?",
+    "nhanh": [
+      {
+        "ma": "lan-dau",
+        "ten": "Tôi đến thực hiện dịch vụ HIFU lần đầu",
+        "icon": "1️⃣",
+        "doc": "Mời bạn đến quầy chăm sóc khách hàng để được tư vấn về dịch vụ. Bạn có muốn tôi dẫn đường không ạ?",
+        "dich_id": 5
+      },
+      {
+        "ma": "duoc-chi-dinh",
+        "ten": "Tôi được đơn vị hoặc phòng khám khác chỉ định đến",
+        "icon": "2️⃣",
+        "doc": "Mời bạn đến trực tiếp Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ để nhân viên tư vấn. Bạn có muốn tôi dẫn đường không ạ?",
+        "dich_id": 4
+      }
+    ]
+  },
+  "nhom": [
+    {
+      "ma": "su-kien",
+      "ten": "Sự kiện hôm nay",
+      "icon": "🎉"
+    },
+    {
+      "ma": "benh-vien",
+      "ten": "Bệnh viện Hùng Vương",
+      "icon": "🏥"
+    },
+    {
+      "ma": "hifu",
+      "ten": "Kỹ thuật HIFU",
+      "icon": "🔬"
+    },
+    {
+      "ma": "quy-trinh",
+      "ten": "Quy trình điều trị",
+      "icon": "📋"
+    }
+  ],
+  "hoi_dap": [
+    {
+      "id": 1,
+      "nhom": "su-kien",
+      "hoi": "Hôm nay bệnh viện có sự kiện gì?",
+      "cach": [
+        "hôm nay có gì",
+        "đang diễn ra sự kiện gì",
+        "bệnh viện đang tổ chức gì",
+        "sự kiện hôm nay",
+        "hôm nay có chương trình gì"
+      ],
+      "dap": "Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU."
+    },
+    {
+      "id": 2,
+      "nhom": "su-kien",
+      "hoi": "Buổi lễ diễn ra ở đâu, lúc mấy giờ?",
+      "cach": [
+        "buổi lễ ở đâu",
+        "mấy giờ bắt đầu",
+        "khai mạc lúc nào",
+        "địa điểm tổ chức",
+        "hội trường ở đâu",
+        "lễ bắt đầu khi nào"
+      ],
+      "dap": "Buổi lễ bắt đầu lúc chín giờ sáng tại Hội trường lầu mười một, Toà nhà Bách Hợp, Bệnh viện Hùng Vương, số chín Lý Thường Kiệt, Phường Chợ Lớn, Thành phố Hồ Chí Minh. Bệnh viện hân hạnh đón tiếp Quý đại biểu từ tám giờ ba mươi."
+    },
+    {
+      "id": 3,
+      "nhom": "su-kien",
+      "hoi": "Chương trình buổi lễ gồm những gì?",
+      "cach": [
+        "chương trình gồm gì",
+        "lịch trình thế nào",
+        "nội dung chương trình",
+        "chương trình buổi lễ",
+        "có những phần nào"
+      ],
+      "dap": "Chương trình mở đầu bằng văn nghệ chào mừng lúc chín giờ, nghi thức chào cờ và giới thiệu đại biểu, phát biểu của lãnh đạo bệnh viện và trình chiếu phim phóng sự. Nghi thức đón nhận danh hiệu Anh hùng Lao động từ mười giờ. Nghi thức khai trương Đơn vị HIFU lúc mười một giờ mười lăm. Bế mạc lúc mười một giờ ba mươi và tiệc trưa thân mật tại lầu sáu. Quý vị có thể xem chương trình chi tiết trên màn hình của tôi."
+    },
+    {
+      "id": 4,
+      "nhom": "su-kien",
+      "hoi": "Mấy giờ trao danh hiệu Anh hùng Lao động?",
+      "cach": [
+        "khi nào trao danh hiệu",
+        "lúc nào nhận danh hiệu",
+        "trao thưởng lúc mấy giờ",
+        "nghi thức đón nhận lúc nào"
+      ],
+      "dap": "Nghi thức đón nhận danh hiệu Anh hùng Lao động và các danh hiệu cao quý khác của Nhà nước diễn ra từ mười giờ đến mười giờ năm mươi tại Hội trường lầu mười một."
+    },
+    {
+      "id": 5,
+      "nhom": "su-kien",
+      "hoi": "Mấy giờ khai trương Đơn vị HIFU?",
+      "cach": [
+        "khi nào khai trương",
+        "lễ khai trương lúc mấy giờ",
+        "cắt băng lúc nào",
+        "khai trương đơn vị lúc nào"
+      ],
+      "dap": "Nghi thức khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU diễn ra từ mười một giờ mười lăm đến mười một giờ hai mươi lăm, ngay trong chương trình buổi lễ."
+    },
+    {
+      "id": 6,
+      "nhom": "su-kien",
+      "hoi": "Vì sao bệnh viện được phong tặng danh hiệu Anh hùng Lao động?",
+      "cach": [
+        "vì sao được anh hùng lao động",
+        "lý do được phong tặng",
+        "được thưởng vì cái gì",
+        "thành tích gì mà được"
+      ],
+      "dap": "Danh hiệu Anh hùng Lao động được Chủ tịch nước phong tặng theo Quyết định số tám trăm ba mươi ngày ba tháng sáu năm hai nghìn không trăm hai mươi sáu, ghi nhận những thành tích đặc biệt xuất sắc của tập thể Bệnh viện Hùng Vương qua nhiều thế hệ trong công tác khám chữa bệnh, đào tạo nguồn nhân lực, nghiên cứu khoa học, hợp tác quốc tế và chăm sóc sức khỏe bà mẹ, trẻ em."
+    },
+    {
+      "id": 7,
+      "nhom": "su-kien",
+      "hoi": "Giám đốc bệnh viện là ai?",
+      "cach": [
+        "ai là giám đốc",
+        "giám đốc tên gì",
+        "lãnh đạo bệnh viện là ai"
+      ],
+      "dap": "Giám đốc Bệnh viện Hùng Vương là Phó Giáo sư, Tiến sĩ, Bác sĩ Hoàng Thị Diễm Tuyết."
+    },
+    {
+      "id": 8,
+      "nhom": "benh-vien",
+      "hoi": "Giới thiệu về Bệnh viện Hùng Vương?",
+      "cach": [
+        "bệnh viện hùng vương là gì",
+        "kể về bệnh viện",
+        "bệnh viện thế nào",
+        "giới thiệu bệnh viện"
+      ],
+      "dap": "Bệnh viện Hùng Vương là bệnh viện chuyên khoa hạng một về sản phụ khoa, tuyến cuối của khu vực phía Nam, trực thuộc Sở Y tế Thành phố Hồ Chí Minh, với bề dày truyền thống trong khám chữa bệnh, đào tạo, nghiên cứu khoa học và hợp tác quốc tế, luôn tiên phong trong chăm sóc và bảo vệ sức khỏe bà mẹ và trẻ em."
+    },
+    {
+      "id": 9,
+      "nhom": "benh-vien",
+      "hoi": "Đơn vị HIFU có ý nghĩa gì với bệnh viện?",
+      "cach": [
+        "ý nghĩa của đơn vị hifu",
+        "vì sao lập đơn vị hifu",
+        "đơn vị này quan trọng thế nào"
+      ],
+      "dap": "Đơn vị HIFU ra đời là một bước ngoặt của bệnh viện trong điều trị khối u tử cung mà không phải can thiệp phẫu thuật, hoàn thiện phổ điều trị cá thể hóa gồm nội khoa, can thiệp không xâm lấn và phẫu thuật. Đây là kỹ thuật hiện đại phù hợp với xu hướng thế giới về can thiệp tối thiểu, góp phần nâng cao chất lượng khám chữa bệnh và đáp ứng nhu cầu chăm sóc sức khỏe ngày càng cao của người dân."
+    },
+    {
+      "id": 10,
+      "nhom": "hifu",
+      "hoi": "HIFU là gì?",
+      "cach": [
+        "hifu là gì",
+        "kỹ thuật này là gì",
+        "sóng siêu âm hội tụ là gì",
+        "điều trị không xâm lấn là gì",
+        "giải thích hifu"
+      ],
+      "dap": "HIFU là viết tắt của sóng siêu âm hội tụ cường độ cao. Chùm sóng siêu âm từ bên ngoài cơ thể được hội tụ chính xác vào khối u, tương tự thấu kính hội tụ ánh sáng. Tại tiêu điểm, mô u đạt sáu mươi đến một trăm độ C chỉ trong vài giây và bị hoại tử, trong khi da và mô lành trên đường truyền sóng hầu như không bị tổn thương. Kỹ thuật điều trị u xơ tử cung bằng sóng siêu âm hội tụ đã được cơ quan quản lý thực phẩm và dược phẩm Hoa Kỳ chấp thuận từ năm hai nghìn không trăm lẻ tư và được ứng dụng rộng rãi trên thế giới."
+    },
+    {
+      "id": 11,
+      "nhom": "hifu",
+      "hoi": "Đơn vị HIFU điều trị những bệnh gì?",
+      "cach": [
+        "điều trị bệnh gì",
+        "chữa được bệnh nào",
+        "áp dụng cho bệnh nào",
+        "hifu chữa gì",
+        "làm được những gì"
+      ],
+      "dap": "Theo Quy trình kỹ thuật đã được bệnh viện ban hành, Đơn vị điều trị các bệnh lý lành tính vùng chậu và tuyến vú, gồm năm nhóm: u xơ tử cung; lạc tuyến trong cơ tử cung; lạc nội mạc tử cung ở thành bụng; hỗ trợ tiền xử lý thai bám vết mổ cũ trước khi hút thai; và u xơ tuyến vú lành tính. Kỹ thuật chỉ áp dụng cho tổn thương lành tính đã được xác định, không dùng để điều trị ung thư."
+    },
+    {
+      "id": 12,
+      "nhom": "hifu",
+      "hoi": "Ưu điểm của điều trị HIFU?",
+      "cach": [
+        "ưu điểm là gì",
+        "lợi ích của hifu",
+        "hay ở chỗ nào",
+        "tốt hơn mổ chỗ nào"
+      ],
+      "dap": "HIFU hoàn toàn không rạch da, không chảy máu, không để lại sẹo; bảo tồn nguyên vẹn tử cung, khả năng sinh sản và hình dạng tuyến vú của người phụ nữ. Người bệnh chỉ cần an thần nhẹ, hồi phục nhanh, thường xuất viện ngay ngày hôm sau và sớm trở lại sinh hoạt, lao động."
+    },
+    {
+      "id": 13,
+      "nhom": "hifu",
+      "hoi": "Điều trị HIFU có đau không, có phải gây mê không?",
+      "cach": [
+        "có đau không",
+        "có gây mê không",
+        "đau lắm không",
+        "có phải mê không",
+        "làm có đau"
+      ],
+      "dap": "Người bệnh không cần gây mê. Ê-kíp gây mê hồi sức sử dụng thuốc an thần và giảm đau đường tĩnh mạch; người bệnh vẫn tỉnh táo, giao tiếp được với bác sĩ trong suốt quá trình điều trị và được theo dõi sinh hiệu liên tục trên monitor. Đa số chỉ cảm thấy nóng ấm hoặc tức nhẹ vùng bụng dưới."
+    },
+    {
+      "id": 14,
+      "nhom": "hifu",
+      "hoi": "Một ca điều trị mất bao lâu, nằm viện bao lâu?",
+      "cach": [
+        "mất bao lâu",
+        "làm trong bao lâu",
+        "nằm viện mấy ngày",
+        "bao lâu thì xong",
+        "thời gian điều trị"
+      ],
+      "dap": "Thời gian điều trị khoảng một đến ba giờ đối với u tử cung và ba mươi đến sáu mươi phút đối với u vú. Người bệnh nhập viện trước một ngày để chuẩn bị và thường xuất viện ngay ngày hôm sau điều trị."
+    },
+    {
+      "id": 15,
+      "nhom": "hifu",
+      "hoi": "Ai phù hợp để điều trị HIFU?",
+      "cach": [
+        "ai làm được",
+        "trường hợp nào làm được",
+        "phù hợp với ai",
+        "đối tượng nào"
+      ],
+      "dap": "Người bệnh có u xơ tử cung hoặc lạc tuyến trong cơ tử cung gây triệu chứng hoặc gây vô sinh, mong muốn bảo tồn tử cung hoặc không muốn phẫu thuật; người có khối lạc nội mạc tử cung ở thành bụng; hoặc u xơ tuyến vú lành tính có triệu chứng. Bác sĩ sẽ thăm khám, xét nghiệm, chụp cộng hưởng từ và thực hiện nghiệm pháp đánh giá trước khi quyết định chỉ định cho từng trường hợp cụ thể."
+    },
+    {
+      "id": 16,
+      "nhom": "hifu",
+      "hoi": "Trường hợp nào không thực hiện được HIFU?",
+      "cach": [
+        "ai không làm được",
+        "chống chỉ định",
+        "trường hợp nào không được",
+        "không nên làm khi nào"
+      ],
+      "dap": "Một số trường hợp không thực hiện được, ví dụ: phụ nữ đang mang thai; có bệnh lý ác tính của cơ quan sinh dục hoặc hình ảnh nghi ngờ ác tính; đang đặt dụng cụ tử cung thì cần lấy ra trước; tiền sử xạ trị vùng chậu; không thể nằm sấp trong một đến ba giờ; hoặc một số bệnh lý nội khoa nặng. Bác sĩ sẽ sàng lọc kỹ lưỡng theo quy trình trước khi điều trị."
+    },
+    {
+      "id": 17,
+      "nhom": "hifu",
+      "hoi": "Điều trị HIFU có an toàn không?",
+      "cach": [
+        "có an toàn không",
+        "có rủi ro gì không",
+        "biến chứng thế nào",
+        "có nguy hiểm không"
+      ],
+      "dap": "Đây là kỹ thuật có độ an toàn cao. Theo tổng kết y văn trên gần mười nghìn trường hợp, đa số chỉ gặp phản ứng nhẹ tự khỏi như đau bụng dưới hoặc sốt nhẹ, khoảng mười ba phẩy năm phần trăm; biến chứng nặng rất hiếm, chỉ khoảng không phẩy không năm phần trăm. Tại Bệnh viện Hùng Vương, quy trình được chuẩn hóa với bảng kiểm ba giai đoạn trước, trong và sau điều trị, và ê-kíp gây mê hồi sức theo dõi người bệnh liên tục trong suốt quá trình."
+    },
+    {
+      "id": 18,
+      "nhom": "hifu",
+      "hoi": "Hiệu quả điều trị như thế nào?",
+      "cach": [
+        "hiệu quả ra sao",
+        "kết quả thế nào",
+        "u có nhỏ lại không",
+        "khỏi được không"
+      ],
+      "dap": "Mục tiêu là phá hủy ít nhất bảy mươi phần trăm thể tích khối u ngay trong lần điều trị, được kiểm chứng bằng chụp cộng hưởng từ. Theo y văn, thể tích u xơ tử cung giảm trung bình năm mươi đến tám mươi phần trăm sau mười hai tháng kèm cải thiện rõ triệu chứng và chất lượng sống. U xơ tuyến vú giảm khoảng bảy mươi phần trăm thể tích sau một năm và hiệu quả duy trì ổn định đến năm năm sau một lần điều trị."
+    },
+    {
+      "id": 19,
+      "nhom": "hifu",
+      "hoi": "Sau điều trị HIFU có thể mang thai không?",
+      "cach": [
+        "có con được không",
+        "mang thai được không",
+        "còn sinh con được không",
+        "ảnh hưởng sinh sản không",
+        "bao lâu thì có thai được"
+      ],
+      "dap": "Có. HIFU bảo tồn nguyên vẹn tử cung, và u xơ tử cung gây vô sinh cũng là một chỉ định điều trị. Theo quy trình của bệnh viện, người bệnh có thể mang thai sau điều trị ba tháng và sẽ được bác sĩ tư vấn kế hoạch sinh sản cụ thể khi tái khám."
+    },
+    {
+      "id": 20,
+      "nhom": "hifu",
+      "hoi": "Người bệnh cần chuẩn bị gì trước điều trị?",
+      "cach": [
+        "cần chuẩn bị gì",
+        "trước khi làm phải làm gì",
+        "chuẩn bị thế nào",
+        "có phải nhịn ăn không"
+      ],
+      "dap": "Người bệnh được hướng dẫn chuẩn bị chu đáo trong ba ngày trước điều trị: tập làm quen với cảm giác căng bàng quang, ăn thức ăn nhẹ ít chất bã, sau đó nhập viện trước một ngày để làm sạch ruột và nhịn ăn uống trong ngày điều trị. Sự chuẩn bị này giúp tạo cửa sổ siêu âm tốt nhất để việc điều trị chính xác và an toàn."
+    },
+    {
+      "id": 21,
+      "nhom": "hifu",
+      "hoi": "Ê-kíp thực hiện gồm những ai?",
+      "cach": [
+        "ai thực hiện",
+        "bao nhiêu người làm",
+        "ê kíp gồm ai",
+        "đội ngũ thế nào"
+      ],
+      "dap": "Mỗi ca điều trị do ê-kíp năm người thực hiện: bác sĩ sản phụ khoa, bác sĩ chẩn đoán hình ảnh, bác sĩ gây mê hồi sức, kỹ thuật viên gây mê và điều dưỡng hộ sinh; tất cả đều được đào tạo về kỹ thuật HIFU. Đơn vị có tổng cộng mười một nhân sự chuyên trách cùng phòng điều trị HIFU chuyên biệt."
+    },
+    {
+      "id": 22,
+      "nhom": "hifu",
+      "hoi": "Khi nào Đơn vị bắt đầu tiếp nhận điều trị?",
+      "cach": [
+        "khi nào nhận bệnh",
+        "bao giờ hoạt động",
+        "bắt đầu điều trị từ khi nào",
+        "khi nào làm được"
+      ],
+      "dap": "Sau lễ khai trương hôm nay, Đơn vị HIFU sẽ tiếp nhận điều trị những trường hợp đầu tiên từ tháng chín năm hai nghìn không trăm hai mươi sáu, với sự đồng hành và giám sát của các chuyên gia giàu kinh nghiệm. Quý vị có thể đăng ký khám và tư vấn ngay từ bây giờ qua Bộ phận Chăm sóc khách hàng số không chín sáu một, hai năm một, bốn ba một, hoặc qua Zalo."
+    },
+    {
+      "id": 23,
+      "nhom": "hifu",
+      "hoi": "Muốn khám và tư vấn HIFU thì đăng ký ở đâu?",
+      "cach": [
+        "đăng ký ở đâu",
+        "khám ở đâu",
+        "muốn tư vấn thì đi đâu",
+        "liên hệ ở đâu",
+        "đặt lịch ở đâu"
+      ],
+      "dap": "Quý vị có thể đăng ký khám tại quầy tiếp đón ở toà nhà Cát Tường, khoa Phụ nội Nội tiết ở toà nhà Bách Hợp, hoặc liên hệ Bộ phận Chăm sóc khách hàng số không chín sáu một, hai năm một, bốn ba một, hoặc qua Zalo để đặt lịch hẹn tư vấn với bác sĩ chuyên khoa."
+    },
+    {
+      "id": 24,
+      "nhom": "hifu",
+      "hoi": "Đơn vị HIFU nằm ở đâu trong bệnh viện?",
+      "cach": [
+        "đơn vị hifu ở đâu",
+        "chỗ nào làm hifu",
+        "đi đến hifu thế nào",
+        "hifu ở tầng mấy"
+      ],
+      "dap": "Đơn vị Điều trị không xâm lấn bằng sóng siêu âm hội tụ, hay còn gọi là đơn vị HIFU, trực thuộc khoa Phụ nội Nội tiết, được đặt tại tầng trệt toà nhà Cát Tường. Từ cổng số năm, địa chỉ số chín Lý Thường Kiệt nhìn vào, Quý vị sẽ thấy ngay đơn vị HIFU."
+    },
+    {
+      "id": 25,
+      "nhom": "hifu",
+      "hoi": "Máy HIFU của bệnh viện là hệ thống nào?",
+      "cach": [
+        "máy gì",
+        "thiết bị nào",
+        "hệ thống máy ra sao",
+        "máy móc thế nào"
+      ],
+      "dap": "Bệnh viện trang bị hệ thống điều trị siêu âm hội tụ đồng bộ, gồm bàn điều trị tích hợp đầu phát sóng hội tụ, bể nước lạnh khử khí, hệ thống siêu âm định vị dẫn đường thời gian thực và máy trạm lập kế hoạch điều trị."
+    }
+  ],
+  "quy_trinh": [
+    {
+      "buoc": 1,
+      "ten": "Tiếp nhận – đăng ký khám",
+      "dich_id": 5,
+      "doc": "Bước một, tiếp nhận và đăng ký khám. Người bệnh đăng ký khám trực tiếp tại đơn vị HIFU nếu đến thông qua giấy giới thiệu từ bệnh viện hoặc từ phòng khám phụ khoa, hoặc đặt hẹn qua Bộ phận Chăm sóc khách hàng số không chín sáu một, hai năm một, bốn ba một, hoặc qua Zalo. Bác sĩ sản phụ khoa sẽ thăm khám và đánh giá nhu cầu sinh sản trong tương lai."
+    },
+    {
+      "buoc": 2,
+      "ten": "Xét nghiệm tiền phẫu",
+      "dich_id": 7,
+      "doc": "Bước hai, xét nghiệm tiền phẫu. Thực hiện đầy đủ các xét nghiệm: công thức máu, nhóm máu, chức năng đông máu, chức năng gan thận, bê ta hát xê gê, xê a một trăm hai mươi lăm, tế bào học cổ tử cung, điện tim và siêu âm tim. Tại phòng mười hai, Khu B, toà nhà Cát Tường."
+    },
+    {
+      "buoc": 3,
+      "ten": "Chẩn đoán hình ảnh chuyên sâu",
+      "dich_id": 6,
+      "doc": "Bước ba, chẩn đoán hình ảnh chuyên sâu. Chụp cộng hưởng từ vùng chậu có tiêm thuốc tương phản để lập kế hoạch điều trị; thực hiện nghiệm pháp oxytocin kết hợp siêu âm Doppler nhằm dự đoán mức độ đáp ứng với HIFU. Tại phòng chụp cộng hưởng từ, toà nhà Cát Tường."
+    },
+    {
+      "buoc": 4,
+      "ten": "Hội chẩn và tư vấn",
+      "dich_id": 4,
+      "doc": "Bước bốn, hội chẩn và tư vấn. Bác sĩ điều trị HIFU cùng bác sĩ gây mê hồi sức phối hợp đánh giá chỉ định và chống chỉ định; người bệnh được tư vấn đầy đủ về lợi ích, nguy cơ và ký đồng thuận trước điều trị. Tại đơn vị HIFU, toà nhà Cát Tường."
+    },
+    {
+      "buoc": 5,
+      "ten": "Chuẩn bị trước điều trị",
+      "dich_id": null,
+      "doc": "Bước năm, chuẩn bị trước điều trị. Trong ba ngày trước điều trị: tập bàng quang và ăn chế độ ít chất bã theo hướng dẫn; nhập viện trước một ngày để làm sạch ruột; nhịn ăn uống hoàn toàn trong ngày điều trị. Tại khoa Phụ nội Nội tiết, toà nhà Bách Hợp."
+    },
+    {
+      "buoc": 6,
+      "ten": "Thực hiện điều trị HIFU",
+      "dich_id": 4,
+      "doc": "Bước sáu, thực hiện điều trị. Tại phòng điều trị HIFU chuyên biệt, người bệnh nằm sấp trên bàn điều trị có bể nước khử khí, được an thần và giảm đau nhưng vẫn tỉnh táo. Bác sĩ định vị khối u và phát sóng hội tụ tiêu hủy mô u dưới hướng dẫn siêu âm thời gian thực, với ê-kíp năm người theo dõi liên tục. Thời gian khoảng một đến ba giờ với u tử cung, ba mươi đến sáu mươi phút với u vú."
+    },
+    {
+      "buoc": 7,
+      "ten": "Theo dõi sau điều trị",
+      "dich_id": 9,
+      "doc": "Bước bảy, theo dõi sau điều trị. Người bệnh được làm mát bàng quang, theo dõi tại khoa nội trú và chụp cộng hưởng từ đánh giá hiệu quả với mục tiêu phá hủy ít nhất bảy mươi phần trăm thể tích khối u; thường xuất viện ngay ngày hôm sau."
+    },
+    {
+      "buoc": 8,
+      "ten": "Tái khám định kỳ",
+      "dich_id": null,
+      "doc": "Bước tám, tái khám định kỳ. Tái khám tại phòng khám HIFU sau hai tuần, sau đó định kỳ ba, sáu và mười hai tháng với chụp cộng hưởng từ đánh giá mức giảm kích thước khối u. Người bệnh mong con được tư vấn có thai sau điều trị ba tháng."
+    }
+  ],
+  "chua_co": [
+    "số điện thoại Ban tổ chức sự kiện",
+    "tên mạng wifi và mật khẩu",
+    "vị trí nhà vệ sinh",
+    "vị trí bãi giữ xe",
+    "vị trí căn tin",
+    "giá dịch vụ HIFU"
+  ]
+};
+/*__GIA_LAP__*/
+
+/* ═══════════════════════════════════════════════════════════════════
+   App robot lễ tân — Bệnh viện Hùng Vương, sự kiện 22/08/2026.
+
+   Luồng Sếp chốt:
+     màn chờ (emoji_wink_2)  →  chạm  →  HAI lựa chọn
+       ├─ Dẫn đường    → danh sách vị trí → chi tiết → dẫn → tới nơi thì ĐỌC lời giới thiệu
+       └─ Giao tiếp AI → chọn Đại biểu / Khách VIP → phát lời chào tương ứng → trò chuyện
+
+   Hai nút bệnh viện yêu cầu thêm (PHẦN D tài liệu địa điểm) nằm ở hàng dưới màn chọn:
+     · Mời khách vào hội trường
+     · Tư vấn thực hiện HIFU  → hai nhánh → hỏi có dẫn đường không → dẫn
+   ═══════════════════════════════════════════════════════════════════ */
+const D = window.DU_LIEU;
+const $ = s => document.querySelector(s);
+
+/* ═══════════ Biểu cảm ═══════════ */
+/* Anh Trường chốt: màn chờ lặp emoji_wink_2. Muốn xoay vòng nhiều clip thì thêm tên vào mảng. */
+const BIEU_CAM_CHO = ['emoji_wink_2'];
+const BIEU_CAM_DAN = ['emoji_happy','emoji_wink_1','emoji_laugh','emoji_wink_2'];
+
+function mayBieuCam(idA, idB, ds){
+  const vA = $('#'+idA), vB = $('#'+idB);
+  let dang = vA, cho = vB, hang = [], chay = false, canhGac = null, mocGio = -1, lanIm = 0, lanDau = true;
+  function xao(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function ke(){ if(!hang.length) hang = ds.length > 1 ? xao(ds) : ds.slice(); return hang.shift(); }
+  function nap(v){
+    let ten;
+    if(lanDau){ ten = ds[0]; lanDau = false; hang = ds.length > 1 ? xao(ds.slice(1)) : []; }
+    else ten = ke();
+    v.src = 'bieu-cam/' + ten + '.mp4'; v.load();
+  }
+  function doi(){
+    if(!chay) return;
+    const cu = dang; dang = cho; cho = cu;
+    dang.classList.add('tren'); cho.classList.remove('tren');
+    try{ dang.currentTime = 0; }catch(e){}
+    const p = dang.play(); if(p && p.catch) p.catch(()=>{});
+    nap(cho); mocGio = -1; lanIm = 0;
+  }
+  [vA, vB].forEach(v=>{
+    v.addEventListener('ended', ()=>{ if(v === dang) doi(); });
+    v.addEventListener('error', ()=>{ if(v === dang) doi(); else nap(v); });
+  });
+  /* Canh gác: WebView của robot đôi khi dừng video mà không bắn sự kiện nào.
+     Thấy currentTime đứng yên hai nhịp liền thì tự đổi sang clip kia. */
+  function soi(){
+    if(!chay) return;
+    if(dang.paused){ const p = dang.play(); if(p && p.catch) p.catch(()=>{}); }
+    if(dang.currentTime === mocGio){ if(++lanIm >= 2) doi(); }
+    else { mocGio = dang.currentTime; lanIm = 0; }
+  }
+  return {
+    bat(){
+      if(chay) return;
+      chay = true;
+      if(!dang.src){ nap(dang); nap(cho); }
+      dang.classList.add('tren');
+      const p = dang.play(); if(p && p.catch) p.catch(()=>{});
+      clearInterval(canhGac); canhGac = setInterval(soi, 2000);
+    },
+    dung(){ chay = false; clearInterval(canhGac); try{ vA.pause(); vB.pause(); }catch(e){} }
+  };
+}
+const mayCho  = mayBieuCam('bc-a','bc-b', BIEU_CAM_CHO);
+const mayDan  = mayBieuCam('bc-c','bc-d', BIEU_CAM_DAN);
+const mayChat = mayBieuCam('bc-e','bc-f', BIEU_CAM_DAN);
+
+/* ═══════════ Tiện ích ═══════════ */
+function thoat(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function khongDau(s){
+  /* ⚠ Trong cặp ngoặc vuông của regex dưới đây là DẢI DẤU THANH U+0300–U+036F, tách ra
+     bởi normalize('NFD'). Chúng là ký tự KẾT HỢP nên trình soạn thảo hiển thị gần như
+     vô hình — trông cứ như ngoặc vuông rỗng. Đừng "dọn dẹp" chỗ đó: xoá đi là toàn bộ
+     bộ tìm kiếm ngừng khớp mọi câu có dấu tiếng Việt, mà không báo lỗi gì. */
+  return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase()
+    .replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+}
+function tachTu(s){ return khongDau(s).split(' ').filter(w => w.length > 1); }
+
+/* ═══════════ Chuyển màn ═══════════ */
+let manDang = 'mh-cho';
+function ve(id){
+  document.querySelectorAll('.man-hinh').forEach(m => m.classList.remove('hien'));
+  $('#'+id).classList.add('hien');
+  manDang = id;
+  /* Chỉ cho video chạy ở đúng màn đang hiện — để chạy ngầm thì máy giải mã 30 hình/giây
+     suốt buổi, nóng máy và tốn pin. */
+  if(id === 'mh-cho')  mayCho.bat();  else mayCho.dung();
+  if(id === 'mh-dan')  mayDan.bat();  else mayDan.dung();
+  if(id === 'mh-chat') mayChat.bat(); else mayChat.dung();
+  if(id !== 'mh-chat' && micChatMo) dongMicChat();
+  if(id === 'mh-cho') clearTimeout(henCho); else hoatDong();
+  keManHinhChoAI(id);
+}
+
+/* ═══════════ Màn chờ & đồng hồ vắng người ═══════════ */
+const CHO_SAU = 5 * 60 * 1000;
+let henCho = null;
+function thoiCho(){ ve('mh-chon'); }
+function hoatDong(){ clearTimeout(henCho); henCho = setTimeout(hetGio, CHO_SAU); }
+function hetGio(){
+  if(dangDoc || dangDanDuong){ henCho = setTimeout(hetGio, 30000); return; }
+  veManCho();
+}
+function veManCho(){
+  dungDoc();
+  huyVeCho();
+  if(dangDanDuong){ try{ CAU.dungDanDuong(); }catch(e){} dangDanDuong = false; }
+  dichDang = null; buocDang = null; nhanhDang = null;
+  $('#chat-o').value = '';
+  $('#chat-ds').innerHTML = '';
+  dongHoi();
+  /* Xoá ngữ cảnh trong bộ não hãng — chuyện của người trước không dính sang người sau.
+     Ở bệnh viện đây còn là chuyện riêng tư. */
+  try{ if(window.CAU && CAU.xoaNguCanh) CAU.xoaNguCanh(); }catch(e){}
+  ve('mh-cho');
+}
+/* Xong một lượt khách: hiện đồng hồ đếm ngược, hết giờ thì robot tự về chỗ đứng đợi
+   VÀ màn hình quay lại màn chờ.
+
+   ⚠ THỨ TỰ QUAN TRỌNG: không được gọi veManCho() ngay ở đây. veManCho() có gọi
+     huyVeCho(), nên bật đồng hồ rồi về màn chờ luôn là tự tay xoá đồng hồ vừa bật —
+     robot đứng nguyên tại chỗ vừa dẫn tới, cả buổi không ai ở sảnh thấy robot đâu.
+     Phải để đồng hồ chạy hết rồi mới dọn màn hình. */
+function xongLuot(){
+  dungDoc();
+  if(coDanDuong() && !lyDoChuaDanDuoc()){
+    batDauVeCho();
+  }else{
+    veManCho();          /* không có robot (bản demo) thì về thẳng màn chờ */
+  }
+}
+
+/* ═══════════ Cầu nối sang Kotlin ═══════════ */
+function coCau(){ try{ return typeof CAU !== 'undefined' && CAU; }catch(e){ return false; } }
+function coDanDuong(){ return !!(coCau() && typeof CAU.danDuongToiDiem === 'function'); }
+function coMicRobot(){ return !!(coCau() && typeof CAU.batMic === 'function'); }
+function lyDoChuaDanDuoc(){
+  try{ return (coCau() && CAU.lyDoChuaDanDuongDuoc) ? CAU.lyDoChuaDanDuongDuoc() : ''; }
+  catch(e){ return ''; }
+}
+
+let dangDoc = false;
+function doc(vanBan, xong){
+  if(!vanBan) return;
+  dangDoc = true;
+  if(coCau() && CAU.doc){
+    try{ CAU.doc(vanBan); }catch(e){ dangDoc = false; }
+    /* Kotlin gọi window.robotDocXong() khi đọc xong — xem Cau.baoDocXong(). */
+    hetDoc = xong || null;
+  }else{
+    /* Trên máy tính không có robot: giả lập thời gian đọc để thử luồng.
+       eleven_v3 đọc ~18 ký tự/giây, giọng robot Nova cũng xấp xỉ. */
+    const ms = Math.min(20000, 900 + vanBan.length * 55);
+    setTimeout(()=>{ dangDoc = false; if(xong) xong(); }, ms);
+  }
+}
+let hetDoc = null;
+window.robotDocXong = function(){
+  dangDoc = false;
+  const f = hetDoc; hetDoc = null;
+  if(f) f();
+};
+function dungDoc(){
+  dangDoc = false; hetDoc = null;
+  try{ if(coCau() && CAU.dungDoc) CAU.dungDoc(); }catch(e){}
+}
+
+/* ═══════════ Màn chờ: bảng tên sự kiện ═══════════ */
+function veBangSuKien(){
+  $('#bang-su-kien').innerHTML =
+    '<b>' + thoat(D.don_vi) + '</b><span>' + thoat(D.su_kien) + '</span>';
+  $('#dau-donvi').textContent = D.don_vi;
+  $('#dau-sukien').textContent = D.su_kien + ' · ' + D.ngay;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   1. DẪN ĐƯỜNG
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Buổi sáng là lễ, buổi chiều là hội thảo — hai đích khác nhau cùng tên "Hội trường
+   lầu 11" nhưng lời thoại khác hẳn. Lọc theo giờ máy để lễ tân khỏi phải chọn tay.
+   Mốc 12 giờ: trước là sáng, sau là chiều. */
+function buoiHienTai(){ return (new Date()).getHours() < 12 ? 'sang' : 'chieu'; }
+
+let hienTatCa = false;
+function moDanDuong(){ hienTatCa = false; veDanhSachDich(); ve('mh-dich'); }
+
+function veDanhSachDich(){
+  const b = buoiHienTai();
+  const uu = D.dich.filter(d => d.buoi === b);
+  const chung = D.dich.filter(d => d.buoi === 'moi-luc');
+  const con = D.dich.filter(d => d.buoi !== b && d.buoi !== 'moi-luc');
+
+  let h = '';
+  if(uu.length){
+    h += '<div class="tieu-muc">' + (b === 'sang' ? 'Buổi lễ sáng nay' : 'Hội thảo chiều nay') + '</div>';
+    h += '<div class="luoi hai">' + uu.map(theDich).join('') + '</div>';
+  }
+  if(chung.length){
+    h += '<div class="tieu-muc">Các phòng chức năng</div>';
+    h += '<div class="luoi">' + chung.map(theDich).join('') + '</div>';
+  }
+  if(con.length){
+    if(hienTatCa){
+      h += '<div class="tieu-muc">Điểm của buổi khác</div>';
+      h += '<div class="luoi hai">' + con.map(theDich).join('') + '</div>';
+    }else{
+      h += '<div class="tieu-muc">Khác</div>';
+      h += '<button class="the" onclick="hienTatCa=true;veDanhSachDich()">' +
+           '<span class="ic">➕</span><span class="noi"><b>Xem thêm ' + con.length + ' điểm</b>' +
+           '<span>Điểm dành cho buổi khác trong ngày</span></span></button>';
+    }
+  }
+  $('#dich-than').innerHTML = h;
+}
+
+function theDich(d){
+  const nhan = d.buoi === 'sang' ? '<span class="nhan-buoi nhan-sang">BUỔI SÁNG</span>'
+             : d.buoi === 'chieu' ? '<span class="nhan-buoi nhan-chieu">BUỔI CHIỀU</span>'
+             : '<span class="nhan-buoi nhan-moi">CẢ NGÀY</span>';
+  return '<button class="the" onclick="moChiTiet(' + d.id + ')">' +
+         '<span class="ic">' + d.icon + '</span>' +
+         '<span class="noi"><b>' + thoat(d.ten) + '</b>' +
+         '<span>' + thoat(d.phu) + '</span>' + nhan + '</span></button>';
+}
+
+let dichDang = null;
+function timDichTheoId(id){ return D.dich.filter(d => d.id === id)[0] || null; }
+
+function moChiTiet(id){
+  const d = timDichTheoId(id);
+  if(!d) return;
+  dichDang = d;
+  $('#ct-dau').textContent = d.ten;
+  $('#ct-dau-phu').textContent = d.phu;
+  $('#ct-ic').textContent = d.icon;
+  $('#ct-ten').textContent = d.ten;
+  $('#ct-phu').textContent = d.phu;
+  $('#ct-loi').textContent = d.doc;
+
+  /* Nút dẫn đường: KHÔNG giấu khi robot chưa sẵn sàng — hiện kèm lời nhắc, để kỹ thuật
+     biết vì sao. Giấu nút thì người dùng tưởng app hỏng. */
+  const nut = $('#ct-nut-dan'), nhac = $('#ct-nhac');
+  if(!coDanDuong()){
+    nut.setAttribute('disabled','');
+    nhac.textContent = 'Bản xem trên máy tính — không có robot nên chưa dẫn đường được.';
+    nhac.classList.remove('an');
+  }else{
+    const vuong = lyDoChuaDanDuoc();
+    if(vuong){
+      nut.setAttribute('disabled','');
+      nhac.textContent = vuong;
+      nhac.classList.remove('an');
+    }else{
+      nut.removeAttribute('disabled');
+      nhac.classList.add('an');
+    }
+  }
+  ve('mh-ct');
+}
+
+function ngheTruoc(){
+  if(!dichDang) return;
+  dungDoc();
+  doc(dichDang.doc);
+}
+
+/* ── Bắt đầu dẫn ── */
+let dangDanDuong = false;
+function danDuong(){
+  if(!dichDang || !coDanDuong()) return;
+  const tenDiem = D.diem[dichDang.diem];
+  if(!tenDiem){
+    $('#ct-nhac').textContent = 'Chưa cấu hình điểm bản đồ cho nơi này.';
+    $('#ct-nhac').classList.remove('an');
+    return;
+  }
+  dangDanDuong = true;
+  $('#dan-ten').textContent = 'Xin mời đi theo tôi';
+  $('#dan-tin').textContent = 'Đang đi tới ' + dichDang.ten;
+  ve('mh-dan');
+  try{ CAU.danDuongToiDiem(tenDiem); }catch(e){ dangDanDuong = false; }
+}
+
+function dungDanDuongNgay(){
+  dangDanDuong = false;
+  try{ if(coCau() && CAU.dungDanDuong) CAU.dungDanDuong(); }catch(e){}
+  ve('mh-ct');
+}
+
+/* Kotlin báo diễn biến dẫn đường về đây — xem Cau.baoDanDuong(). */
+window.baoDanDuong = function(trangThai, loiNhan){
+  hoatDong();
+  if(trangThai === 'bat-dau'){
+    dangDanDuong = true;
+    $('#dan-tin').textContent = dichDang ? ('Đang đi tới ' + dichDang.ten) : '';
+    if(manDang !== 'mh-dan') ve('mh-dan');
+    return;
+  }
+  if(trangThai === 'dang-di'){ $('#dan-tin').textContent = loiNhan || ''; return; }
+  if(trangThai === 'toi-noi'){ dangDanDuong = false; toiNoi(); return; }
+  if(trangThai === 'loi'){
+    dangDanDuong = false;
+    /* Lỗi thì PHẢI nói ra. Im lặng là để khách đứng chờ một con robot đã bỏ cuộc. */
+    $('#dan-ten').textContent = 'Tôi chưa đi được';
+    $('#dan-tin').textContent = loiNhan || '';
+    return;
+  }
+  if(trangThai === 'da-dung'){ dangDanDuong = false; $('#dan-tin').textContent = loiNhan || ''; }
+};
+
+/* ── Tới nơi: đọc lời giới thiệu bệnh viện soạn ── */
+function toiNoi(){
+  if(!dichDang){ ve('mh-chon'); return; }
+  $('#toi-dau-phu').textContent = dichDang.phu;
+  $('#toi-ic').textContent = dichDang.icon;
+  $('#toi-ten').textContent = dichDang.ten;
+  $('#toi-loi').textContent = dichDang.doc;
+  ve('mh-toi');
+  /* Đọc XONG mới tính giờ vắng người, để robot không bị cắt lời giữa chừng. */
+  doc(dichDang.doc, ()=> hoatDong());
+}
+function ngheLaiToiNoi(){ if(dichDang){ dungDoc(); doc(dichDang.doc); } }
+
+/* ── Robot tự về chỗ đứng đợi ── */
+let henVeCho = null;
+function batDauVeCho(){
+  if(!coDanDuong()) return;
+  let con = 8;
+  $('#ve-cho-chu').textContent = 'Tôi về chỗ đứng đợi sau ' + con + ' giây…';
+  $('#ve-cho').classList.add('hien');
+  clearInterval(henVeCho);
+  henVeCho = setInterval(()=>{
+    con--;
+    if(con <= 0){
+      huyVeCho();
+      veChoNgay();       /* ra lệnh cho robot đi về trước… */
+      veManCho();        /* …rồi mới dọn màn hình. Cau.kt cố ý KHÔNG báo gì trong
+                            chuyến về, nên màn chờ không bị kéo ra giữa chừng. */
+      return;
+    }
+    $('#ve-cho-chu').textContent = 'Tôi về chỗ đứng đợi sau ' + con + ' giây…';
+  }, 1000);
+}
+function huyVeCho(){ clearInterval(henVeCho); $('#ve-cho').classList.remove('hien'); }
+/* Khách bấm "Tôi còn cần robot" — huỷ chuyến về, quay lại màn chọn để hỏi tiếp. */
+function hoanVeCho(){ huyVeCho(); ve('mh-chon'); }
+function veChoNgay(){ try{ if(coCau() && CAU.veCho) CAU.veCho(); }catch(e){} }
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. GIAO TIẾP AI
+   ═══════════════════════════════════════════════════════════════════ */
+
+function moGiaoTiep(){
+  const h = Object.keys(D.chao).map(function(ma){
+    const c = D.chao[ma];
+    return '<button class="the-loai" onclick="chonLoaiKhach(\'' + ma + '\')">' +
+           '<span class="ic">' + c.icon + '</span>' +
+           '<b>' + thoat(c.ten) + '</b>' +
+           '<span>' + thoat(c.mo_ta) + '</span></button>';
+  }).join('');
+  $('#loai-hang').innerHTML = h;
+  ve('mh-loai');
+}
+
+/* Luân phiên hai câu chào đại biểu: hai người đứng cạnh nhau nghe y hệt một câu thì
+   robot trông như máy phát băng. Bệnh viện cung cấp sẵn hai biến thể cho việc này. */
+const demChao = {};
+let loaiKhachDang = null;
+
+function chonLoaiKhach(ma){
+  const c = D.chao[ma];
+  if(!c) return;
+  loaiKhachDang = ma;
+  const i = (demChao[ma] || 0) % c.cau.length;
+  demChao[ma] = i + 1;
+  const cau = c.cau[i];
+
+  $('#chat-dau').textContent = 'Xin chào ' + c.ten;
+  $('#chat-dau-phu').textContent = 'Quý vị hỏi tôi bất cứ điều gì về sự kiện hôm nay';
+  $('#chat-ds').innerHTML = '';
+  veGoiY();
+  ve('mh-chat');
+
+  themBong('robot', cau);
+  doc(cau, ()=> hoatDong());
+  if(coMicRobot() && aiSanSang) moMicChat();
+}
+
+/* ── Thẻ câu hỏi gợi ý ── */
+function veGoiY(){
+  let h = '';
+  D.nhom.forEach(function(n){
+    const ds = D.hoi_dap.filter(x => x.nhom === n.ma);
+    if(!ds.length) return;
+    h += '<div class="nhom-ten">' + n.icon + ' ' + thoat(n.ten) + '</div>';
+    h += ds.map(x => '<button class="the-goi" onclick="hoiSan(' + x.id + ')">' +
+                     thoat(x.hoi) + '</button>').join('');
+  });
+  $('#chat-goi').innerHTML = h;
+}
+
+/* Bấm thẻ câu hỏi = đọc thẳng câu trả lời của bệnh viện, KHÔNG qua mô hình AI.
+   Câu đã duyệt sẵn thì không có lý do gì đưa cho mô hình diễn đạt lại. */
+function hoiSan(id){
+  const x = D.hoi_dap.filter(a => a.id === id)[0];
+  if(!x) return;
+  dungDoc();
+  themBong('nguoi', x.hoi);
+  themBong('robot', x.dap);
+  doc(x.dap, ()=> hoatDong());
+  hoatDong();
+}
+
+function themBong(ai, chu, dang){
+  const ds = $('#chat-ds');
+  const b = document.createElement('div');
+  b.className = 'bong-chat ' + (ai === 'nguoi' ? 'nguoi' : 'robot') + (dang ? ' dang' : '');
+  b.textContent = chu;
+  ds.appendChild(b);
+  ds.scrollTop = ds.scrollHeight;
+  return b;
+}
+
+/* ── Gõ chữ ── */
+function guiChat(){
+  const o = $('#chat-o');
+  const t = (o.value || '').trim();
+  if(t.length < 2) return;
+  o.value = '';
+  themBong('nguoi', t);
+  hoatDong();
+  if(coCau() && CAU.hoiRobot){
+    /* Đi CÙNG một đường với nói miệng — mọi lớp chặn nằm trong TraLoi.kt, viết một lần. */
+    try{ CAU.hoiRobot(t); }catch(e){ traLoiTaiCho(t); }
+  }else{
+    traLoiTaiCho(t);
+  }
+}
+
+/* Bản chạy trên máy tính không có mô hình — trả lời bằng đúng bộ tìm kiếm tại chỗ,
+   để thử được ngưỡng tin cậy mà không cần robot. */
+function traLoiTaiCho(cau){
+  const kq = traCuu(cau);
+  if(kq.muc === 'chac' && kq.ung_vien.length){
+    const x = D.hoi_dap.filter(a => a.id === kq.ung_vien[0].id)[0];
+    themBong('robot', x.dap); doc(x.dap, ()=> hoatDong());
+  }else{
+    themBong('robot', D.cau.ngoai_pham_vi);
+    doc(D.cau.ngoai_pham_vi, ()=> hoatDong());
+  }
+}
+
+/* ── Micro ── */
+let aiSanSang = false, micChatMo = false;
+window.baoAISanSang = function(s){
+  aiSanSang = !!s;
+  $('#nut-mic').classList.toggle('an', !(aiSanSang && coMicRobot()));
+};
+function moMicChat(){
+  if(!coMicRobot()) return;
+  try{ CAU.batMic(); micChatMo = true; $('#nut-mic').classList.add('dang'); }catch(e){}
+}
+function dongMicChat(){
+  try{ if(coCau() && CAU.tatMic) CAU.tatMic(); }catch(e){}
+  micChatMo = false; $('#nut-mic').classList.remove('dang');
+}
+function bamMic(){ micChatMo ? dongMicChat() : moMicChat(); }
+
+/* Kotlin đẩy từng mẩu lời nói lên đây — xem Cau.guiLoiNoi(). */
+let bongDang = null, aiBongDang = null;
+window.nhanLoiNoi = function(ai, chu, xong){
+  hoatDong();
+  if(manDang !== 'mh-chat') return;
+  if(bongDang && aiBongDang === ai){
+    bongDang.textContent = chu;
+    if(xong){ bongDang.classList.remove('dang'); bongDang = null; aiBongDang = null; }
+  }else{
+    if(bongDang) bongDang.classList.remove('dang');
+    bongDang = themBong(ai, chu, !xong);
+    aiBongDang = ai;
+    if(xong){ bongDang.classList.remove('dang'); bongDang = null; aiBongDang = null; }
+  }
+  $('#chat-ds').scrollTop = $('#chat-ds').scrollHeight;
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   BỘ TÌM KIẾM — có NGƯỠNG TUYỆT ĐỐI
+   Bài học app Mông Dương: ngưỡng tương đối thì bộ tìm không bao giờ nói được
+   "tôi không biết" — nó cứ lấy mục điểm cao nhất trong đám điểm thấp rồi đọc to.
+   ═══════════════════════════════════════════════════════════════════ */
+const TIN_SAN = 22;      /* điểm sàn tuyệt đối — dưới mức này coi như không tìm thấy */
+const PHU_SAN = 0.45;    /* độ phủ từ tối thiểu: câu hỏi phải khớp gần nửa số từ có nghĩa */
+
+/* Từ đệm — không mang thông tin, không tính vào độ phủ.
+   ⚠ KHÔNG đưa "nao" vào đây: bỏ dấu thì "nào" trùng "não". */
+const TU_DEM = ['la','gi','the','nhu','va','cua','co','khong','a','o','cho','toi','minh',
+                'quy','vi','vay','ha','ak','xin','hoi','cho','giup','duoc','ma','thi','se'];
+
+function chamMuc(tuHoi, x){
+  const kho = tachTu(x.hoi + ' ' + x.cach.join(' '));
+  if(!kho.length) return {diem:0, phu:0};
+  let diem = 0, trung = 0;
+  const coNghia = tuHoi.filter(t => TU_DEM.indexOf(t) < 0);
+  coNghia.forEach(function(t){
+    let khop = false;
+    for(let i = 0; i < kho.length; i++){
+      if(kho[i] === t){ diem += 12; khop = true; break; }
+      if(kho[i].indexOf(t) === 0 || t.indexOf(kho[i]) === 0){ diem += 6; khop = true; break; }
+    }
+    if(khop) trung++;
+  });
+  /* Cả cụm từ khớp nguyên vẹn thì cộng thêm — "hifu là gì" phải thắng "hifu ở đâu". */
+  const cauKhong = khongDau(tuHoi.join(' '));
+  if(khongDau(x.hoi).indexOf(cauKhong) >= 0) diem += 18;
+  x.cach.forEach(function(c){ if(khongDau(c).indexOf(cauKhong) >= 0) diem += 14; });
+
+  /* ⚠ ĐIỂM CỤM HAI TỪ — đừng bỏ, đây là thứ phân biệt được những cặp câu chỉ khác
+     nhau một tiếng.
+
+     Ca đã đo: "mấy giờ khai mạc" (buổi lễ) và "mấy giờ khai trương" (Đơn vị HIFU).
+     Đếm từ rời thì cả hai cùng trúng "mấy", "giờ", "khai" — mục đúng chỉ hơn mục sai
+     có 48 so với 36, chưa đủ khoảng cách để dám chắc, nên robot đi hỏi lại một câu mà
+     lẽ ra nó phải trả lời thẳng. Tính thêm cụm "khai mạc" thì mục đúng bỏ xa hẳn.
+
+     Bỏ dòng này ra là hai câu đó lại nhập nhằng. Sửa xong phải chạy tools/thu-app.mjs. */
+  const cum = khongDau(x.hoi + ' ' + x.cach.join(' '));
+  for(let i = 0; i + 1 < tuHoi.length; i++){
+    if(cum.indexOf(tuHoi[i] + ' ' + tuHoi[i+1]) >= 0) diem += 10;
+  }
+  return {diem: diem, phu: coNghia.length ? trung / coNghia.length : 0};
+}
+
+function traCuu(cau){
+  const tu = tachTu(cau);
+  const kq = D.hoi_dap.map(function(x){
+    const c = chamMuc(tu, x);
+    return {id:x.id, hoi:x.hoi, diem:c.diem, phu:c.phu};
+  }).filter(function(r){
+    /* HAI cổng, phải qua cả hai. Chỉ điểm số thôi là chưa đủ: câu dài vô nghĩa
+       vẫn gom đủ điểm nhờ trùng lặt vặt vài từ. */
+    return r.diem >= TIN_SAN && r.phu >= PHU_SAN;
+  }).sort((a,b) => b.diem - a.diem).slice(0, 4);
+
+  let muc = 'khong-thay';
+  if(kq.length){
+    const cao = kq[0].diem, nhi = kq.length > 1 ? kq[1].diem : 0;
+    const phuTron = kq[0].phu >= 0.999;   /* mục đầu khớp HẾT từ có nghĩa của câu hỏi */
+
+    /* Hai đường để được coi là "chắc":
+         · phủ TRỌN VẸN và đang dẫn đầu — mọi từ có nghĩa người ta nói đều nằm trong mục này
+         · hoặc bỏ xa mục nhì tới 35%
+
+       ⚠ Vì sao cần đường thứ nhất: ca "mấy giờ khai mạc" (buổi lễ) so với "mấy giờ khai
+         trương" (Đơn vị HIFU). Cả hai cùng trúng "mấy · giờ · khai"; mục đúng được 68,
+         mục sai được 56 — chưa đủ 35% nên robot đi hỏi lại một câu mà nó thừa sức trả lời.
+         Nhưng mục đúng phủ 4/4 từ còn mục sai chỉ 3/4 (thiếu "mạc"). Độ phủ mới là thứ
+         phân biệt được, không phải khoảng cách điểm.
+
+       ⚠ Đường thứ nhất KHÔNG làm robot nói bừa: phủ trọn nghĩa là không còn từ nào của
+         người hỏi bị bỏ rơi. Câu vu vơ như "thời tiết hôm nay thế nào" không mục nào phủ
+         nổi, nên vẫn rơi vào "khong-thay" như trước. Có phép kiểm cho đúng ca đó trong
+         tools/thu-app.mjs — đổi ngưỡng thì chạy lại. */
+    muc = (cao >= 40 && (phuTron ? cao > nhi : cao >= nhi * 1.35)) ? 'chac' : 'chua-chac';
+  }
+  return {muc: muc, ung_vien: kq};
+}
+
+/* Kotlin gọi qua Cau.traKhoaChoAI() để lấy danh sách ứng viên gửi kèm prompt.
+   ⚠ Trả về id + câu hỏi, KHÔNG trả câu đáp — gửi câu đáp cho mô hình là mời nó
+     diễn đạt lại, mà lệch một con số là sai hẳn thông tin y khoa. App tự đọc câu
+     đáp nguyên văn sau câu dẫn của mô hình. Xem TraLoi.kt. */
+window.tomTatChoAI = function(cau){
+  const r = traCuu(cau || '');
+  return JSON.stringify({muc: r.muc, ung_vien: r.ung_vien.map(x => ({id:x.id, hoi:x.hoi}))});
+};
+
+/* Kotlin gọi khi mô hình chốt được một mục — app đọc câu đáp NGUYÊN VĂN. */
+window.docDapAn = function(id){
+  const x = D.hoi_dap.filter(a => a.id === Number(id))[0];
+  return x ? x.dap : '';
+};
+
+/* Robot nghe được câu nói → gợi ý lên màn hình. Giữ tên hàm giống app Uông Bí
+   để Cau.kt dùng chung không phải sửa. */
+window.goiYTuRobot = function(cau){
+  const r = traCuu(cau || '');
+  if(r.muc === 'chac' && r.ung_vien.length && manDang !== 'mh-chat'){
+    /* Đang ở màn khác mà khách hỏi thì kéo về màn trò chuyện cho thấy câu trả lời. */
+    if(manDang !== 'mh-dan' && manDang !== 'mh-cho') ve('mh-chat');
+  }
+  return r.ung_vien.length;
+};
+
+/* App này KHÔNG có màn cấp cứu (sự kiện hội trường, không phải sảnh khám bệnh).
+   Cau.kt vẫn gọi hàm này khi chặn được từ khoá cấp cứu — để trống thì lỗi JS,
+   nên hiện lời nhắc trên khung chat. */
+window.moManCapCuuTuAI = function(){
+  if(manDang !== 'mh-chat') ve('mh-chat');
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. HAI NÚT BỆNH VIỆN YÊU CẦU THÊM
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Nút "Mời khách" — PHẦN D mục 1 tài liệu địa điểm. */
+function moiVaoHoiTruong(){
+  dungDoc();
+  doc(D.cau.moi_vao_hoi_truong, ()=> hoatDong());
+  hoatDong();
+}
+
+/* Nút "Tư vấn thực hiện HIFU" — PHẦN D mục 2. Hai nhánh, mỗi nhánh hỏi có dẫn đường không. */
+let nhanhDang = null;
+function moTuVan(){
+  const t = D.tu_van_hifu;
+  $('#tv-dau').textContent = t.tieu_de;
+  $('#tv-hoi').textContent = t.hoi;
+  $('#tv-hang').innerHTML = t.nhanh.map(function(n, i){
+    return '<button class="the-tv" onclick="chonNhanhTuVan(' + i + ')">' +
+           '<span class="ic">' + n.icon + '</span><b>' + thoat(n.ten) + '</b></button>';
+  }).join('');
+  ve('mh-tuvan');
+}
+
+function chonNhanhTuVan(i){
+  const n = D.tu_van_hifu.nhanh[i];
+  if(!n) return;
+  nhanhDang = n;
+  dungDoc();
+  /* Đọc câu tư vấn TRƯỚC, hỏi dẫn đường SAU — câu của bệnh viện đã kết bằng
+     "Bạn có muốn tôi dẫn đường không", nên hộp hỏi hiện lên là vừa đúng lúc. */
+  doc(n.doc, ()=> hoatDong());
+  moHoi(n.doc);
+}
+
+function moHoi(chu){
+  $('#hoi-chu').textContent = chu;
+  $('#hoi-lop').classList.add('hien');
+  hoatDong();
+}
+function dongHoi(){ $('#hoi-lop').classList.remove('hien'); }
+function dongYHoi(){
+  dongHoi();
+  dungDoc();
+  if(!nhanhDang) return;
+  const d = timDichTheoId(nhanhDang.dich_id);
+  if(!d) return;
+  dichDang = d;
+  danDuong();
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. QUY TRÌNH 8 BƯỚC
+   ═══════════════════════════════════════════════════════════════════ */
+let manTruocQuyTrinh = 'mh-chon';
+function moQuyTrinh(){
+  manTruocQuyTrinh = manDang;
+  $('#qt-than').innerHTML = D.quy_trinh.map(function(b){
+    const co = b.dich_id ? ' · chạm để nghe và dẫn đường' : ' · chạm để nghe';
+    return '<button class="buoc" onclick="ngheBuoc(' + b.buoc + ')">' +
+           '<span class="so">' + b.buoc + '</span>' +
+           '<span class="noi"><b>' + thoat(b.ten) + '</b>' +
+           '<span>' + thoat(b.doc.slice(0, 150)) + '…' + co + '</span></span></button>';
+  }).join('');
+  ve('mh-quytrinh');
+}
+function quayTuQuyTrinh(){ ve(manTruocQuyTrinh === 'mh-quytrinh' ? 'mh-chon' : manTruocQuyTrinh); }
+
+let buocDang = null;
+function ngheBuoc(so){
+  const b = D.quy_trinh.filter(x => x.buoc === so)[0];
+  if(!b) return;
+  buocDang = b;
+  dungDoc();
+  doc(b.doc, function(){
+    hoatDong();
+    /* Bước nào gắn với một nơi thì mời dẫn đường — đọc xong mới hỏi, không cắt lời. */
+    if(b.dich_id && coDanDuong() && !lyDoChuaDanDuoc()){
+      const d = timDichTheoId(b.dich_id);
+      if(d){ nhanhDang = {dich_id: b.dich_id}; moHoi('Quý vị có muốn tôi dẫn tới ' + d.ten + ' không ạ?'); }
+    }
+  });
+}
+function ngheTongQuan(){ dungDoc(); doc(D.cau.thuyet_minh_quy_trinh, ()=> hoatDong()); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   5. TỰ KIỂM BẢN ĐỒ — kỹ thuật viên dùng lúc lắp đặt
+   Vào bằng: bấm giữ logo 🏥 trên thanh đầu màn chọn 1,2 giây.
+   ═══════════════════════════════════════════════════════════════════ */
+function CAU_kiemTraBanDo(){
+  $('#bd-than').innerHTML = '<div class="bd-dong"><span class="kq">⏳</span>' +
+    '<span class="ten">Đang hỏi robot…</span></div>';
+  ve('mh-bando');
+  if(!(coCau() && CAU.kiemTraBanDo)){
+    $('#bd-than').innerHTML = '<div class="bd-dong"><span class="kq">✘</span>' +
+      '<span class="ten">Không có robot — đây là bản xem trên máy tính.</span></div>';
+    return;
+  }
+  try{ CAU.kiemTraBanDo(); }catch(e){}
+}
+
+window.baoTinhTrangBanDo = function(json){
+  let t = {};
+  try{ t = JSON.parse(json); }catch(e){}
+  const ds = String(t.danhSachDiem || '');
+  const can = Object.keys(D.diem).map(k => D.diem[k])
+                .concat([D.diem_ve_cho, D.diem_tram_sac]);
+  const duy = can.filter((v, i) => can.indexOf(v) === i);
+
+  let h = '<div class="bd-dong"><span class="kq">' + (t.daDinhVi ? '✔' : '✘') + '</span>' +
+          '<span class="ten">Robot đã định vị trên bản đồ</span>' +
+          '<span class="ghi">' + (t.daDinhVi ? 'xong' : 'CHƯA — mọi lệnh dẫn đường sẽ lỗi') +
+          '</span></div>';
+  duy.forEach(function(ten){
+    const co = ds.indexOf(ten) >= 0;
+    h += '<div class="bd-dong"><span class="kq">' + (co ? '✔' : '✘') + '</span>' +
+         '<span class="ten">' + thoat(ten) + '</span>' +
+         '<span class="ghi">' + (co ? 'đã đặt' : 'CHƯA CÓ trên bản đồ') + '</span></div>';
+  });
+  h += '<div class="tieu-muc">Robot trả về</div>' +
+       '<div class="bd-dong"><span class="ghi">' + thoat(ds || '(rỗng)') + '</span></div>';
+  $('#bd-than').innerHTML = h;
+};
+
+/* Bấm giữ biểu tượng bệnh viện 1,2 giây → màn tự kiểm. Bấm một cái thì không có gì
+   xảy ra — cố ý, để khách không mở nhầm màn kỹ thuật. */
+(function gaiCuaSau(){
+  const el = document.querySelector('#mh-chon .dau-icon');
+  if(!el) return;
+  let hen = null;
+  const bat = ()=>{ hen = setTimeout(CAU_kiemTraBanDo, 1200); };
+  const tha = ()=>{ clearTimeout(hen); };
+  el.addEventListener('touchstart', bat); el.addEventListener('mousedown', bat);
+  ['touchend','touchcancel','mouseup','mouseleave'].forEach(e => el.addEventListener(e, tha));
+})();
+
+/* ═══════════════════════════════════════════════════════════════════
+   Kể cho mô hình biết màn hình đang hiện gì
+   ⚠ Kênh này CHỈ để mô tả màn hình. Sự thật cố định nằm ở PERSONA trong
+     MainApplication.kt — hãng xác nhận mô hình không dùng kênh này để trả lời
+     câu hỏi kiến thức.
+   ═══════════════════════════════════════════════════════════════════ */
+function keManHinhChoAI(id){
+  if(!(coCau() && CAU.moTaManHinh)) return;
+  let mo = '';
+  if(id === 'mh-chon')      mo = 'Màn hình đang hiện hai lựa chọn: Dẫn đường và Giao tiếp AI.';
+  else if(id === 'mh-dich') mo = 'Màn hình đang hiện danh sách các nơi robot dẫn tới được.';
+  else if(id === 'mh-ct')   mo = 'Màn hình đang hiện chi tiết nơi đến: ' + (dichDang ? dichDang.ten : '');
+  else if(id === 'mh-dan')  mo = 'Robot đang dẫn khách đi, không trả lời câu hỏi lúc này.';
+  else if(id === 'mh-toi')  mo = 'Robot vừa tới ' + (dichDang ? dichDang.ten : '') + ' và đang giới thiệu.';
+  else if(id === 'mh-chat') mo = 'Màn hình đang là khung trò chuyện. Khách là ' +
+                                 (loaiKhachDang && D.chao[loaiKhachDang] ? D.chao[loaiKhachDang].ten : 'đại biểu') + '.';
+  else if(id === 'mh-quytrinh') mo = 'Màn hình đang hiện tám bước quy trình điều trị HIFU.';
+  else if(id === 'mh-tuvan') mo = 'Màn hình đang hỏi khách thuộc trường hợp nào để tư vấn HIFU.';
+  else if(id === 'mh-cho')  mo = 'Robot đang ở màn chờ, chưa có khách.';
+  if(mo){ try{ CAU.moTaManHinh(mo); }catch(e){} }
+}
+
+/* Nút Back của hệ thống. Chỉ ở màn chờ mới cho thoát ra RobotOS Home. */
+window.luiHeThong = function(){
+  if($('#hoi-lop').classList.contains('hien')){ dongHoi(); return '1'; }
+  if(manDang === 'mh-cho') return '0';
+  if(manDang === 'mh-dan'){ dungDanDuongNgay(); return '1'; }
+  if(manDang === 'mh-chon'){ veManCho(); return '1'; }
+  ve('mh-chon');
+  return '1';
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   Khởi động
+   ═══════════════════════════════════════════════════════════════════ */
+function datCoChu(){
+  /* Bố cục thiết kế theo khung 1920×1080. Trên cửa sổ trình duyệt nhỏ hơn thì thu
+     cỡ chữ gốc theo tỉ lệ, để bản demo trên máy tính trông y hệt bản chạy trên robot. */
+  const w = document.documentElement.clientWidth || 1920;
+  const h = document.documentElement.clientHeight || 1080;
+  const ti = Math.min(w / 1920, h / 1080);
+  document.documentElement.style.fontSize = Math.max(8, 16 * ti) + 'px';
+}
+window.addEventListener('resize', datCoChu);
+
+(function batDau(){
+  datCoChu();
+  veBangSuKien();
+  /* Báo cho Kotlin biết robot về đứng đợi ở đâu — tên lấy từ app-data.json, KHÔNG
+     ghi cứng trong Kotlin. Đổi tên điểm thì chỉ sửa JSON, không phải build lại APK. */
+  try{ if(coCau() && CAU.datDiemVeCho) CAU.datDiemVeCho(D.diem_ve_cho); }catch(e){}
+  ve('mh-cho');
+})();
+</script>
+</body>
+</html>
