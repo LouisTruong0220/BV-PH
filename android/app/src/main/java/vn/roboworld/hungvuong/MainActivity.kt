@@ -117,10 +117,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Ra khỏi tiền cảnh thì đóng mic lại, khỏi nghe lén phòng chờ. */
+    /**
+     * Ra khỏi tiền cảnh thì đóng mic lại, khỏi nghe lén phòng chờ, VÀ dừng vòng đi.
+     *
+     * ⚠ Dừng vòng đi ở đây không phải cho gọn: RobotOS thu hồi quyền điều khiển khi app
+     *   rời tiền cảnh, nên mọi lệnh dẫn đường sau đó đều rơi vào hư không. Để bộ đi vòng
+     *   tiếp tục bắn lệnh là nó đếm lỗi liên tiếp rồi tự nghỉ dài — lúc quay lại màn hình
+     *   robot đứng im cả phút mà không ai hiểu vì sao.
+     *   Lớp web có đồng hồ canh gác, về màn chờ là tự cho đi lại.
+     */
     override fun onPause() {
         super.onPause()
         MainApplication.tatMicro()
+        DiVong.dung("app rời tiền cảnh")
     }
 
     /** Chạy toàn màn hình — robot không có thanh trạng thái để người dân bấm nhầm. */
@@ -153,6 +162,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         Cau.go()
+        DiVong.dung("đóng app")
         RobotHelper.dungDoc()
         web.destroy()
         super.onDestroy()

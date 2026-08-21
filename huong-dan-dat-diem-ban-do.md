@@ -8,7 +8,7 @@ Robot chỉ đi được tới những điểm đã đặt tên sẵn trên bả
 
 ---
 
-## Mười điểm cần đặt
+## Mười điểm DẪN ĐƯỜNG
 
 | # | Tên điểm — **gõ đúng thế này** | Đặt ở đâu | Bắt buộc |
 |---|---|---|---|
@@ -30,6 +30,55 @@ Robot chỉ đi được tới những điểm đã đặt tên sẵn trên bả
 - **Đúng một dấu cách** giữa các chữ, không có dấu cách thừa ở đầu hay cuối.
 - Không đổi tên cho "đẹp hơn". Muốn đổi thì sửa bảng `DIEM` trong `dung-du-lieu.py`
   rồi chạy lại `dung-du-lieu.py` + `dung-app.py` — **không phải build lại APK**.
+
+---
+
+## Năm điểm ĐI VÒNG — đặt thêm, khác với mười điểm trên
+
+Robot không đứng một chỗ chờ khách nữa. Nó **đi liên tục** theo vòng
+`Diem 1 → 2 → 3 → 4 → 5 → 1 → …`, vừa đi vừa chào khách, khách chạm màn hình thì dừng lại
+phục vụ, ba mươi giây không ai thao tác thì đi tiếp.
+
+| # | Tên điểm — **gõ đúng thế này** | Đặt ở đâu |
+|---|---|---|
+| 11 | `Diem 1` | Chọn năm chỗ **rải đều quanh khu vực đón khách**, nối lại thành **vòng khép kín** |
+| 12 | `Diem 2` | |
+| 13 | `Diem 3` | |
+| 14 | `Diem 4` | |
+| 15 | `Diem 5` | |
+
+**Chữ D viết hoa, chữ `iem` thường, một dấu cách trước số.** `Diem 1` — không phải
+`diem 1`, không phải `Điểm 1`, không phải `Diem1`.
+
+### Chọn chỗ đặt năm điểm thế nào
+
+- **Vòng khép kín, không phải đường đi rồi quay đầu.** Điểm 5 phải nằm gần Điểm 1. Đặt
+  thành một đường thẳng là robot đi tới cuối rồi quay ngoắt lại — nhìn rất kỳ, và mỗi lần
+  quay đầu robot đứng lại mấy giây.
+- **Tránh lối thoát hiểm và cửa ra vào.** Robot dừng giữa lối thoát hiểm là chuyện an toàn,
+  không phải chuyện thẩm mỹ.
+- **Tránh cắt ngang khu chụp hình backdrop.** Đại biểu đang chụp hình mà robot đi ngang
+  qua là hỏng ảnh của người ta.
+- **Cách tường và bàn ghi danh ít nhất một mét.** Robot vòng qua điểm chứ không đỗ vào đó.
+- **Sảnh nhỏ thì bớt xuống ba điểm.** Không có luật nào bắt phải đủ năm. Sửa danh sách
+  `DI_VONG['diem']` trong `dung-du-lieu.py` rồi chạy lại hai script — **không build lại APK**.
+
+### Kiểm lại sau khi đặt
+
+Màn tự kiểm (bấm giữ 🏥 góc trên trái 1,2 giây) **soi cả năm điểm này**. Đây là chỗ bắt
+buộc phải xem, vì thiếu điểm đi vòng là kiểu hỏng **im lặng nhất**: robot vẫn đi bình
+thường, chỉ lặng lẽ bỏ qua đúng cái điểm gõ sai tên, không báo lỗi, không ai biết cho tới
+lúc ngồi xem lại đường robot đã đi.
+
+Kiểm thêm bằng mắt: mở app, để yên ở màn chờ chừng một phút. Robot phải **tự lăn bánh**
+mà không cần ai bấm gì, và ở góc dưới trái màn hình có **chấm xanh nhấp nháy** kèm dòng
+chữ mờ cho biết đang đi tới điểm nào. Chấm **cam đứng yên** nghĩa là robot chưa đi được —
+thường vì chưa định vị.
+
+### Muốn robot đứng yên như cũ
+
+Sửa `DI_VONG['bat']` thành `False` trong `dung-du-lieu.py`, chạy lại hai script, đẩy lại
+`index.html`. App quay về nếp cũ: đứng đợi ở `Le tan`, dẫn xong thì tự về chỗ.
 
 ---
 
@@ -61,7 +110,7 @@ những điểm còn lại app tự ẩn nút (không đặt thì bấm vào rob
    Quét bản đồ trước rồi mới kê đồ là robot đâm vào những thứ nó chưa biết, hoặc dừng
    giữa đường.
 2. Quét bản đồ toàn khu vực robot sẽ đi.
-3. Đặt mười điểm theo bảng trên.
+3. Đặt **mười lăm điểm** theo hai bảng trên — mười điểm dẫn đường + năm điểm đi vòng.
 4. **Định vị robot** — chưa định vị thì mọi lệnh dẫn đường đều lỗi `ERROR_NOT_ESTIMATE`.
 5. **Tự kiểm bằng chính app**, đừng nhìn bằng mắt:
    - Mở app → ở màn hai lựa chọn, **bấm giữ biểu tượng 🏥 góc trên trái 1,2 giây**

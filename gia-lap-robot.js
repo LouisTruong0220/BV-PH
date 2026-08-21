@@ -25,13 +25,23 @@
     diemVeCho: '(chưa đặt)',
     dangDi: null,
     dangDoc: null,
-    daNoi: []              // mọi câu robot đã nói — bộ thử tự động đọc ở đây
+    daNoi: [],             // mọi câu robot đã nói — bộ thử tự động đọc ở đây
+
+    /* ── Đi vòng ── */
+    vongDangDi: false,
+    vongDiem: [],
+    vongChiSo: 0,
+    vongHen: null,
+    giayMoiDiem: 12        // mô phỏng: mất bao lâu để đi từ điểm này sang điểm kế
   };
   window.GIA_LAP = GL;
 
   var DIEM_GIA = ['Hoi truong L11', 'Don vi HIFU', 'Quay CSKH', 'Phong MRI',
                   'Phong 12 khu B', 'Phong 8 khu B', 'Dieu tri trong ngay',
-                  'Ban tiep don', 'Le tan', 'Tram sac'];
+                  'Ban tiep don', 'Le tan', 'Tram sac',
+                  /* Năm điểm đi vòng — giả lập coi như kỹ thuật viên đã đặt đủ.
+                     Bỏ bớt một tên ở đây là thử được cảnh "thiếu điểm trên bản đồ". */
+                  'Diem 1', 'Diem 2', 'Diem 3', 'Diem 4', 'Diem 5'];
 
   /* ── Ghi nhật ký ra bảng điều khiển ───────────────────────────────── */
   function ghi(loai, chu) {
@@ -146,6 +156,19 @@
     ghi('ok', '🏠 Robot tự đi về "' + GL.diemVeCho + '" (im lặng, không báo lên màn hình)');
   }
 
+  /* ── Đi vòng: mô phỏng chuyến đi từ điểm này sang điểm kế ──
+     Trên máy thật DiVong.kt bắn 'di' NGAY khi tới nơi, không nghỉ một nhịp nào — đó
+     chính là chỗ quyết định robot "đi liên tục". Ở đây cũng vậy. */
+  function vongDiTiep() {
+    if (!GL.vongDangDi) return;
+    var ten = GL.vongDiem[GL.vongChiSo % GL.vongDiem.length];
+    GL.vongChiSo = (GL.vongChiSo + 1) % GL.vongDiem.length;
+    if (window.baoDiVong) window.baoDiVong('di', ten);
+    ghi('ok', '🚶 Đi vòng → ' + ten);
+    clearTimeout(GL.vongHen);
+    GL.vongHen = setTimeout(vongDiTiep, GL.giayMoiDiem * 1000);
+  }
+
   /* ═══════════ Dựng lại BA LỚP CHẶN của TraLoi.kt ═══════════
      Ba biểu thức dưới đây phải KHỚP với ba biểu thức trong MainApplication.kt.
      Sửa một bên thì sửa cả hai — không thì bản thử nói khác robot thật, mà đó đúng
@@ -246,6 +269,40 @@
       var j = JSON.stringify({ daDinhVi: true, danhSachDiem: DIEM_GIA });
       ghi('lenh', 'CAU.kiemTraBanDo() → ' + DIEM_GIA.length + ' điểm (giả lập)');
       if (window.baoTinhTrangBanDo) window.baoTinhTrangBanDo(j);
+    },
+
+    /* ── Đi vòng ──
+       Giả lập lại đúng chữ ký và đúng trình tự báo trạng thái của DiVong.kt: cứ
+       `GL.giayMoiDiem` giây thì coi như tới điểm kế và bắn 'di' lên lớp web. Nhờ vậy
+       thử được trên máy tính cả ba nhịp quan trọng: robot đi → khách chạm màn hình thì
+       dừng → ba mươi giây vắng người thì đi tiếp. */
+    batDauDiVong: function (dsJson, tocThang, tocXoay, saiSo) {
+      var ds = [];
+      try { ds = JSON.parse(dsJson || '[]'); } catch (e) { ds = []; }
+      if (ds.length < 2) { ghi('loi', 'CAU.batDauDiVong: danh sách điểm không hợp lệ'); return; }
+      if (GL.lyDoChan) { ghi('loi', 'CAU.batDauDiVong bị chặn: ' + GL.lyDoChan); return; }
+      if (GL.vongDangDi) return;                 // đang đi rồi thì bỏ qua, y như DiVong.kt
+      GL.vongDiem = ds; GL.vongChiSo = 0; GL.vongDangDi = true;
+      ghi('lenh', 'CAU.batDauDiVong(' + ds.length + ' điểm, ' + tocThang + ' m/s, sai số ' +
+                  saiSo + ' m) — không dừng ở điểm nào');
+      vongDiTiep();
+    },
+    dungDiVong: function (viSao) {
+      if (!GL.vongDangDi) return;
+      GL.vongDangDi = false;
+      clearTimeout(GL.vongHen); GL.vongHen = null;
+      ghi('lenh', 'CAU.dungDiVong("' + (viSao || '') + '")');
+      if (window.baoDiVong) window.baoDiVong('dung', viSao || '');
+    },
+    dangDiVong: function () { return !!GL.vongDangDi; },
+    moTaDiVong: function () {
+      return GL.vongDangDi ? ('đang đi tới ' + GL.vongDiem[GL.vongChiSo % GL.vongDiem.length])
+                           : 'tắt';
+    },
+    diemDiVongConThieu: function (dsJson) {
+      var ds = [];
+      try { ds = JSON.parse(dsJson || '[]'); } catch (e) { ds = []; }
+      return ds.filter(function (t) { return DIEM_GIA.indexOf(t) < 0; }).join(', ');
     },
 
     batMic: function () { GL.micMo = true; ghi('lenh', 'CAU.batMic()'); veBang(); },

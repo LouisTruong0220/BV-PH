@@ -160,7 +160,14 @@ await trang.click('.the-loai');
 await trang.waitForTimeout(500);
 kiem(await manDang() === 'mh-chat', 'Chọn Đại biểu thì vào màn trò chuyện');
 const chaoDB = (await daDoc())[0] || '';
-const cauDB = await trang.evaluate(() => window.DU_LIEU.chao['dai-bieu'].cau);
+/* Sáng là buổi lễ, chiều là hội thảo — bệnh viện soạn hai bộ lời chào khác nhau.
+   Bộ thử phải hỏi app đang ở buổi nào rồi mới so, không thì chạy sau mười hai giờ trưa
+   là báo hỏng oan. */
+const cauDB = await trang.evaluate(() => {
+  const c = window.DU_LIEU.chao['dai-bieu'];
+  return (window.buoiHienTai() === 'chieu' && c.cau_chieu && c.cau_chieu.length)
+         ? c.cau_chieu : c.cau;
+});
 kiem(cauDB.indexOf(chaoDB) >= 0,
      'Phát ĐÚNG lời chào đại biểu số ' + (cauDB.indexOf(chaoDB) + 1) + ' của bệnh viện');
 await anh('08-chat-dai-bieu');
@@ -186,7 +193,11 @@ await trang.evaluate(() => { window.GIA_LAP.cauDaDoc.length = 0; });
 await trang.click('.the-loai:nth-child(2)');
 await trang.waitForTimeout(400);
 const chaoVIP = (await daDoc())[0] || '';
-const cauVIP = await trang.evaluate(() => window.DU_LIEU.chao['khach-vip'].cau);
+const cauVIP = await trang.evaluate(() => {
+  const c = window.DU_LIEU.chao['khach-vip'];
+  return (window.buoiHienTai() === 'chieu' && c.cau_chieu && c.cau_chieu.length)
+         ? c.cau_chieu : c.cau;
+});
 kiem(cauVIP.indexOf(chaoVIP) >= 0, 'Khách VIP có lời chào RIÊNG của bệnh viện');
 kiem(chaoVIP !== chaoDB, 'Lời chào VIP khác hẳn lời chào đại biểu');
 await anh('09-chat-khach-vip');
@@ -279,6 +290,106 @@ await trang.evaluate(() => window.veManCho());
 await trang.waitForTimeout(300);
 kiem(await manDang() === 'mh-cho', 'Kết thúc lượt thì về màn chờ');
 kiem((await hienNhat()).length === 1, 'Chỉ MỘT màn hiện tại một lúc (không chồng màn)');
+
+
+console.log('\n═══ 9. ĐI VÒNG QUANH SỰ KIỆN ═══');
+
+/* Bộ giả lập đi mỗi điểm mất mười hai giây — quá lâu cho một bộ thử. Rút xuống một
+   giây để cả vòng năm điểm chạy trong năm giây. */
+await trang.evaluate(() => { window.GIA_LAP.giayMoiDiem = 1; });
+
+/* Về màn chờ rồi chờ đồng hồ canh gác (nhịp hai giây) cho robot lăn bánh. */
+await trang.evaluate(() => window.veManCho());
+await trang.waitForTimeout(3200);
+
+const dangDiVong = () => trang.evaluate(() => window.GIA_LAP.vongDangDi);
+const soDiem     = () => trang.evaluate(() => (window.DU_LIEU.di_vong || {}).diem || []);
+
+const dsDiem = await soDiem();
+kiem(dsDiem.length >= 2, 'Có danh sách điểm đi vòng (' + dsDiem.length + ' điểm)');
+kiem(dsDiem.every(t => /^[\x20-\x7E]+$/.test(t)),
+     'Tên điểm đi vòng KHÔNG dấu tiếng Việt: ' + dsDiem.join(' · '));
+kiem(await dangDiVong(), 'Ở màn chờ, robot TỰ ĐỘNG đi vòng (không cần ai bấm)');
+
+/* Robot phải ĐỔI ĐIỂM chứ không đứng lại ở điểm đầu — đây là cả cái yêu cầu
+   "đi liên tục, không dừng ở mỗi điểm". */
+const diem1 = await trang.evaluate(() => window.GIA_LAP.vongChiSo);
+await trang.waitForTimeout(2400);
+const diem2 = await trang.evaluate(() => window.GIA_LAP.vongChiSo);
+kiem(diem1 !== diem2, 'Tới điểm rồi ĐI TIẾP ngay, không dừng lại (chỉ số ' +
+     diem1 + ' → ' + diem2 + ')');
+
+/* Câu chào dọc đường: phải nằm trong đúng bộ câu bệnh viện soạn cho buổi đang diễn ra */
+const khoChao = await trang.evaluate(() => {
+  const d = window.DU_LIEU.di_vong || {};
+  return (window.buoiHienTai() === 'chieu' ? d.chao_chieu : d.chao) || d.chao || [];
+});
+kiem(khoChao.length >= 2, 'Có kho câu chào đi vòng (' + khoChao.length + ' câu)');
+const daChao = (await daDoc()).filter(c => khoChao.indexOf(c) >= 0);
+kiem(daChao.length >= 1, 'Vừa đi vừa phát lời chào (đã nghe ' + daChao.length + ' câu)');
+await anh('11-di-vong');
+
+/* Khách chạm màn hình → robot phải DỪNG NGAY */
+await trang.click('#mh-cho');
+await trang.waitForTimeout(400);
+kiem(await manDang() === 'mh-chon', 'Chạm màn hình thì hiện giao diện tương tác');
+kiem(!(await dangDiVong()), 'Có khách thì robot DỪNG đi vòng ngay lập tức');
+
+/* Đang phục vụ khách thì đồng hồ canh gác KHÔNG được cho robot chạy lại */
+await trang.waitForTimeout(2600);
+kiem(!(await dangDiVong()), 'Đang phục vụ khách, robot vẫn đứng yên (canh gác không cướp lệnh)');
+
+/* Vắng người quá hạn → robot tự đi tiếp.
+   Không ngồi đợi ba mươi giây thật: gọi thẳng hetGio() cho nhanh, đúng thứ đồng hồ
+   sẽ gọi. Còn con số ba mươi giây thì kiểm riêng ở dòng dưới. */
+/* ⚠ CHO_SAU khai bằng `const` ở đầu thẻ <script>, nên nó KHÔNG nằm trên window —
+   `window.CHO_SAU` trả về undefined. Gọi trần bằng tên là được: const ở tầng ngoài
+   cùng của một script thường nằm trong global lexical environment, mọi script trong
+   cùng trang đều thấy. Viết `window.` ở đây là bộ thử báo hỏng oan. */
+const choSau = await trang.evaluate(() => CHO_SAU);
+kiem(choSau === 30000, 'Đồng hồ vắng người đặt đúng BA MƯƠI giây (đang là ' +
+     (choSau / 1000) + ' s)');
+await trang.evaluate(() => window.hetGio());
+await trang.waitForTimeout(3200);
+kiem(await manDang() === 'mh-cho', 'Hết giờ vắng người thì về màn chờ');
+kiem(await dangDiVong(), 'Về màn chờ xong robot TỰ ĐI TIẾP');
+
+/* Đèn báo cho kỹ thuật viên */
+kiem(await trang.evaluate(() => document.querySelector('#den-vong').classList.contains('hien')),
+     'Màn chờ hiện đèn báo đang đi vòng');
+
+/* Điểm đi vòng phải có mặt trong màn tự kiểm bản đồ — thiếu điểm là hỏng im lặng */
+await trang.evaluate(() => window.CAU_kiemTraBanDo());
+await trang.waitForTimeout(500);
+const banDo = await trang.evaluate(() => document.querySelector('#bd-than').textContent);
+kiem(dsDiem.every(t => banDo.indexOf(t) >= 0),
+     'Màn tự kiểm bản đồ soi CẢ năm điểm đi vòng');
+await anh('12-tu-kiem-ban-do');
+await trang.evaluate(() => window.veManCho());
+await trang.waitForTimeout(300);
+
+console.log('\n═══ 10. KIẾN THỨC HỘI THẢO KHOA HỌC (bản s2) ═══');
+const hoiKho = async (cau) => {
+  await trang.evaluate(() => { window.GIA_LAP.cauDaDoc.length = 0; });
+  await trang.evaluate(c => window.traLoiTaiCho(c), cau);
+  await trang.waitForTimeout(300);
+  return (await daDoc()).join(' ');
+};
+const h1 = await hoiKho('hội thảo mấy giờ bắt đầu');
+kiem(h1.includes('mười bốn giờ'), '"hội thảo mấy giờ" → đúng mốc mười bốn giờ');
+const h2 = await hoiKho('phí tham dự hội thảo');
+kiem(h2.includes('không thu phí'), '"phí tham dự" → không thu phí');
+const h3 = await hoiKho('phí cấp chứng chỉ CME bao nhiêu');
+kiem(h3.includes('ba trăm nghìn'), '"phí CME" → ba trăm nghìn (KHÁC câu phí tham dự)');
+kiem(h2 !== h3, 'Hai câu tiền bạc KHÔNG lẫn vào nhau — đây là chỗ tài liệu gốc mâu thuẫn');
+const h4 = await hoiKho('ai báo cáo trong hội thảo');
+kiem(h4.includes('He Min') && h4.includes('Nguyễn Viết Tiến'),
+     '"ai báo cáo" → đủ tên các diễn giả');
+const h5 = await hoiKho('bệnh viện tiên phong hifu thứ mấy cả nước');
+kiem(h5.includes('thứ hai trên cả nước'), '"tiên phong HIFU" → lần đầu TPHCM, thứ hai cả nước');
+const h6 = await hoiKho('thời tiết hôm nay thế nào');
+kiem(h6.includes('ngoài thông tin tôi được cung cấp'),
+     'Câu vô nghĩa VẪN bị chặn sau khi nạp thêm mười bốn mục');
 
 await trinh.close();
 

@@ -78,6 +78,22 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .bang-su-kien b{display:block;font-size:2.1rem;font-weight:700;letter-spacing:.01em}
 .bang-su-kien span{display:block;font-size:1.15rem;opacity:.8;margin-top:.35rem}
 
+/* Đèn báo robot đang đi vòng — góc dưới trái màn chờ.
+   Cố ý làm NHỎ và MỜ: đây là thứ cho kỹ thuật viên liếc một cái là biết robot còn đi
+   hay đã đứng, không phải thứ để khách đọc. Khách nhìn vào chỉ thấy một chấm sáng. */
+.den-vong{
+  position:absolute;left:1.75rem;bottom:1.5rem;display:none;align-items:center;gap:.6rem;
+  padding:.45rem .95rem;border-radius:1.5rem;background:rgba(0,0,0,.45);
+  color:rgba(255,255,255,.75);font-size:.9rem;pointer-events:none;max-width:26rem;
+}
+.den-vong.hien{display:flex}
+.den-vong i{
+  width:.6rem;height:.6rem;border-radius:50%;background:#5BD07A;flex:none;
+  animation:tho 1.8s ease-in-out infinite;
+}
+.den-vong.nghi i{background:#E8A33D;animation:none}
+.den-vong span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* ═══════════ Màn CHỌN — hai lựa chọn lớn ═══════════ */
 .chon-boc{flex:1;min-height:0;display:flex;flex-direction:column;padding:1.75rem 2.25rem 1.5rem}
 .chon-tren{flex:1;min-height:0;display:flex;gap:1.75rem}
@@ -330,6 +346,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   </div>
   <div class="bang-su-kien" id="bang-su-kien"></div>
   <div class="moi-cham">Chạm vào màn hình để bắt đầu</div>
+  <div class="den-vong" id="den-vong"><i></i><span id="den-vong-chu"></span></div>
 </div>
 
 <!-- ══════════════ MÀN CHỌN ══════════════ -->
@@ -728,6 +745,10 @@ window.DU_LIEU={
       "cau": [
         "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị điều trị HIFU. Kính chúc Quý vị một ngày thật nhiều niềm vui!",
         "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! Hôm nay là ngày hội lớn của bệnh viện chúng tôi. Rất hân hạnh được phục vụ Quý vị!"
+      ],
+      "cau_chieu": [
+        "Bệnh viện Hùng Vương trân trọng kính chào Quý đại biểu! Chào mừng Quý vị đến tham dự Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ. Kính chúc Quý đại biểu có một ngày thật nhiều niềm vui và có những trải nghiệm, kiến thức bổ ích tại Hội thảo!",
+        "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị!"
       ]
     },
     "khach-vip": {
@@ -743,6 +764,8 @@ window.DU_LIEU={
     "tu_gioi_thieu": "Xin chào! Tôi là robot lễ tân của Bệnh viện Hùng Vương. Tôi có thể giới thiệu chương trình buổi lễ, hướng dẫn đường đi và cung cấp thông tin về dịch vụ HIFU. Quý vị cần tôi hỗ trợ điều gì ạ?",
     "huong_dan_check_in": "Kính mời Quý đại biểu ghi danh tại bàn tiếp đón, nhận hoa cài áo và quà tặng của bệnh viện. Sau đó, kính mời Quý vị chụp hình lưu niệm tại khu vực backdrop và di chuyển lên Hội trường lầu mười một bằng thang máy ưu tiên.",
     "moi_vao_hoi_truong": "Buổi lễ sắp bắt đầu. Kính mời Quý đại biểu di chuyển vào Hội trường lầu mười một và ổn định chỗ ngồi theo hướng dẫn của Ban tổ chức. Xin trân trọng cảm ơn!",
+    "moi_vao_hoi_thao": "Chương trình sắp bắt đầu. Kính mời Quý đại biểu vui lòng di chuyển vào Hội trường lầu mười một và ổn định chỗ ngồi. Xin trân trọng cảm ơn!",
+    "tu_gioi_thieu_chieu": "Xin chào! Tôi là robot lễ tân của Bệnh viện Hùng Vương. Tôi có thể giới thiệu chương trình hội thảo khoa học, hướng dẫn đường đi và cung cấp thông tin về hội thảo. Quý vị cần tôi hỗ trợ điều gì ạ?",
     "cam_on": "Bệnh viện Hùng Vương xin trân trọng cảm ơn Quý đại biểu đã dành thời gian quý báu đến chung vui cùng bệnh viện trong ngày trọng đại hôm nay!",
     "moi_tiec_trua": "Kính mời Quý đại biểu di chuyển đến Hội trường lầu sáu để dùng tiệc trưa thân mật cùng bệnh viện, từ mười một giờ ba mươi đến mười ba giờ. Xin trân trọng kính mời!",
     "tam_biet": "Xin kính chào tạm biệt Quý đại biểu! Kính chúc Quý vị nhiều sức khỏe, hạnh phúc và thành công. Hẹn gặp lại Quý vị tại Bệnh viện Hùng Vương!",
@@ -778,6 +801,11 @@ window.DU_LIEU={
       "icon": "🎉"
     },
     {
+      "ma": "hoi-thao",
+      "ten": "Hội thảo khoa học",
+      "icon": "🎤"
+    },
+    {
       "ma": "benh-vien",
       "ten": "Bệnh viện Hùng Vương",
       "icon": "🏥"
@@ -805,7 +833,7 @@ window.DU_LIEU={
         "sự kiện hôm nay",
         "hôm nay có chương trình gì"
       ],
-      "dap": "Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU."
+      "dap": "Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng Vương có hai sự kiện. Buổi sáng, bệnh viện long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU. Buổi chiều, bệnh viện tổ chức Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ."
     },
     {
       "id": 2,
@@ -1101,6 +1129,189 @@ window.DU_LIEU={
         "máy móc thế nào"
       ],
       "dap": "Bệnh viện trang bị hệ thống điều trị siêu âm hội tụ đồng bộ, gồm bàn điều trị tích hợp đầu phát sóng hội tụ, bể nước lạnh khử khí, hệ thống siêu âm định vị dẫn đường thời gian thực và máy trạm lập kế hoạch điều trị."
+    },
+    {
+      "id": 26,
+      "nhom": "hoi-thao",
+      "hoi": "Hội thảo diễn ra ở đâu, lúc mấy giờ?",
+      "cach": [
+        "hội thảo mấy giờ",
+        "hội thảo ở đâu",
+        "hội thảo khoa học lúc nào",
+        "chiều nay mấy giờ",
+        "hội thảo bắt đầu khi nào",
+        "buổi chiều mấy giờ",
+        "hội thảo khoa học ở đâu"
+      ],
+      "dap": "Hội thảo bắt đầu lúc mười bốn giờ chiều tại Hội trường lầu mười một, Toà nhà Bách Hợp, Bệnh viện Hùng Vương, số chín đường Lý Thường Kiệt, Phường Chợ Lớn, Thành phố Hồ Chí Minh. Bệnh viện hân hạnh đón tiếp Quý đại biểu từ mười ba giờ ba mươi."
+    },
+    {
+      "id": 27,
+      "nhom": "hoi-thao",
+      "hoi": "Chương trình Hội thảo gồm những gì?",
+      "cach": [
+        "chương trình hội thảo",
+        "nội dung hội thảo",
+        "lịch trình hội thảo",
+        "hội thảo có những bài gì",
+        "các bài báo cáo",
+        "chương trình chiều nay"
+      ],
+      "dap": "Chương trình gồm: mười bốn giờ năm phút, Giám đốc Bệnh viện Hùng Vương phát biểu khai mạc. Mười bốn giờ mười, Giáo sư He Min trình bày bài Tổng quan về ứng dụng lâm sàng của siêu âm hội tụ cường độ cao, thực trạng và định hướng phát triển trong tương lai. Mười bốn giờ ba mươi, Giáo sư Nguyễn Viết Tiến trình bày bài Kinh nghiệm điều trị u xơ tử cung và lạc tuyến trong cơ tử cung bằng điều trị không xâm lấn bằng sóng siêu âm hội tụ. Mười bốn giờ năm mươi, Quý đại biểu nghỉ giải lao. Mười lăm giờ mười, Phó Giáo sư, Tiến sĩ, Bác sĩ Hoàng Thị Diễm Tuyết trình bày bài Không phải mọi khối u tử cung đều cần phẫu thuật, kỷ nguyên điều trị bảo tồn trong phụ khoa. Mười lăm giờ ba mươi, Cử nhân hộ sinh Nguyễn Thị Hà Chi, Phòng Điều dưỡng Bệnh viện Hùng Vương, trình bày về Vai trò điều dưỡng chăm sóc người bệnh điều trị không xâm lấn bằng sóng siêu âm hội tụ. Từ mười lăm giờ năm mươi đến mười sáu giờ ba mươi, các đại biểu cùng thảo luận và đặt câu hỏi, sau đó tổng kết bế mạc Hội thảo. Quý vị có thể xem chương trình chi tiết trên màn hình của tôi."
+    },
+    {
+      "id": 28,
+      "nhom": "hoi-thao",
+      "hoi": "Ai tham gia báo cáo trong Hội thảo hôm nay?",
+      "cach": [
+        "ai báo cáo",
+        "diễn giả là ai",
+        "báo cáo viên",
+        "chuyên gia nào trình bày",
+        "ai trình bày",
+        "giáo sư nào"
+      ],
+      "dap": "Giáo sư He Min, Tiến sĩ Y khoa, Bác sĩ điều trị không xâm lấn bằng sóng siêu âm hội tụ cao cấp, Trợ lý Giám đốc Bệnh viện Haifu Trùng Khánh, Giám đốc Trung tâm Đào tạo Lâm sàng. Giáo sư Nguyễn Viết Tiến, nguyên Thứ trưởng Bộ Y tế, Chủ tịch Hội Sản phụ khoa Việt Nam. Phó Giáo sư, Tiến sĩ, Bác sĩ Hoàng Thị Diễm Tuyết, Giám đốc Bệnh viện Hùng Vương. Và Cử nhân hộ sinh Nguyễn Thị Hà Chi, Phòng Điều dưỡng Bệnh viện Hùng Vương."
+    },
+    {
+      "id": 29,
+      "nhom": "hoi-thao",
+      "hoi": "Vì sao bệnh viện tổ chức Hội thảo này?",
+      "cach": [
+        "lý do tổ chức hội thảo",
+        "tại sao có hội thảo",
+        "vì sao tổ chức",
+        "mục tiêu tổ chức hội thảo"
+      ],
+      "dap": "Hội thảo nằm trong khuôn khổ Tuần lễ cập nhật kiến thức y khoa liên tục năm hai nghìn không trăm hai mươi sáu, nhằm cập nhật những tiến bộ mới trong điều trị không xâm lấn bằng sóng siêu âm hội tụ, đồng thời tạo cơ hội để các chuyên gia cùng trao đổi, chia sẻ kinh nghiệm về một phương pháp điều trị hiện đại, hướng đến giảm can thiệp, nâng cao chất lượng điều trị và đặc biệt mở thêm lựa chọn cho phụ nữ có nhu cầu bảo tồn tử cung."
+    },
+    {
+      "id": 30,
+      "nhom": "hoi-thao",
+      "hoi": "Mục đích của Hội thảo là gì?",
+      "cach": [
+        "mục đích hội thảo",
+        "hội thảo để làm gì",
+        "ý nghĩa của hội thảo",
+        "hội thảo nhằm mục đích gì"
+      ],
+      "dap": "Hội thảo khoa học là cơ hội để các nhân viên y tế trao đổi, cập nhật kiến thức mới cũng như chia sẻ kinh nghiệm trong việc chẩn đoán và kỹ thuật điều trị bệnh lý phụ khoa, nhũ hoa bằng công nghệ sóng siêu âm hội tụ cao tần."
+    },
+    {
+      "id": 31,
+      "nhom": "hoi-thao",
+      "hoi": "Phí tham dự Hội thảo?",
+      "cach": [
+        "hội thảo có mất phí không",
+        "tham dự tốn bao nhiêu",
+        "có thu tiền không",
+        "phí tham dự",
+        "vào cửa có mất tiền không",
+        "miễn phí không"
+      ],
+      "dap": "Chương trình Hội thảo tổ chức không thu phí."
+    },
+    {
+      "id": 32,
+      "nhom": "hoi-thao",
+      "hoi": "Phí cấp chứng chỉ CME là bao nhiêu?",
+      "cach": [
+        "cme bao nhiêu tiền",
+        "phí cme",
+        "chứng chỉ cme",
+        "tín chỉ cme",
+        "cấp cme",
+        "muốn lấy chứng chỉ",
+        "phí tham dự và cấp cme"
+      ],
+      "dap": "Phí tham dự và cấp chứng chỉ CME là ba trăm nghìn đồng một CME, cấp một phẩy năm giờ tín chỉ."
+    },
+    {
+      "id": 33,
+      "nhom": "hoi-thao",
+      "hoi": "Hội thảo tập trung vào những nội dung nổi bật nào?",
+      "cach": [
+        "nội dung nổi bật",
+        "hội thảo nói về gì",
+        "chủ đề hội thảo",
+        "điểm nhấn hội thảo"
+      ],
+      "dap": "Hội thảo tập trung vào thực trạng và định hướng phát triển trong tương lai của điều trị không xâm lấn bằng sóng siêu âm hội tụ, cùng kỷ nguyên mới trong điều trị bảo tồn trong phụ khoa."
+    },
+    {
+      "id": 34,
+      "nhom": "hoi-thao",
+      "hoi": "Đại biểu nhận được gì khi tham dự Hội thảo?",
+      "cach": [
+        "tham dự được gì",
+        "lợi ích khi tham dự",
+        "đại biểu được gì",
+        "dự hội thảo có lợi gì"
+      ],
+      "dap": "Đại biểu có cơ hội cập nhật kiến thức mới, lắng nghe các chuyên gia chia sẻ kinh nghiệm thực tiễn và trao đổi về ứng dụng điều trị không xâm lấn bằng sóng siêu âm hội tụ trong điều trị bệnh lý phụ khoa."
+    },
+    {
+      "id": 35,
+      "nhom": "hoi-thao",
+      "hoi": "Hội thảo có ý nghĩa gì đối với người bệnh?",
+      "cach": [
+        "ý nghĩa với người bệnh",
+        "người bệnh được lợi gì",
+        "bệnh nhân hưởng lợi gì",
+        "hội thảo giúp gì cho bệnh nhân"
+      ],
+      "dap": "Thông qua việc cập nhật và trao đổi chuyên môn, Hội thảo góp phần thúc đẩy những phương pháp điều trị hiện đại, an toàn, không xâm lấn và phù hợp hơn với nhu cầu chăm sóc sức khoẻ phụ nữ."
+    },
+    {
+      "id": 36,
+      "nhom": "hoi-thao",
+      "hoi": "Hội thảo dành cho ai?",
+      "cach": [
+        "ai được tham dự",
+        "đối tượng tham dự",
+        "dành cho những ai",
+        "ai được vào hội thảo",
+        "thành phần tham dự"
+      ],
+      "dap": "Hội thảo hướng đến các chuyên gia, bác sĩ, hộ sinh, điều dưỡng và nhân viên y tế hoạt động trong lĩnh vực sản phụ khoa."
+    },
+    {
+      "id": 37,
+      "nhom": "hoi-thao",
+      "hoi": "Điều gì khiến điều trị bằng sóng siêu âm hội tụ đáng quan tâm hiện nay?",
+      "cach": [
+        "vì sao hifu được quan tâm",
+        "tại sao hifu là xu hướng",
+        "hifu có gì đáng chú ý",
+        "xu hướng điều trị hiện nay"
+      ],
+      "dap": "Trong xu hướng y học hiện đại, người bệnh ngày càng mong muốn những phương pháp ít xâm lấn, giảm đau, hồi phục nhanh và thân thiện hơn. Điều trị không xâm lấn bằng sóng siêu âm hội tụ là một trong những công nghệ đang được quan tâm trong xu hướng này."
+    },
+    {
+      "id": 38,
+      "nhom": "benh-vien",
+      "hoi": "Bệnh viện Hùng Vương tiên phong triển khai HIFU như thế nào?",
+      "cach": [
+        "bệnh viện đầu tiên làm hifu",
+        "tiên phong hifu",
+        "đầu tiên tại thành phố",
+        "thứ mấy cả nước",
+        "bệnh viện nào làm trước"
+      ],
+      "dap": "Bệnh viện Hùng Vương tiên phong triển khai công nghệ điều trị không xâm lấn bằng sóng siêu âm hội tụ, lần đầu tiên tại Thành phố Hồ Chí Minh và là nơi thứ hai trên cả nước."
+    },
+    {
+      "id": 39,
+      "nhom": "benh-vien",
+      "hoi": "Bệnh viện đầu tư cho Đơn vị HIFU như thế nào?",
+      "cach": [
+        "đầu tư ra sao",
+        "đào tạo ở đâu",
+        "bác sĩ được đào tạo thế nào",
+        "máy móc đầu tư",
+        "chuẩn bị nhân sự thế nào"
+      ],
+      "dap": "Đội ngũ bác sĩ và nữ hộ sinh được đào tạo chuyên sâu tại Trùng Khánh, Trung Quốc, nơi đã thực hiện rất nhiều ca điều trị bằng sóng siêu âm hội tụ. Bệnh viện trang bị máy điều trị thế hệ mới nhất, đồng thời hội chẩn và đào tạo định kỳ cùng các chuyên gia quốc tế."
     }
   ],
   "quy_trinh": [
@@ -1160,7 +1371,37 @@ window.DU_LIEU={
     "vị trí bãi giữ xe",
     "vị trí căn tin",
     "giá dịch vụ HIFU"
-  ]
+  ],
+  "di_vong": {
+    "bat": true,
+    "diem": [
+      "Diem 1",
+      "Diem 2",
+      "Diem 3",
+      "Diem 4",
+      "Diem 5"
+    ],
+    "cach_chao_giay": 10,
+    "cho_khach_giay": 30,
+    "dem_di_tiep_giay": 8,
+    "toc_do_thang": 0.5,
+    "toc_do_xoay": 0.8,
+    "sai_so_met": 1.0,
+    "chao": [
+      "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự Lễ đón nhận danh hiệu Anh hùng Lao động.",
+      "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! Hôm nay là ngày hội lớn của bệnh viện chúng tôi.",
+      "Kính chào Quý vị! Chào mừng Quý vị đến dự Lễ khai trương Đơn vị điều trị HIFU của Bệnh viện Hùng Vương.",
+      "Bệnh viện Hùng Vương kính chúc Quý vị một ngày thật nhiều niềm vui! Quý vị cần hỗ trợ, xin chạm vào màn hình của tôi.",
+      "Tôi là robot lễ tân của Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị trong ngày trọng đại hôm nay!"
+    ],
+    "chao_chieu": [
+      "Bệnh viện Hùng Vương trân trọng kính chào Quý đại biểu! Chào mừng Quý vị đến tham dự Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ.",
+      "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị!",
+      "Kính chúc Quý đại biểu một ngày thật nhiều niềm vui và có những trải nghiệm, kiến thức bổ ích tại Hội thảo!",
+      "Bệnh viện Hùng Vương kính chào Quý vị! Quý vị cần hỗ trợ, xin chạm vào màn hình của tôi.",
+      "Tôi là robot lễ tân của Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị tại Hội thảo khoa học hôm nay!"
+    ]
+  }
 };
 /* ═══════════════════════════════════════════════════════════════════════
    GIẢ LẬP ROBOT — chỉ dùng cho bản thử trên máy tính (demo/thu-nghiem.html).
@@ -1189,13 +1430,23 @@ window.DU_LIEU={
     diemVeCho: '(chưa đặt)',
     dangDi: null,
     dangDoc: null,
-    daNoi: []              // mọi câu robot đã nói — bộ thử tự động đọc ở đây
+    daNoi: [],             // mọi câu robot đã nói — bộ thử tự động đọc ở đây
+
+    /* ── Đi vòng ── */
+    vongDangDi: false,
+    vongDiem: [],
+    vongChiSo: 0,
+    vongHen: null,
+    giayMoiDiem: 12        // mô phỏng: mất bao lâu để đi từ điểm này sang điểm kế
   };
   window.GIA_LAP = GL;
 
   var DIEM_GIA = ['Hoi truong L11', 'Don vi HIFU', 'Quay CSKH', 'Phong MRI',
                   'Phong 12 khu B', 'Phong 8 khu B', 'Dieu tri trong ngay',
-                  'Ban tiep don', 'Le tan', 'Tram sac'];
+                  'Ban tiep don', 'Le tan', 'Tram sac',
+                  /* Năm điểm đi vòng — giả lập coi như kỹ thuật viên đã đặt đủ.
+                     Bỏ bớt một tên ở đây là thử được cảnh "thiếu điểm trên bản đồ". */
+                  'Diem 1', 'Diem 2', 'Diem 3', 'Diem 4', 'Diem 5'];
 
   /* ── Ghi nhật ký ra bảng điều khiển ───────────────────────────────── */
   function ghi(loai, chu) {
@@ -1310,6 +1561,19 @@ window.DU_LIEU={
     ghi('ok', '🏠 Robot tự đi về "' + GL.diemVeCho + '" (im lặng, không báo lên màn hình)');
   }
 
+  /* ── Đi vòng: mô phỏng chuyến đi từ điểm này sang điểm kế ──
+     Trên máy thật DiVong.kt bắn 'di' NGAY khi tới nơi, không nghỉ một nhịp nào — đó
+     chính là chỗ quyết định robot "đi liên tục". Ở đây cũng vậy. */
+  function vongDiTiep() {
+    if (!GL.vongDangDi) return;
+    var ten = GL.vongDiem[GL.vongChiSo % GL.vongDiem.length];
+    GL.vongChiSo = (GL.vongChiSo + 1) % GL.vongDiem.length;
+    if (window.baoDiVong) window.baoDiVong('di', ten);
+    ghi('ok', '🚶 Đi vòng → ' + ten);
+    clearTimeout(GL.vongHen);
+    GL.vongHen = setTimeout(vongDiTiep, GL.giayMoiDiem * 1000);
+  }
+
   /* ═══════════ Dựng lại BA LỚP CHẶN của TraLoi.kt ═══════════
      Ba biểu thức dưới đây phải KHỚP với ba biểu thức trong MainApplication.kt.
      Sửa một bên thì sửa cả hai — không thì bản thử nói khác robot thật, mà đó đúng
@@ -1410,6 +1674,40 @@ window.DU_LIEU={
       var j = JSON.stringify({ daDinhVi: true, danhSachDiem: DIEM_GIA });
       ghi('lenh', 'CAU.kiemTraBanDo() → ' + DIEM_GIA.length + ' điểm (giả lập)');
       if (window.baoTinhTrangBanDo) window.baoTinhTrangBanDo(j);
+    },
+
+    /* ── Đi vòng ──
+       Giả lập lại đúng chữ ký và đúng trình tự báo trạng thái của DiVong.kt: cứ
+       `GL.giayMoiDiem` giây thì coi như tới điểm kế và bắn 'di' lên lớp web. Nhờ vậy
+       thử được trên máy tính cả ba nhịp quan trọng: robot đi → khách chạm màn hình thì
+       dừng → ba mươi giây vắng người thì đi tiếp. */
+    batDauDiVong: function (dsJson, tocThang, tocXoay, saiSo) {
+      var ds = [];
+      try { ds = JSON.parse(dsJson || '[]'); } catch (e) { ds = []; }
+      if (ds.length < 2) { ghi('loi', 'CAU.batDauDiVong: danh sách điểm không hợp lệ'); return; }
+      if (GL.lyDoChan) { ghi('loi', 'CAU.batDauDiVong bị chặn: ' + GL.lyDoChan); return; }
+      if (GL.vongDangDi) return;                 // đang đi rồi thì bỏ qua, y như DiVong.kt
+      GL.vongDiem = ds; GL.vongChiSo = 0; GL.vongDangDi = true;
+      ghi('lenh', 'CAU.batDauDiVong(' + ds.length + ' điểm, ' + tocThang + ' m/s, sai số ' +
+                  saiSo + ' m) — không dừng ở điểm nào');
+      vongDiTiep();
+    },
+    dungDiVong: function (viSao) {
+      if (!GL.vongDangDi) return;
+      GL.vongDangDi = false;
+      clearTimeout(GL.vongHen); GL.vongHen = null;
+      ghi('lenh', 'CAU.dungDiVong("' + (viSao || '') + '")');
+      if (window.baoDiVong) window.baoDiVong('dung', viSao || '');
+    },
+    dangDiVong: function () { return !!GL.vongDangDi; },
+    moTaDiVong: function () {
+      return GL.vongDangDi ? ('đang đi tới ' + GL.vongDiem[GL.vongChiSo % GL.vongDiem.length])
+                           : 'tắt';
+    },
+    diemDiVongConThieu: function (dsJson) {
+      var ds = [];
+      try { ds = JSON.parse(dsJson || '[]'); } catch (e) { ds = []; }
+      return ds.filter(function (t) { return DIEM_GIA.indexOf(t) < 0; }).join(', ');
     },
 
     batMic: function () { GL.micMo = true; ghi('lenh', 'CAU.batMic()'); veBang(); },
@@ -1678,16 +1976,33 @@ function ve(id){
   if(id === 'mh-chat') mayChat.bat(); else mayChat.dung();
   if(id !== 'mh-chat' && micChatMo) dongMicChat();
   if(id === 'mh-cho') clearTimeout(henCho); else hoatDong();
+  /* Rời màn chờ là robot phải đứng lại — kể cả khi tới đây bằng đường nào khác thoiCho()
+     (nút Back của hệ thống, pop-up gợi ý từ AI…). Một chỗ chặn, không phải nhiều chỗ. */
+  if(id !== 'mh-cho' && dvDangDi) dvDung('rời màn chờ');
+  dvVeDen();
   keManHinhChoAI(id);
 }
 
 /* ═══════════ Màn chờ & đồng hồ vắng người ═══════════ */
-const CHO_SAU = 5 * 60 * 1000;
+
+/* Vắng người bao lâu thì robot bỏ màn hình mà đi tiếp.
+   Anh Trường chốt 21/08/2026: BA MƯƠI GIÂY (bản trước là năm phút — hợp với robot đứng
+   một chỗ ở sảnh bệnh viện, nhưng ở sự kiện thì robot đứng chờ ba mươi giây trước một
+   màn hình không ai bấm là đã lãng phí). Sửa con số ở dung-du-lieu.py, không sửa ở đây. */
+const CHO_SAU = ((D.di_vong && D.di_vong.cho_khach_giay) || 30) * 1000;
 let henCho = null;
-function thoiCho(){ ve('mh-chon'); }
+function thoiCho(){
+  /* Khách vừa chạm màn hình: DỪNG VÒNG ĐI TRƯỚC rồi mới đổi màn.
+     Đổi màn trước thì có một khoảnh khắc robot vẫn đang chạy trong lúc khách đứng đọc
+     — vừa nguy hiểm vừa khó bấm. */
+  dvDung('khách chạm màn hình');
+  ve('mh-chon');
+}
 function hoatDong(){ clearTimeout(henCho); henCho = setTimeout(hetGio, CHO_SAU); }
 function hetGio(){
-  if(dangDoc || dangDanDuong){ henCho = setTimeout(hetGio, 30000); return; }
+  /* Robot đang nói dở hoặc đang dẫn khách thì chưa tính là vắng người — hẹn lại.
+     Mic đang mở cũng vậy: khách có thể đang nghĩ xem hỏi gì. */
+  if(dangDoc || dangDanDuong || micChatMo){ henCho = setTimeout(hetGio, 10000); return; }
   veManCho();
 }
 function veManCho(){
@@ -1702,6 +2017,10 @@ function veManCho(){
      Ở bệnh viện đây còn là chuyện riêng tư. */
   try{ if(window.CAU && CAU.xoaNguCanh) CAU.xoaNguCanh(); }catch(e){}
   ve('mh-cho');
+  /* Về màn chờ là robot đi tiếp. Không gọi thẳng dvBatDau() ở đây mà để đồng hồ canh
+     gác lo — nó chạy đều đặn hai giây một nhịp và tự biết lúc nào robot sẵn sàng, nên
+     không cần chỗ nào phải đoán "giờ đã kết nối xong chưa". */
+  dvThuChayNgay();
 }
 /* Xong một lượt khách: hiện đồng hồ đếm ngược, hết giờ thì robot tự về chỗ đứng đợi
    VÀ màn hình quay lại màn chờ.
@@ -1718,6 +2037,136 @@ function xongLuot(){
     veManCho();          /* không có robot (bản demo) thì về thẳng màn chờ */
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   ĐI VÒNG QUANH SỰ KIỆN   (anh Trường chốt 21/08/2026)
+
+   Robot đi liên tục qua năm điểm, không dừng ở điểm nào, vừa đi vừa chào khách.
+   Khách chạm màn hình → dừng, vào giao diện phục vụ.
+   Ba mươi giây vắng người → đi tiếp.
+
+   ── Chia việc với Kotlin ──────────────────────────────────────────
+   Kotlin (DiVong.kt) lo MỘT việc: giữ cho robot còn đang đi, và tự chọn giữa lệnh
+   đi tuần của hãng với lối nối từng điểm.
+   Lớp này lo phần còn lại: KHI NÀO được đi (chỉ khi đang ở màn chờ), và nói gì dọc đường.
+
+   ⚠ Câu chào đi qua doc() — CÙNG một đường với mọi lời robot nói. Không mở đường
+     riêng: mở đường riêng là có ngày khách chạm màn hình mà robot vẫn đang đọc dở
+     câu chào của lượt trước, hai giọng chồng lên nhau.
+   ═══════════════════════════════════════════════════════════════════ */
+const DV = D.di_vong || {};
+
+let dvHang = [];          /* túi câu chào đã xáo, bốc dần cho hết mới xáo lại */
+let dvChaoCuoi = '';      /* câu vừa đọc — để túi mới không mở đầu trùng câu cũ */
+let dvHenChao = null;
+let dvDangDi = false;     /* Kotlin đã nhận lệnh đi chưa */
+let dvCanhGac = null;
+
+function dvCoBat(){
+  return !!(DV.bat && DV.diem && DV.diem.length >= 2
+            && coCau() && typeof CAU.batDauDiVong === 'function');
+}
+
+/* ── Bật / tắt ── */
+function dvBatDau(){
+  if(!dvCoBat()) return;
+  if(manDang !== 'mh-cho') return;          /* có khách thì tuyệt đối không cho đi */
+  if(lyDoChuaDanDuoc()) return;             /* robot chưa sẵn sàng, để nhịp sau thử lại */
+  try{
+    CAU.batDauDiVong(JSON.stringify(DV.diem),
+                     DV.toc_do_thang || 0.5, DV.toc_do_xoay || 0.8, DV.sai_so_met || 1.0);
+  }catch(e){ return; }
+  dvDangDi = true;
+  dvHenChaoSau(2500);                       /* chào câu đầu ngay khi vừa lăn bánh */
+}
+
+function dvDung(viSao){
+  clearTimeout(dvHenChao); dvHenChao = null;
+  if(!dvDangDi) { dvVeDen(); return; }
+  dvDangDi = false;
+  dungDoc();                                 /* cắt luôn câu chào đang đọc dở */
+  try{ if(coCau() && CAU.dungDiVong) CAU.dungDiVong(viSao || ''); }catch(e){}
+  dvVeDen();
+}
+
+/* ── Đồng hồ canh gác ──
+   Chạy suốt buổi, hai giây một nhịp. Nó là thứ duy nhất ra lệnh cho robot đi, nên
+   mọi cách robot có thể "chết đứng" đều tự hồi phục qua đây:
+     · lúc mới mở app RobotOS chưa kết nối xong  → nhịp sau kết nối xong thì đi
+     · robot bị hệ thống treo rồi thả ra          → nhịp sau đi lại
+     · Kotlin gặp lỗi và tự tắt vòng đi           → nhịp sau dựng lại
+   Không có nó thì mỗi chỗ trên đây phải tự đoán thời điểm — mà đoán là sai. */
+function dvNhipCanhGac(){
+  if(!dvCoBat()) return;
+  if(manDang !== 'mh-cho'){ if(dvDangDi) dvDung('không ở màn chờ'); return; }
+  let thuc = false;
+  try{ thuc = !!(CAU.dangDiVong && CAU.dangDiVong()); }catch(e){}
+  if(!thuc){ dvDangDi = false; dvBatDau(); }
+  dvVeDen();
+}
+
+/* Gọi khi vừa về màn chờ — khỏi phải đợi hết nhịp canh gác. */
+function dvThuChayNgay(){ setTimeout(dvNhipCanhGac, 400); }
+
+/* ── Câu chào dọc đường ── */
+/* Sáng là buổi lễ, chiều là hội thảo — hai bộ câu khác nhau, chọn theo giờ máy. */
+function dvKhoChao(){
+  const ds = (buoiHienTai() === 'chieu' ? DV.chao_chieu : DV.chao) || DV.chao || [];
+  return ds;
+}
+function dvKeChao(){
+  const ds = dvKhoChao();
+  if(!ds.length) return '';
+  if(!dvHang.length){
+    dvHang = ds.slice();
+    for(let i = dvHang.length - 1; i > 0; i--){
+      const j = (Math.random() * (i + 1)) | 0;
+      const t = dvHang[i]; dvHang[i] = dvHang[j]; dvHang[j] = t;
+    }
+    /* Xáo ngẫu nhiên nhưng không để câu đầu túi mới trùng câu cuối túi cũ — nghe hai
+       lần liền cùng một câu thì khách tưởng robot hỏng. */
+    if(dvHang.length > 1 && dvHang[0] === dvChaoCuoi){
+      const t = dvHang[0]; dvHang[0] = dvHang[1]; dvHang[1] = t;
+    }
+  }
+  dvChaoCuoi = dvHang.shift();
+  return dvChaoCuoi;
+}
+function dvHenChaoSau(ms){
+  clearTimeout(dvHenChao);
+  dvHenChao = setTimeout(dvChaoMotCau, ms);
+}
+function dvChaoMotCau(){
+  if(!dvDangDi || manDang !== 'mh-cho'){ return; }
+  const cau = dvKeChao();
+  if(!cau) return;
+  /* Đếm mười giây TỪ LÚC ĐỌC XONG, không phải từ lúc bắt đầu đọc. Đếm từ lúc bắt đầu
+     thì câu dài mười hai giây sẽ bị câu sau chồng lên. */
+  doc(cau, ()=> dvHenChaoSau((DV.cach_chao_giay || 10) * 1000));
+}
+
+/* ── Đèn báo góc màn chờ ── */
+function dvVeDen(){
+  const el = $('#den-vong'); if(!el) return;
+  if(!dvCoBat() || manDang !== 'mh-cho'){ el.classList.remove('hien'); return; }
+  let mo = '';
+  try{ mo = (CAU.moTaDiVong && CAU.moTaDiVong()) || ''; }catch(e){}
+  el.classList.add('hien');
+  el.classList.toggle('nghi', !dvDangDi);
+  $('#den-vong-chu').textContent = dvDangDi ? ('Đang đi vòng — ' + mo) : 'Chưa đi được';
+}
+
+/* Kotlin báo diễn biến vòng đi về đây — xem Cau.baoDiVong(). */
+window.baoDiVong = function(trangThai, chiTiet){
+  if(trangThai === 'dung'){ dvDangDi = false; }
+  if(trangThai === 'kho-khan' || trangThai === 'cho'){
+    /* Robot đang vướng: thôi chào, đứng giữa sảnh nói vọng ra trong khi không nhúc nhích
+       thì nghe rất kỳ. Nhịp canh gác sẽ tự cho đi lại khi thông đường. */
+    clearTimeout(dvHenChao); dvHenChao = null;
+  }
+  if(trangThai === 'di' && dvDangDi && !dvHenChao) dvHenChaoSau(2500);
+  dvVeDen();
+};
 
 /* ═══════════ Cầu nối sang Kotlin ═══════════ */
 function coCau(){ try{ return typeof CAU !== 'undefined' && CAU; }catch(e){ return false; } }
@@ -1915,20 +2364,28 @@ function ngheLaiToiNoi(){ if(dichDang){ dungDoc(); doc(dichDang.doc); } }
 let henVeCho = null;
 function batDauVeCho(){
   if(!coDanDuong()) return;
-  let con = 8;
-  $('#ve-cho-chu').textContent = 'Tôi về chỗ đứng đợi sau ' + con + ' giây…';
+  /* Hai kết cục khác nhau tuỳ có bật đi vòng hay không:
+       · BẬT  → robot đi tiếp vòng của nó, KHÔNG về chỗ đứng đợi. Về chỗ rồi đứng im
+                giữa một sự kiện đang đông là uổng cả con robot.
+       · TẮT  → giữ nguyên nếp cũ: tự về điểm đứng đợi ở sảnh. */
+  const diTiep = dvCoBat();
+  let con = (DV.dem_di_tiep_giay || 8);
+  const chu = n => diTiep ? ('Tôi đi tiếp sau ' + n + ' giây…')
+                          : ('Tôi về chỗ đứng đợi sau ' + n + ' giây…');
+  $('#ve-cho-chu').textContent = chu(con);
   $('#ve-cho').classList.add('hien');
   clearInterval(henVeCho);
   henVeCho = setInterval(()=>{
     con--;
     if(con <= 0){
       huyVeCho();
-      veChoNgay();       /* ra lệnh cho robot đi về trước… */
-      veManCho();        /* …rồi mới dọn màn hình. Cau.kt cố ý KHÔNG báo gì trong
-                            chuyến về, nên màn chờ không bị kéo ra giữa chừng. */
+      /* veManCho() gọi dvThuChayNgay() ở cuối, nên nhánh đi vòng không phải làm gì thêm. */
+      if(!diTiep) veChoNgay();   /* ra lệnh cho robot đi về trước… */
+      veManCho();                /* …rồi mới dọn màn hình. Cau.kt cố ý KHÔNG báo gì trong
+                                    chuyến về, nên màn chờ không bị kéo ra giữa chừng. */
       return;
     }
-    $('#ve-cho-chu').textContent = 'Tôi về chỗ đứng đợi sau ' + con + ' giây…';
+    $('#ve-cho-chu').textContent = chu(con);
   }, 1000);
 }
 function huyVeCho(){ clearInterval(henVeCho); $('#ve-cho').classList.remove('hien'); }
@@ -1961,9 +2418,14 @@ function chonLoaiKhach(ma){
   const c = D.chao[ma];
   if(!c) return;
   loaiKhachDang = ma;
-  const i = (demChao[ma] || 0) % c.cau.length;
+  /* Sáng là Lễ đón nhận danh hiệu, chiều là Hội thảo khoa học — bệnh viện soạn hai bộ
+     lời chào khác nhau (bản 21/08 và bản s2 20/08). Chọn theo giờ máy để lễ tân khỏi
+     phải bấm chọn. Loại khách nào chưa có bộ chiều thì dùng lại bộ sáng. */
+  const kho = (buoiHienTai() === 'chieu' && c.cau_chieu && c.cau_chieu.length)
+              ? c.cau_chieu : c.cau;
+  const i = (demChao[ma] || 0) % kho.length;
   demChao[ma] = i + 1;
-  const cau = c.cau[i];
+  const cau = kho[i];
 
   $('#chat-dau').textContent = 'Xin chào ' + c.ten;
   $('#chat-dau-phu').textContent = 'Quý vị hỏi tôi bất cứ điều gì về sự kiện hôm nay';
@@ -2083,8 +2545,23 @@ const PHU_SAN = 0.45;    /* độ phủ từ tối thiểu: câu hỏi phải kh
 
 /* Từ đệm — không mang thông tin, không tính vào độ phủ.
    ⚠ KHÔNG đưa "nao" vào đây: bỏ dấu thì "nào" trùng "não". */
+/* Từ đệm — KHÔNG tính điểm, không tính vào độ phủ. Đây là những tiếng ai hỏi gì cũng
+   dùng, nên để chúng ghi điểm là bộ tìm kiếm khớp bừa.
+
+   ⚠ Nhóm 'hom','nay','nao','sao','ra' thêm ngày 21/08/2026 sau một ca hỏng ĐO ĐƯỢC:
+     câu "thời tiết hôm nay thế nào" ra mục "Ai tham gia báo cáo trong Hội thảo hôm nay?"
+     với bốn mươi sáu điểm và độ phủ 0,60 — qua cả hai ngưỡng, robot đọc to giữa hội
+     trường. Nó trúng ba tiếng: "hôm", "nay" (cộng thêm điểm cụm "hôm nay") và "nào"
+     (có trong cách hỏi "chuyên gia nào trình bày"). Không một tiếng nào trong đó nói
+     lên người ta đang hỏi gì.
+     Bỏ ba tiếng ấy ra thì chỉ còn "thời" và "tiết" — không khớp gì, robot nói thẳng là
+     không biết. Câu "hôm nay bệnh viện có sự kiện gì" vẫn trúng đúng mục nhờ "sự kiện".
+
+   ⚠ ĐỪNG thêm 'gio' (giờ) hay 'nhieu' vào đây: "mấy giờ khai mạc" và "bao nhiêu tiền"
+     sống nhờ đúng hai tiếng đó. */
 const TU_DEM = ['la','gi','the','nhu','va','cua','co','khong','a','o','cho','toi','minh',
-                'quy','vi','vay','ha','ak','xin','hoi','cho','giup','duoc','ma','thi','se'];
+                'quy','vi','vay','ha','ak','xin','hoi','cho','giup','duoc','ma','thi','se',
+                'hom','nay','nao','sao','ra'];
 
 function chamMuc(tuHoi, x){
   const kho = tachTu(x.hoi + ' ' + x.cach.join(' '));
@@ -2115,6 +2592,9 @@ function chamMuc(tuHoi, x){
      Bỏ dòng này ra là hai câu đó lại nhập nhằng. Sửa xong phải chạy tools/thu-app.mjs. */
   const cum = khongDau(x.hoi + ' ' + x.cach.join(' '));
   for(let i = 0; i + 1 < tuHoi.length; i++){
+    /* Cụm phải có ÍT NHẤT MỘT tiếng có nghĩa. Cụm toàn từ đệm — "hôm nay", "thế nào",
+       "ra sao" — thì ai hỏi gì cũng trúng, cộng điểm cho nó là thưởng cho sự trùng hợp. */
+    if(TU_DEM.indexOf(tuHoi[i]) >= 0 && TU_DEM.indexOf(tuHoi[i+1]) >= 0) continue;
     if(cum.indexOf(tuHoi[i] + ' ' + tuHoi[i+1]) >= 0) diem += 10;
   }
   return {diem: diem, phu: coNghia.length ? trung / coNghia.length : 0};
@@ -2195,7 +2675,11 @@ window.moManCapCuuTuAI = function(){
 /* Nút "Mời khách" — PHẦN D mục 1 tài liệu địa điểm. */
 function moiVaoHoiTruong(){
   dungDoc();
-  doc(D.cau.moi_vao_hoi_truong, ()=> hoatDong());
+  /* Cùng một nút, hai câu: buổi sáng mời vào buổi lễ, buổi chiều mời vào hội thảo.
+     Bệnh viện soạn riêng từng câu, không được lấy câu này đọc cho sự kiện kia. */
+  const cau = (buoiHienTai() === 'chieu' && D.cau.moi_vao_hoi_thao)
+              ? D.cau.moi_vao_hoi_thao : D.cau.moi_vao_hoi_truong;
+  doc(cau, ()=> hoatDong());
   hoatDong();
 }
 
@@ -2294,7 +2778,11 @@ window.baoTinhTrangBanDo = function(json){
   try{ t = JSON.parse(json); }catch(e){}
   const ds = String(t.danhSachDiem || '');
   const can = Object.keys(D.diem).map(k => D.diem[k])
-                .concat([D.diem_ve_cho, D.diem_tram_sac]);
+                .concat([D.diem_ve_cho, D.diem_tram_sac])
+                /* Điểm đi vòng cũng phải soi ở đây. Thiếu một điểm đi vòng là kiểu hỏng
+                   im lặng nhất: robot vẫn đi, chỉ lặng lẽ bỏ qua đúng điểm gõ sai tên,
+                   không ai biết cho tới khi ngồi xem lại đường robot đã đi. */
+                .concat((D.di_vong && D.di_vong.bat && D.di_vong.diem) || []);
   const duy = can.filter((v, i) => can.indexOf(v) === i);
 
   let h = '<div class="bd-dong"><span class="kq">' + (t.daDinhVi ? '✔' : '✘') + '</span>' +
@@ -2376,6 +2864,14 @@ window.addEventListener('resize', datCoChu);
      ghi cứng trong Kotlin. Đổi tên điểm thì chỉ sửa JSON, không phải build lại APK. */
   try{ if(coCau() && CAU.datDiemVeCho) CAU.datDiemVeCho(D.diem_ve_cho); }catch(e){}
   ve('mh-cho');
+
+  /* Đồng hồ canh gác vòng đi — thứ duy nhất ra lệnh cho robot đi. Chạy suốt buổi.
+     Đặt ở đây, sau ve('mh-cho'), để nhịp đầu tiên đã thấy đúng màn hình đang hiện. */
+  if(dvCoBat()){
+    clearInterval(dvCanhGac);
+    dvCanhGac = setInterval(dvNhipCanhGac, 2000);
+    dvThuChayNgay();
+  }
 })();
 </script>
 </body>

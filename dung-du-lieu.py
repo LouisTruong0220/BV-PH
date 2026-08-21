@@ -162,6 +162,17 @@ CHAO = {
             "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! "
             "Hôm nay là ngày hội lớn của bệnh viện chúng tôi. Rất hân hạnh được phục vụ Quý vị!",
         ],
+        # Buổi chiều là Hội thảo khoa học — bệnh viện soạn riêng hai câu này ở bản s2
+        # (20/08/2026). App tự chọn theo giờ máy, xem buoiHienTai() trong khung-app.html.
+        "cau_chieu": [
+            "Bệnh viện Hùng Vương trân trọng kính chào Quý đại biểu! Chào mừng Quý vị đến tham dự "
+            "Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ. Kính chúc Quý đại "
+            "biểu có một ngày thật nhiều niềm vui và có những trải nghiệm, kiến thức bổ ích tại "
+            "Hội thảo!",
+
+            "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương. "
+            "Rất hân hạnh được phục vụ Quý vị!",
+        ],
     },
     "khach-vip": {
         "ten": "Khách VIP",
@@ -187,10 +198,23 @@ CAU_CO_DINH = {
         "Sau đó, kính mời Quý vị chụp hình lưu niệm tại khu vực backdrop và di chuyển lên "
         "Hội trường lầu mười một bằng thang máy ưu tiên.",
 
-    # Nút "Mời khách" — yêu cầu D1 của bệnh viện
+    # Nút "Mời khách" — yêu cầu D1 của bệnh viện. Buổi sáng là buổi lễ (gần chín giờ).
     "moi_vao_hoi_truong":
         "Buổi lễ sắp bắt đầu. Kính mời Quý đại biểu di chuyển vào Hội trường lầu mười một và ổn định "
         "chỗ ngồi theo hướng dẫn của Ban tổ chức. Xin trân trọng cảm ơn!",
+
+    # Buổi chiều là Hội thảo (gần mười ba giờ ba mươi) — nguyên văn bản s2 STT 5.
+    # Cùng một nút "Mời khách", app tự đổi câu theo giờ máy.
+    "moi_vao_hoi_thao":
+        "Chương trình sắp bắt đầu. Kính mời Quý đại biểu vui lòng di chuyển vào Hội trường lầu "
+        "mười một và ổn định chỗ ngồi. Xin trân trọng cảm ơn!",
+
+    # Robot tự giới thiệu ở buổi chiều — bản s2 STT 3, nói "chương trình hội thảo khoa học"
+    # thay vì "chương trình buổi lễ".
+    "tu_gioi_thieu_chieu":
+        "Xin chào! Tôi là robot lễ tân của Bệnh viện Hùng Vương. Tôi có thể giới thiệu chương trình "
+        "hội thảo khoa học, hướng dẫn đường đi và cung cấp thông tin về hội thảo. "
+        "Quý vị cần tôi hỗ trợ điều gì ạ?",
 
     "cam_on":
         "Bệnh viện Hùng Vương xin trân trọng cảm ơn Quý đại biểu đã dành thời gian quý báu đến "
@@ -264,6 +288,7 @@ TU_VAN_HIFU = {
 # ════════════════════════════════════════════════════════════════════
 NHOM = [
     {"ma": "su-kien",  "ten": "Sự kiện hôm nay",    "icon": "🎉"},
+    {"ma": "hoi-thao", "ten": "Hội thảo khoa học",   "icon": "🎤"},
     {"ma": "benh-vien", "ten": "Bệnh viện Hùng Vương", "icon": "🏥"},
     {"ma": "hifu",     "ten": "Kỹ thuật HIFU",      "icon": "🔬"},
     {"ma": "quy-trinh", "ten": "Quy trình điều trị", "icon": "📋"},
@@ -275,9 +300,10 @@ HOI_DAP = [
          cach=["hôm nay có gì", "đang diễn ra sự kiện gì", "bệnh viện đang tổ chức gì",
                "sự kiện hôm nay", "hôm nay có chương trình gì"],
          dap="Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, "
-             "Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do "
-             "Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn "
-             "bằng sóng siêu âm hội tụ HIFU."),
+             "Bệnh viện Hùng Vương có hai sự kiện. Buổi sáng, bệnh viện long trọng tổ chức Lễ đón "
+             "nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai "
+             "trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU. Buổi chiều, "
+             "bệnh viện tổ chức Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ."),
 
     dict(id=2, nhom="su-kien", hoi="Buổi lễ diễn ra ở đâu, lúc mấy giờ?",
          cach=["buổi lễ ở đâu", "mấy giờ bắt đầu", "khai mạc lúc nào", "địa điểm tổ chức",
@@ -467,6 +493,126 @@ HOI_DAP = [
          dap="Bệnh viện trang bị hệ thống điều trị siêu âm hội tụ đồng bộ, gồm bàn điều trị tích "
              "hợp đầu phát sóng hội tụ, bể nước lạnh khử khí, hệ thống siêu âm định vị dẫn đường "
              "thời gian thực và máy trạm lập kế hoạch điều trị."),
+
+    # ─────────── Hội thảo khoa học buổi chiều ───────────
+    # Nguồn: "Noi dung cai dat Robot - HTKH HIFU_s2.docx" bệnh viện gửi 20/08/2026,
+    # PHẦN B1 "Về chương trình Hội thảo". Đây là SỰ KIỆN THỨ HAI trong ngày 22/08 —
+    # bản tài liệu 21/08 chỉ nói buổi lễ sáng nên trước đây robot không biết gì về
+    # hội thảo chiều. Giữ nguyên văn bệnh viện, chỉ chuyển số sang chữ.
+    dict(id=26, nhom="hoi-thao", hoi="Hội thảo diễn ra ở đâu, lúc mấy giờ?",
+         cach=["hội thảo mấy giờ", "hội thảo ở đâu", "hội thảo khoa học lúc nào",
+               "chiều nay mấy giờ", "hội thảo bắt đầu khi nào", "buổi chiều mấy giờ",
+               "hội thảo khoa học ở đâu"],
+         dap="Hội thảo bắt đầu lúc mười bốn giờ chiều tại Hội trường lầu mười một, Toà nhà Bách "
+             "Hợp, Bệnh viện Hùng Vương, số chín đường Lý Thường Kiệt, Phường Chợ Lớn, Thành phố "
+             "Hồ Chí Minh. Bệnh viện hân hạnh đón tiếp Quý đại biểu từ mười ba giờ ba mươi."),
+
+    dict(id=27, nhom="hoi-thao", hoi="Chương trình Hội thảo gồm những gì?",
+         cach=["chương trình hội thảo", "nội dung hội thảo", "lịch trình hội thảo",
+               "hội thảo có những bài gì", "các bài báo cáo", "chương trình chiều nay"],
+         dap="Chương trình gồm: mười bốn giờ năm phút, Giám đốc Bệnh viện Hùng Vương phát biểu "
+             "khai mạc. Mười bốn giờ mười, Giáo sư He Min trình bày bài Tổng quan về ứng dụng lâm "
+             "sàng của siêu âm hội tụ cường độ cao, thực trạng và định hướng phát triển trong "
+             "tương lai. Mười bốn giờ ba mươi, Giáo sư Nguyễn Viết Tiến trình bày bài Kinh nghiệm "
+             "điều trị u xơ tử cung và lạc tuyến trong cơ tử cung bằng điều trị không xâm lấn bằng "
+             "sóng siêu âm hội tụ. Mười bốn giờ năm mươi, Quý đại biểu nghỉ giải lao. Mười lăm giờ "
+             "mười, Phó Giáo sư, Tiến sĩ, Bác sĩ Hoàng Thị Diễm Tuyết trình bày bài Không phải mọi "
+             "khối u tử cung đều cần phẫu thuật, kỷ nguyên điều trị bảo tồn trong phụ khoa. Mười "
+             "lăm giờ ba mươi, Cử nhân hộ sinh Nguyễn Thị Hà Chi, Phòng Điều dưỡng Bệnh viện Hùng "
+             "Vương, trình bày về Vai trò điều dưỡng chăm sóc người bệnh điều trị không xâm lấn "
+             "bằng sóng siêu âm hội tụ. Từ mười lăm giờ năm mươi đến mười sáu giờ ba mươi, các đại "
+             "biểu cùng thảo luận và đặt câu hỏi, sau đó tổng kết bế mạc Hội thảo. Quý vị có thể "
+             "xem chương trình chi tiết trên màn hình của tôi."),
+
+    dict(id=28, nhom="hoi-thao", hoi="Ai tham gia báo cáo trong Hội thảo hôm nay?",
+         cach=["ai báo cáo", "diễn giả là ai", "báo cáo viên", "chuyên gia nào trình bày",
+               "ai trình bày", "giáo sư nào"],
+         dap="Giáo sư He Min, Tiến sĩ Y khoa, Bác sĩ điều trị không xâm lấn bằng sóng siêu âm hội "
+             "tụ cao cấp, Trợ lý Giám đốc Bệnh viện Haifu Trùng Khánh, Giám đốc Trung tâm Đào tạo "
+             "Lâm sàng. Giáo sư Nguyễn Viết Tiến, nguyên Thứ trưởng Bộ Y tế, Chủ tịch Hội Sản phụ "
+             "khoa Việt Nam. Phó Giáo sư, Tiến sĩ, Bác sĩ Hoàng Thị Diễm Tuyết, Giám đốc Bệnh viện "
+             "Hùng Vương. Và Cử nhân hộ sinh Nguyễn Thị Hà Chi, Phòng Điều dưỡng Bệnh viện Hùng Vương."),
+
+    dict(id=29, nhom="hoi-thao", hoi="Vì sao bệnh viện tổ chức Hội thảo này?",
+         cach=["lý do tổ chức hội thảo", "tại sao có hội thảo", "vì sao tổ chức",
+               "mục tiêu tổ chức hội thảo"],
+         dap="Hội thảo nằm trong khuôn khổ Tuần lễ cập nhật kiến thức y khoa liên tục năm hai "
+             "nghìn không trăm hai mươi sáu, nhằm cập nhật những tiến bộ mới trong điều trị không "
+             "xâm lấn bằng sóng siêu âm hội tụ, đồng thời tạo cơ hội để các chuyên gia cùng trao "
+             "đổi, chia sẻ kinh nghiệm về một phương pháp điều trị hiện đại, hướng đến giảm can "
+             "thiệp, nâng cao chất lượng điều trị và đặc biệt mở thêm lựa chọn cho phụ nữ có nhu "
+             "cầu bảo tồn tử cung."),
+
+    dict(id=30, nhom="hoi-thao", hoi="Mục đích của Hội thảo là gì?",
+         cach=["mục đích hội thảo", "hội thảo để làm gì", "ý nghĩa của hội thảo",
+               "hội thảo nhằm mục đích gì"],
+         dap="Hội thảo khoa học là cơ hội để các nhân viên y tế trao đổi, cập nhật kiến thức mới "
+             "cũng như chia sẻ kinh nghiệm trong việc chẩn đoán và kỹ thuật điều trị bệnh lý phụ "
+             "khoa, nhũ hoa bằng công nghệ sóng siêu âm hội tụ cao tần."),
+
+    dict(id=31, nhom="hoi-thao", hoi="Phí tham dự Hội thảo?",
+         cach=["hội thảo có mất phí không", "tham dự tốn bao nhiêu", "có thu tiền không",
+               "phí tham dự", "vào cửa có mất tiền không", "miễn phí không"],
+         dap="Chương trình Hội thảo tổ chức không thu phí."),
+
+    dict(id=32, nhom="hoi-thao", hoi="Phí cấp chứng chỉ CME là bao nhiêu?",
+         cach=["cme bao nhiêu tiền", "phí cme", "chứng chỉ cme", "tín chỉ cme",
+               "cấp cme", "muốn lấy chứng chỉ", "phí tham dự và cấp cme"],
+         dap="Phí tham dự và cấp chứng chỉ CME là ba trăm nghìn đồng một CME, cấp một phẩy năm "
+             "giờ tín chỉ."),
+
+    dict(id=33, nhom="hoi-thao", hoi="Hội thảo tập trung vào những nội dung nổi bật nào?",
+         cach=["nội dung nổi bật", "hội thảo nói về gì", "chủ đề hội thảo",
+               "điểm nhấn hội thảo"],
+         dap="Hội thảo tập trung vào thực trạng và định hướng phát triển trong tương lai của điều "
+             "trị không xâm lấn bằng sóng siêu âm hội tụ, cùng kỷ nguyên mới trong điều trị bảo "
+             "tồn trong phụ khoa."),
+
+    dict(id=34, nhom="hoi-thao", hoi="Đại biểu nhận được gì khi tham dự Hội thảo?",
+         cach=["tham dự được gì", "lợi ích khi tham dự", "đại biểu được gì",
+               "dự hội thảo có lợi gì"],
+         dap="Đại biểu có cơ hội cập nhật kiến thức mới, lắng nghe các chuyên gia chia sẻ kinh "
+             "nghiệm thực tiễn và trao đổi về ứng dụng điều trị không xâm lấn bằng sóng siêu âm "
+             "hội tụ trong điều trị bệnh lý phụ khoa."),
+
+    dict(id=35, nhom="hoi-thao", hoi="Hội thảo có ý nghĩa gì đối với người bệnh?",
+         cach=["ý nghĩa với người bệnh", "người bệnh được lợi gì", "bệnh nhân hưởng lợi gì",
+               "hội thảo giúp gì cho bệnh nhân"],
+         dap="Thông qua việc cập nhật và trao đổi chuyên môn, Hội thảo góp phần thúc đẩy những "
+             "phương pháp điều trị hiện đại, an toàn, không xâm lấn và phù hợp hơn với nhu cầu "
+             "chăm sóc sức khoẻ phụ nữ."),
+
+    dict(id=36, nhom="hoi-thao", hoi="Hội thảo dành cho ai?",
+         cach=["ai được tham dự", "đối tượng tham dự", "dành cho những ai",
+               "ai được vào hội thảo", "thành phần tham dự"],
+         dap="Hội thảo hướng đến các chuyên gia, bác sĩ, hộ sinh, điều dưỡng và nhân viên y tế "
+             "hoạt động trong lĩnh vực sản phụ khoa."),
+
+    dict(id=37, nhom="hoi-thao",
+         hoi="Điều gì khiến điều trị bằng sóng siêu âm hội tụ đáng quan tâm hiện nay?",
+         cach=["vì sao hifu được quan tâm", "tại sao hifu là xu hướng",
+               "hifu có gì đáng chú ý", "xu hướng điều trị hiện nay"],
+         dap="Trong xu hướng y học hiện đại, người bệnh ngày càng mong muốn những phương pháp ít "
+             "xâm lấn, giảm đau, hồi phục nhanh và thân thiện hơn. Điều trị không xâm lấn bằng "
+             "sóng siêu âm hội tụ là một trong những công nghệ đang được quan tâm trong xu hướng này."),
+
+    # ─────────── Hai câu bệnh viện gửi thêm ở PHẦN B2 bản s2 ───────────
+    dict(id=38, nhom="benh-vien",
+         hoi="Bệnh viện Hùng Vương tiên phong triển khai HIFU như thế nào?",
+         cach=["bệnh viện đầu tiên làm hifu", "tiên phong hifu", "đầu tiên tại thành phố",
+               "thứ mấy cả nước", "bệnh viện nào làm trước"],
+         dap="Bệnh viện Hùng Vương tiên phong triển khai công nghệ điều trị không xâm lấn bằng "
+             "sóng siêu âm hội tụ, lần đầu tiên tại Thành phố Hồ Chí Minh và là nơi thứ hai trên "
+             "cả nước."),
+
+    dict(id=39, nhom="benh-vien",
+         hoi="Bệnh viện đầu tư cho Đơn vị HIFU như thế nào?",
+         cach=["đầu tư ra sao", "đào tạo ở đâu", "bác sĩ được đào tạo thế nào",
+               "máy móc đầu tư", "chuẩn bị nhân sự thế nào"],
+         dap="Đội ngũ bác sĩ và nữ hộ sinh được đào tạo chuyên sâu tại Trùng Khánh, Trung Quốc, "
+             "nơi đã thực hiện rất nhiều ca điều trị bằng sóng siêu âm hội tụ. Bệnh viện trang bị "
+             "máy điều trị thế hệ mới nhất, đồng thời hội chẩn và đào tạo định kỳ cùng các chuyên "
+             "gia quốc tế."),
 ]
 
 # ════════════════════════════════════════════════════════════════════
@@ -537,6 +683,81 @@ CHUA_CO = [
 
 
 # ════════════════════════════════════════════════════════════════════
+#  9. ĐI VÒNG QUANH SỰ KIỆN  (anh Trường chốt 21/08/2026)
+#
+#     Robot đi liên tục qua năm điểm, KHÔNG dừng lại ở điểm nào, vừa đi vừa chào khách.
+#     Khách chạm màn hình → robot dừng, vào giao diện phục vụ.
+#     Ba mươi giây không ai thao tác → robot đi tiếp.
+#
+#     ⚠ TÊN ĐIỂM phải trùng TỪNG KÝ TỰ với tên kỹ thuật đặt lúc quét bản đồ:
+#       không dấu tiếng Việt, chữ D viết hoa, một dấu cách trước số.
+#       Sai một ký tự là robot bỏ qua điểm đó mà không báo gì.
+#
+#     ⚠ NĂM CÂU CHÀO là GHÉP LẠI từ chính lời bệnh viện soạn ở PHẦN A (bảng CHAO và
+#       CAU_CO_DINH bên trên) cho ngắn lại — robot đang đi, không đứng một chỗ nói dài.
+#       Không thêm dữ kiện nào bệnh viện chưa cung cấp. Bệnh viện muốn đổi chữ thì sửa
+#       ở đây rồi chạy lại hai script — KHÔNG phải build lại APK.
+# ════════════════════════════════════════════════════════════════════
+DI_VONG = {
+    "bat": True,
+
+    # Thứ tự trong danh sách CHÍNH LÀ LỘ TRÌNH: 1→2→3→4→5 rồi quay về 1.
+    # Đặt điểm thành vòng khép kín quanh sảnh, đừng đặt kiểu đi rồi quay đầu.
+    "diem": ["Diem 1", "Diem 2", "Diem 3", "Diem 4", "Diem 5"],
+
+    "cach_chao_giay": 10,     # khoảng nghỉ giữa hai câu chào
+    "cho_khach_giay": 30,     # không ai thao tác bao lâu thì robot đi tiếp
+    "dem_di_tiep_giay": 8,    # đếm ngược hiện trên màn hình sau khi khách bấm "Xong"
+
+    # Tốc độ đi vòng. Mặc định của hãng là 0,7 m/s và 1,2 rad/s — nhanh so với một sảnh
+    # đông đại biểu đang đứng nói chuyện. Hạ xuống cho robot đi điềm đạm.
+    "toc_do_thang": 0.5,
+    "toc_do_xoay": 0.8,
+
+    # Sai số toạ độ khi phải dùng LỐI DỰ PHÒNG nối từng điểm. Để rộng một mét để robot
+    # coi như đã tới từ xa rồi đi tiếp luôn, không xoay xở canh đúng tâm điểm.
+    # Để 0,2 như dẫn đường khách là mỗi điểm robot khựng lại một nhịp thấy rõ.
+    "sai_so_met": 1.0,
+
+    "chao": [
+        "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự "
+        "Lễ đón nhận danh hiệu Anh hùng Lao động.",
+
+        "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! "
+        "Hôm nay là ngày hội lớn của bệnh viện chúng tôi.",
+
+        "Kính chào Quý vị! Chào mừng Quý vị đến dự Lễ khai trương Đơn vị điều trị HIFU "
+        "của Bệnh viện Hùng Vương.",
+
+        "Bệnh viện Hùng Vương kính chúc Quý vị một ngày thật nhiều niềm vui! "
+        "Quý vị cần hỗ trợ, xin chạm vào màn hình của tôi.",
+
+        "Tôi là robot lễ tân của Bệnh viện Hùng Vương. "
+        "Rất hân hạnh được phục vụ Quý vị trong ngày trọng đại hôm nay!",
+    ],
+
+    # Buổi chiều là Hội thảo khoa học — chào theo đúng sự kiện đang diễn ra.
+    # App tự chọn theo giờ máy, xem buoiHienTai() trong khung-app.html.
+    "chao_chieu": [
+        "Bệnh viện Hùng Vương trân trọng kính chào Quý đại biểu! Chào mừng Quý vị đến tham dự "
+        "Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ.",
+
+        "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương. "
+        "Rất hân hạnh được phục vụ Quý vị!",
+
+        "Kính chúc Quý đại biểu một ngày thật nhiều niềm vui và có những trải nghiệm, "
+        "kiến thức bổ ích tại Hội thảo!",
+
+        "Bệnh viện Hùng Vương kính chào Quý vị! "
+        "Quý vị cần hỗ trợ, xin chạm vào màn hình của tôi.",
+
+        "Tôi là robot lễ tân của Bệnh viện Hùng Vương. "
+        "Rất hân hạnh được phục vụ Quý vị tại Hội thảo khoa học hôm nay!",
+    ],
+}
+
+
+# ════════════════════════════════════════════════════════════════════
 #  DỰNG FILE
 # ════════════════════════════════════════════════════════════════════
 def khong_dau(s):
@@ -599,14 +820,60 @@ def kiem_tra():
     for k, v in CAU_CO_DINH.items():
         soi_so("Câu cố định '%s'" % k, v)
     for loai, c in CHAO.items():
-        for i, cau in enumerate(c["cau"]):
-            soi_so("Lời chào %s [%d]" % (loai, i), cau)
+        for khoa in ("cau", "cau_chieu"):
+            for i, cau in enumerate(c.get(khoa) or []):
+                soi_so("Lời chào %s.%s [%d]" % (loai, khoa, i), cau)
     for h in HOI_DAP:
         soi_so("Đáp id=%d" % h["id"], h["dap"])
     for b in QUY_TRINH:
         soi_so("Bước %d" % b["buoc"], b["doc"])
     for n in TU_VAN_HIFU["nhanh"]:
         soi_so("Nhánh '%s'" % n["ma"], n["doc"])
+
+    # ── Đi vòng ──
+    # Cổng này tồn tại vì mọi lỗi ở đây đều IM LẶNG trên máy thật: tên điểm sai một ký tự
+    # thì robot bỏ qua điểm đó, câu chào có chữ số thì robot đọc sai nhịp giữa sảnh đông
+    # người — không cái nào bắn ra thông báo lỗi.
+    dv = DI_VONG
+    if dv.get("bat"):
+        ds = dv.get("diem") or []
+        if len(ds) < 2:
+            loi.append("Đi vòng cần ít nhất hai điểm, đang có %d" % len(ds))
+        if len(set(ds)) != len(ds):
+            loi.append("Danh sách điểm đi vòng có tên trùng nhau")
+        for v in ds:
+            if khong_dau(v) != v.lower():
+                loi.append("Điểm đi vòng '%s' còn dấu tiếng Việt" % v)
+            if "  " in v or v != v.strip():
+                loi.append("Điểm đi vòng '%s' có khoảng trắng thừa" % v)
+
+        for khoa in ("chao", "chao_chieu"):
+            cs = dv.get(khoa) or []
+            if len(cs) < 2:
+                loi.append("DI_VONG['%s'] cần ít nhất hai câu, đang có %d" % (khoa, len(cs)))
+            for i, cau in enumerate(cs):
+                soi_so("Câu chào đi vòng %s [%d]" % (khoa, i), cau)
+                # eleven_v3 và giọng robot đều đọc ~18 ký tự/giây. Câu dài hơn 220 ký tự
+                # là robot nói hơn mười hai giây liền trong lúc đang di chuyển — quá dài,
+                # khách đi ngang chỉ nghe được nửa câu.
+                if len(cau) > 220:
+                    loi.append("Câu chào đi vòng %s [%d] dài %d ký tự, quá mười hai giây đọc: %s…"
+                               % (khoa, i, len(cau), cau[:50]))
+
+        if dv.get("cach_chao_giay", 0) < 5:
+            loi.append("cach_chao_giay phải từ năm giây trở lên")
+        if dv.get("cho_khach_giay", 0) < 10:
+            loi.append("cho_khach_giay phải từ mười giây trở lên")
+        if not (0.1 <= dv.get("toc_do_thang", 0) <= 0.8):
+            loi.append("toc_do_thang phải trong khoảng 0,1 đến 0,8 m/s")
+        if dv.get("sai_so_met", 0) < 0.3:
+            loi.append("sai_so_met dưới 0,3 m là robot khựng lại ở từng điểm")
+
+        # Điểm đi vòng KHÔNG được trùng tên điểm dẫn đường: robot đi vòng ngang qua đó
+        # thì khách đang được dẫn tới đó sẽ thấy hai lệnh đánh nhau.
+        trung = set(ds) & (set(DIEM.values()) | {DIEM_VE_CHO, DIEM_TRAM_SAC})
+        if trung:
+            loi.append("Điểm đi vòng trùng tên điểm dẫn đường: %s" % ", ".join(sorted(trung)))
 
     if loi:
         print("DỪNG — dữ liệu chưa đạt:")
@@ -639,6 +906,7 @@ def main():
         "hoi_dap": HOI_DAP,
         "quy_trinh": QUY_TRINH,
         "chua_co": CHUA_CO,
+        "di_vong": DI_VONG,
     }
 
     os.makedirs(os.path.dirname(RA), exist_ok=True)
@@ -648,9 +916,17 @@ def main():
     print("Đã ghi:", RA)
     print("  %d đích dẫn đường · %d cặp hỏi đáp · %d bước quy trình · %d điểm bản đồ"
           % (len(DICH), len(HOI_DAP), len(QUY_TRINH), len(DIEM) + 2))
-    print("  Điểm cần đặt trên bản đồ robot:")
+    print("  Điểm cần đặt trên bản đồ robot — DẪN ĐƯỜNG:")
     for v in sorted(set(list(DIEM.values()) + [DIEM_VE_CHO, DIEM_TRAM_SAC])):
         print("     •", v)
+    if DI_VONG.get("bat"):
+        print("  Điểm cần đặt trên bản đồ robot — ĐI VÒNG (đúng thứ tự lộ trình):")
+        for v in DI_VONG["diem"]:
+            print("     •", v)
+        print("     %d câu chào sáng · %d câu chào chiều · cách nhau %d giây · "
+              "vắng người %d giây thì đi tiếp"
+              % (len(DI_VONG["chao"]), len(DI_VONG["chao_chieu"]),
+                 DI_VONG["cach_chao_giay"], DI_VONG["cho_khach_giay"]))
 
 
 if __name__ == "__main__":

@@ -163,23 +163,29 @@ object RobotHelper {
      * Dẫn khách tới một điểm đã đặt tên trên bản đồ.
      *
      * @param tenDiem  tên điểm, phải khớp TUYỆT ĐỐI với tên trong Công cụ bản đồ
+     * @param saiSoToaDo  cách đích bao nhiêu mét thì coi như đã tới.
+     *        0,2 m là giá trị hãng khuyến nghị khi DẪN KHÁCH — robot canh đúng chỗ đứng
+     *        ở quầy. Nhưng lúc ĐI VÒNG thì để rộng (một mét): robot coi như đã tới từ xa
+     *        rồi bắn luôn lệnh đi điểm kế, không xoay xở canh tâm điểm, nên nhịp khựng ở
+     *        mỗi điểm gần như không thấy. Xem DiVong.kt.
      * @param khiToiNoi  gọi khi tới nơi thành công
      * @param khiLoi     gọi kèm câu giải thích tiếng Việt đã dịch sẵn từ mã lỗi
      * @param khiCapNhat gọi khi có sự kiện dọc đường (gặp vật cản, vật cản đã dọn…)
      */
     fun dieuHuongToi(
         tenDiem: String,
+        saiSoToaDo: Double = 0.2,
         khiToiNoi: () -> Unit,
         khiLoi: (String) -> Unit,
         khiCapNhat: (String) -> Unit = {}
     ) {
         if (!sanSang()) { main.post { khiLoi("Robot chưa sẵn sàng — chưa kết nối RobotOS.") }; return }
 
-        // coordinateDeviation 0.2 m và time 30 s là giá trị tài liệu hãng khuyến nghị.
+        // time 30 s là giá trị tài liệu hãng khuyến nghị.
         // Ghi lại MÃ TRẢ VỀ: nếu lệnh bị từ chối ngay thì ActionListener không bao giờ
         // được gọi, không ghi mã này thì robot đứng im mà không có lấy một dòng log.
         val ma = RobotApi.getInstance().startNavigation(
-            nextReqId(), tenDiem, 0.2, 30_000L,
+            nextReqId(), tenDiem, saiSoToaDo, 30_000L,
             object : ActionListener() {
 
                 override fun onResult(status: Int, response: String?) {

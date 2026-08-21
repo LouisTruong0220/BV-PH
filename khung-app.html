@@ -78,6 +78,22 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .bang-su-kien b{display:block;font-size:2.1rem;font-weight:700;letter-spacing:.01em}
 .bang-su-kien span{display:block;font-size:1.15rem;opacity:.8;margin-top:.35rem}
 
+/* Đèn báo robot đang đi vòng — góc dưới trái màn chờ.
+   Cố ý làm NHỎ và MỜ: đây là thứ cho kỹ thuật viên liếc một cái là biết robot còn đi
+   hay đã đứng, không phải thứ để khách đọc. Khách nhìn vào chỉ thấy một chấm sáng. */
+.den-vong{
+  position:absolute;left:1.75rem;bottom:1.5rem;display:none;align-items:center;gap:.6rem;
+  padding:.45rem .95rem;border-radius:1.5rem;background:rgba(0,0,0,.45);
+  color:rgba(255,255,255,.75);font-size:.9rem;pointer-events:none;max-width:26rem;
+}
+.den-vong.hien{display:flex}
+.den-vong i{
+  width:.6rem;height:.6rem;border-radius:50%;background:#5BD07A;flex:none;
+  animation:tho 1.8s ease-in-out infinite;
+}
+.den-vong.nghi i{background:#E8A33D;animation:none}
+.den-vong span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* ═══════════ Màn CHỌN — hai lựa chọn lớn ═══════════ */
 .chon-boc{flex:1;min-height:0;display:flex;flex-direction:column;padding:1.75rem 2.25rem 1.5rem}
 .chon-tren{flex:1;min-height:0;display:flex;gap:1.75rem}
@@ -330,6 +346,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   </div>
   <div class="bang-su-kien" id="bang-su-kien"></div>
   <div class="moi-cham">Chạm vào màn hình để bắt đầu</div>
+  <div class="den-vong" id="den-vong"><i></i><span id="den-vong-chu"></span></div>
 </div>
 
 <!-- ══════════════ MÀN CHỌN ══════════════ -->
@@ -626,16 +643,33 @@ function ve(id){
   if(id === 'mh-chat') mayChat.bat(); else mayChat.dung();
   if(id !== 'mh-chat' && micChatMo) dongMicChat();
   if(id === 'mh-cho') clearTimeout(henCho); else hoatDong();
+  /* Rời màn chờ là robot phải đứng lại — kể cả khi tới đây bằng đường nào khác thoiCho()
+     (nút Back của hệ thống, pop-up gợi ý từ AI…). Một chỗ chặn, không phải nhiều chỗ. */
+  if(id !== 'mh-cho' && dvDangDi) dvDung('rời màn chờ');
+  dvVeDen();
   keManHinhChoAI(id);
 }
 
 /* ═══════════ Màn chờ & đồng hồ vắng người ═══════════ */
-const CHO_SAU = 5 * 60 * 1000;
+
+/* Vắng người bao lâu thì robot bỏ màn hình mà đi tiếp.
+   Anh Trường chốt 21/08/2026: BA MƯƠI GIÂY (bản trước là năm phút — hợp với robot đứng
+   một chỗ ở sảnh bệnh viện, nhưng ở sự kiện thì robot đứng chờ ba mươi giây trước một
+   màn hình không ai bấm là đã lãng phí). Sửa con số ở dung-du-lieu.py, không sửa ở đây. */
+const CHO_SAU = ((D.di_vong && D.di_vong.cho_khach_giay) || 30) * 1000;
 let henCho = null;
-function thoiCho(){ ve('mh-chon'); }
+function thoiCho(){
+  /* Khách vừa chạm màn hình: DỪNG VÒNG ĐI TRƯỚC rồi mới đổi màn.
+     Đổi màn trước thì có một khoảnh khắc robot vẫn đang chạy trong lúc khách đứng đọc
+     — vừa nguy hiểm vừa khó bấm. */
+  dvDung('khách chạm màn hình');
+  ve('mh-chon');
+}
 function hoatDong(){ clearTimeout(henCho); henCho = setTimeout(hetGio, CHO_SAU); }
 function hetGio(){
-  if(dangDoc || dangDanDuong){ henCho = setTimeout(hetGio, 30000); return; }
+  /* Robot đang nói dở hoặc đang dẫn khách thì chưa tính là vắng người — hẹn lại.
+     Mic đang mở cũng vậy: khách có thể đang nghĩ xem hỏi gì. */
+  if(dangDoc || dangDanDuong || micChatMo){ henCho = setTimeout(hetGio, 10000); return; }
   veManCho();
 }
 function veManCho(){
@@ -650,6 +684,10 @@ function veManCho(){
      Ở bệnh viện đây còn là chuyện riêng tư. */
   try{ if(window.CAU && CAU.xoaNguCanh) CAU.xoaNguCanh(); }catch(e){}
   ve('mh-cho');
+  /* Về màn chờ là robot đi tiếp. Không gọi thẳng dvBatDau() ở đây mà để đồng hồ canh
+     gác lo — nó chạy đều đặn hai giây một nhịp và tự biết lúc nào robot sẵn sàng, nên
+     không cần chỗ nào phải đoán "giờ đã kết nối xong chưa". */
+  dvThuChayNgay();
 }
 /* Xong một lượt khách: hiện đồng hồ đếm ngược, hết giờ thì robot tự về chỗ đứng đợi
    VÀ màn hình quay lại màn chờ.
@@ -666,6 +704,136 @@ function xongLuot(){
     veManCho();          /* không có robot (bản demo) thì về thẳng màn chờ */
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   ĐI VÒNG QUANH SỰ KIỆN   (anh Trường chốt 21/08/2026)
+
+   Robot đi liên tục qua năm điểm, không dừng ở điểm nào, vừa đi vừa chào khách.
+   Khách chạm màn hình → dừng, vào giao diện phục vụ.
+   Ba mươi giây vắng người → đi tiếp.
+
+   ── Chia việc với Kotlin ──────────────────────────────────────────
+   Kotlin (DiVong.kt) lo MỘT việc: giữ cho robot còn đang đi, và tự chọn giữa lệnh
+   đi tuần của hãng với lối nối từng điểm.
+   Lớp này lo phần còn lại: KHI NÀO được đi (chỉ khi đang ở màn chờ), và nói gì dọc đường.
+
+   ⚠ Câu chào đi qua doc() — CÙNG một đường với mọi lời robot nói. Không mở đường
+     riêng: mở đường riêng là có ngày khách chạm màn hình mà robot vẫn đang đọc dở
+     câu chào của lượt trước, hai giọng chồng lên nhau.
+   ═══════════════════════════════════════════════════════════════════ */
+const DV = D.di_vong || {};
+
+let dvHang = [];          /* túi câu chào đã xáo, bốc dần cho hết mới xáo lại */
+let dvChaoCuoi = '';      /* câu vừa đọc — để túi mới không mở đầu trùng câu cũ */
+let dvHenChao = null;
+let dvDangDi = false;     /* Kotlin đã nhận lệnh đi chưa */
+let dvCanhGac = null;
+
+function dvCoBat(){
+  return !!(DV.bat && DV.diem && DV.diem.length >= 2
+            && coCau() && typeof CAU.batDauDiVong === 'function');
+}
+
+/* ── Bật / tắt ── */
+function dvBatDau(){
+  if(!dvCoBat()) return;
+  if(manDang !== 'mh-cho') return;          /* có khách thì tuyệt đối không cho đi */
+  if(lyDoChuaDanDuoc()) return;             /* robot chưa sẵn sàng, để nhịp sau thử lại */
+  try{
+    CAU.batDauDiVong(JSON.stringify(DV.diem),
+                     DV.toc_do_thang || 0.5, DV.toc_do_xoay || 0.8, DV.sai_so_met || 1.0);
+  }catch(e){ return; }
+  dvDangDi = true;
+  dvHenChaoSau(2500);                       /* chào câu đầu ngay khi vừa lăn bánh */
+}
+
+function dvDung(viSao){
+  clearTimeout(dvHenChao); dvHenChao = null;
+  if(!dvDangDi) { dvVeDen(); return; }
+  dvDangDi = false;
+  dungDoc();                                 /* cắt luôn câu chào đang đọc dở */
+  try{ if(coCau() && CAU.dungDiVong) CAU.dungDiVong(viSao || ''); }catch(e){}
+  dvVeDen();
+}
+
+/* ── Đồng hồ canh gác ──
+   Chạy suốt buổi, hai giây một nhịp. Nó là thứ duy nhất ra lệnh cho robot đi, nên
+   mọi cách robot có thể "chết đứng" đều tự hồi phục qua đây:
+     · lúc mới mở app RobotOS chưa kết nối xong  → nhịp sau kết nối xong thì đi
+     · robot bị hệ thống treo rồi thả ra          → nhịp sau đi lại
+     · Kotlin gặp lỗi và tự tắt vòng đi           → nhịp sau dựng lại
+   Không có nó thì mỗi chỗ trên đây phải tự đoán thời điểm — mà đoán là sai. */
+function dvNhipCanhGac(){
+  if(!dvCoBat()) return;
+  if(manDang !== 'mh-cho'){ if(dvDangDi) dvDung('không ở màn chờ'); return; }
+  let thuc = false;
+  try{ thuc = !!(CAU.dangDiVong && CAU.dangDiVong()); }catch(e){}
+  if(!thuc){ dvDangDi = false; dvBatDau(); }
+  dvVeDen();
+}
+
+/* Gọi khi vừa về màn chờ — khỏi phải đợi hết nhịp canh gác. */
+function dvThuChayNgay(){ setTimeout(dvNhipCanhGac, 400); }
+
+/* ── Câu chào dọc đường ── */
+/* Sáng là buổi lễ, chiều là hội thảo — hai bộ câu khác nhau, chọn theo giờ máy. */
+function dvKhoChao(){
+  const ds = (buoiHienTai() === 'chieu' ? DV.chao_chieu : DV.chao) || DV.chao || [];
+  return ds;
+}
+function dvKeChao(){
+  const ds = dvKhoChao();
+  if(!ds.length) return '';
+  if(!dvHang.length){
+    dvHang = ds.slice();
+    for(let i = dvHang.length - 1; i > 0; i--){
+      const j = (Math.random() * (i + 1)) | 0;
+      const t = dvHang[i]; dvHang[i] = dvHang[j]; dvHang[j] = t;
+    }
+    /* Xáo ngẫu nhiên nhưng không để câu đầu túi mới trùng câu cuối túi cũ — nghe hai
+       lần liền cùng một câu thì khách tưởng robot hỏng. */
+    if(dvHang.length > 1 && dvHang[0] === dvChaoCuoi){
+      const t = dvHang[0]; dvHang[0] = dvHang[1]; dvHang[1] = t;
+    }
+  }
+  dvChaoCuoi = dvHang.shift();
+  return dvChaoCuoi;
+}
+function dvHenChaoSau(ms){
+  clearTimeout(dvHenChao);
+  dvHenChao = setTimeout(dvChaoMotCau, ms);
+}
+function dvChaoMotCau(){
+  if(!dvDangDi || manDang !== 'mh-cho'){ return; }
+  const cau = dvKeChao();
+  if(!cau) return;
+  /* Đếm mười giây TỪ LÚC ĐỌC XONG, không phải từ lúc bắt đầu đọc. Đếm từ lúc bắt đầu
+     thì câu dài mười hai giây sẽ bị câu sau chồng lên. */
+  doc(cau, ()=> dvHenChaoSau((DV.cach_chao_giay || 10) * 1000));
+}
+
+/* ── Đèn báo góc màn chờ ── */
+function dvVeDen(){
+  const el = $('#den-vong'); if(!el) return;
+  if(!dvCoBat() || manDang !== 'mh-cho'){ el.classList.remove('hien'); return; }
+  let mo = '';
+  try{ mo = (CAU.moTaDiVong && CAU.moTaDiVong()) || ''; }catch(e){}
+  el.classList.add('hien');
+  el.classList.toggle('nghi', !dvDangDi);
+  $('#den-vong-chu').textContent = dvDangDi ? ('Đang đi vòng — ' + mo) : 'Chưa đi được';
+}
+
+/* Kotlin báo diễn biến vòng đi về đây — xem Cau.baoDiVong(). */
+window.baoDiVong = function(trangThai, chiTiet){
+  if(trangThai === 'dung'){ dvDangDi = false; }
+  if(trangThai === 'kho-khan' || trangThai === 'cho'){
+    /* Robot đang vướng: thôi chào, đứng giữa sảnh nói vọng ra trong khi không nhúc nhích
+       thì nghe rất kỳ. Nhịp canh gác sẽ tự cho đi lại khi thông đường. */
+    clearTimeout(dvHenChao); dvHenChao = null;
+  }
+  if(trangThai === 'di' && dvDangDi && !dvHenChao) dvHenChaoSau(2500);
+  dvVeDen();
+};
 
 /* ═══════════ Cầu nối sang Kotlin ═══════════ */
 function coCau(){ try{ return typeof CAU !== 'undefined' && CAU; }catch(e){ return false; } }
@@ -863,20 +1031,28 @@ function ngheLaiToiNoi(){ if(dichDang){ dungDoc(); doc(dichDang.doc); } }
 let henVeCho = null;
 function batDauVeCho(){
   if(!coDanDuong()) return;
-  let con = 8;
-  $('#ve-cho-chu').textContent = 'Tôi về chỗ đứng đợi sau ' + con + ' giây…';
+  /* Hai kết cục khác nhau tuỳ có bật đi vòng hay không:
+       · BẬT  → robot đi tiếp vòng của nó, KHÔNG về chỗ đứng đợi. Về chỗ rồi đứng im
+                giữa một sự kiện đang đông là uổng cả con robot.
+       · TẮT  → giữ nguyên nếp cũ: tự về điểm đứng đợi ở sảnh. */
+  const diTiep = dvCoBat();
+  let con = (DV.dem_di_tiep_giay || 8);
+  const chu = n => diTiep ? ('Tôi đi tiếp sau ' + n + ' giây…')
+                          : ('Tôi về chỗ đứng đợi sau ' + n + ' giây…');
+  $('#ve-cho-chu').textContent = chu(con);
   $('#ve-cho').classList.add('hien');
   clearInterval(henVeCho);
   henVeCho = setInterval(()=>{
     con--;
     if(con <= 0){
       huyVeCho();
-      veChoNgay();       /* ra lệnh cho robot đi về trước… */
-      veManCho();        /* …rồi mới dọn màn hình. Cau.kt cố ý KHÔNG báo gì trong
-                            chuyến về, nên màn chờ không bị kéo ra giữa chừng. */
+      /* veManCho() gọi dvThuChayNgay() ở cuối, nên nhánh đi vòng không phải làm gì thêm. */
+      if(!diTiep) veChoNgay();   /* ra lệnh cho robot đi về trước… */
+      veManCho();                /* …rồi mới dọn màn hình. Cau.kt cố ý KHÔNG báo gì trong
+                                    chuyến về, nên màn chờ không bị kéo ra giữa chừng. */
       return;
     }
-    $('#ve-cho-chu').textContent = 'Tôi về chỗ đứng đợi sau ' + con + ' giây…';
+    $('#ve-cho-chu').textContent = chu(con);
   }, 1000);
 }
 function huyVeCho(){ clearInterval(henVeCho); $('#ve-cho').classList.remove('hien'); }
@@ -909,9 +1085,14 @@ function chonLoaiKhach(ma){
   const c = D.chao[ma];
   if(!c) return;
   loaiKhachDang = ma;
-  const i = (demChao[ma] || 0) % c.cau.length;
+  /* Sáng là Lễ đón nhận danh hiệu, chiều là Hội thảo khoa học — bệnh viện soạn hai bộ
+     lời chào khác nhau (bản 21/08 và bản s2 20/08). Chọn theo giờ máy để lễ tân khỏi
+     phải bấm chọn. Loại khách nào chưa có bộ chiều thì dùng lại bộ sáng. */
+  const kho = (buoiHienTai() === 'chieu' && c.cau_chieu && c.cau_chieu.length)
+              ? c.cau_chieu : c.cau;
+  const i = (demChao[ma] || 0) % kho.length;
   demChao[ma] = i + 1;
-  const cau = c.cau[i];
+  const cau = kho[i];
 
   $('#chat-dau').textContent = 'Xin chào ' + c.ten;
   $('#chat-dau-phu').textContent = 'Quý vị hỏi tôi bất cứ điều gì về sự kiện hôm nay';
@@ -1031,8 +1212,23 @@ const PHU_SAN = 0.45;    /* độ phủ từ tối thiểu: câu hỏi phải kh
 
 /* Từ đệm — không mang thông tin, không tính vào độ phủ.
    ⚠ KHÔNG đưa "nao" vào đây: bỏ dấu thì "nào" trùng "não". */
+/* Từ đệm — KHÔNG tính điểm, không tính vào độ phủ. Đây là những tiếng ai hỏi gì cũng
+   dùng, nên để chúng ghi điểm là bộ tìm kiếm khớp bừa.
+
+   ⚠ Nhóm 'hom','nay','nao','sao','ra' thêm ngày 21/08/2026 sau một ca hỏng ĐO ĐƯỢC:
+     câu "thời tiết hôm nay thế nào" ra mục "Ai tham gia báo cáo trong Hội thảo hôm nay?"
+     với bốn mươi sáu điểm và độ phủ 0,60 — qua cả hai ngưỡng, robot đọc to giữa hội
+     trường. Nó trúng ba tiếng: "hôm", "nay" (cộng thêm điểm cụm "hôm nay") và "nào"
+     (có trong cách hỏi "chuyên gia nào trình bày"). Không một tiếng nào trong đó nói
+     lên người ta đang hỏi gì.
+     Bỏ ba tiếng ấy ra thì chỉ còn "thời" và "tiết" — không khớp gì, robot nói thẳng là
+     không biết. Câu "hôm nay bệnh viện có sự kiện gì" vẫn trúng đúng mục nhờ "sự kiện".
+
+   ⚠ ĐỪNG thêm 'gio' (giờ) hay 'nhieu' vào đây: "mấy giờ khai mạc" và "bao nhiêu tiền"
+     sống nhờ đúng hai tiếng đó. */
 const TU_DEM = ['la','gi','the','nhu','va','cua','co','khong','a','o','cho','toi','minh',
-                'quy','vi','vay','ha','ak','xin','hoi','cho','giup','duoc','ma','thi','se'];
+                'quy','vi','vay','ha','ak','xin','hoi','cho','giup','duoc','ma','thi','se',
+                'hom','nay','nao','sao','ra'];
 
 function chamMuc(tuHoi, x){
   const kho = tachTu(x.hoi + ' ' + x.cach.join(' '));
@@ -1063,6 +1259,9 @@ function chamMuc(tuHoi, x){
      Bỏ dòng này ra là hai câu đó lại nhập nhằng. Sửa xong phải chạy tools/thu-app.mjs. */
   const cum = khongDau(x.hoi + ' ' + x.cach.join(' '));
   for(let i = 0; i + 1 < tuHoi.length; i++){
+    /* Cụm phải có ÍT NHẤT MỘT tiếng có nghĩa. Cụm toàn từ đệm — "hôm nay", "thế nào",
+       "ra sao" — thì ai hỏi gì cũng trúng, cộng điểm cho nó là thưởng cho sự trùng hợp. */
+    if(TU_DEM.indexOf(tuHoi[i]) >= 0 && TU_DEM.indexOf(tuHoi[i+1]) >= 0) continue;
     if(cum.indexOf(tuHoi[i] + ' ' + tuHoi[i+1]) >= 0) diem += 10;
   }
   return {diem: diem, phu: coNghia.length ? trung / coNghia.length : 0};
@@ -1143,7 +1342,11 @@ window.moManCapCuuTuAI = function(){
 /* Nút "Mời khách" — PHẦN D mục 1 tài liệu địa điểm. */
 function moiVaoHoiTruong(){
   dungDoc();
-  doc(D.cau.moi_vao_hoi_truong, ()=> hoatDong());
+  /* Cùng một nút, hai câu: buổi sáng mời vào buổi lễ, buổi chiều mời vào hội thảo.
+     Bệnh viện soạn riêng từng câu, không được lấy câu này đọc cho sự kiện kia. */
+  const cau = (buoiHienTai() === 'chieu' && D.cau.moi_vao_hoi_thao)
+              ? D.cau.moi_vao_hoi_thao : D.cau.moi_vao_hoi_truong;
+  doc(cau, ()=> hoatDong());
   hoatDong();
 }
 
@@ -1242,7 +1445,11 @@ window.baoTinhTrangBanDo = function(json){
   try{ t = JSON.parse(json); }catch(e){}
   const ds = String(t.danhSachDiem || '');
   const can = Object.keys(D.diem).map(k => D.diem[k])
-                .concat([D.diem_ve_cho, D.diem_tram_sac]);
+                .concat([D.diem_ve_cho, D.diem_tram_sac])
+                /* Điểm đi vòng cũng phải soi ở đây. Thiếu một điểm đi vòng là kiểu hỏng
+                   im lặng nhất: robot vẫn đi, chỉ lặng lẽ bỏ qua đúng điểm gõ sai tên,
+                   không ai biết cho tới khi ngồi xem lại đường robot đã đi. */
+                .concat((D.di_vong && D.di_vong.bat && D.di_vong.diem) || []);
   const duy = can.filter((v, i) => can.indexOf(v) === i);
 
   let h = '<div class="bd-dong"><span class="kq">' + (t.daDinhVi ? '✔' : '✘') + '</span>' +
@@ -1324,6 +1531,14 @@ window.addEventListener('resize', datCoChu);
      ghi cứng trong Kotlin. Đổi tên điểm thì chỉ sửa JSON, không phải build lại APK. */
   try{ if(coCau() && CAU.datDiemVeCho) CAU.datDiemVeCho(D.diem_ve_cho); }catch(e){}
   ve('mh-cho');
+
+  /* Đồng hồ canh gác vòng đi — thứ duy nhất ra lệnh cho robot đi. Chạy suốt buổi.
+     Đặt ở đây, sau ve('mh-cho'), để nhịp đầu tiên đã thấy đúng màn hình đang hiện. */
+  if(dvCoBat()){
+    clearInterval(dvCanhGac);
+    dvCanhGac = setInterval(dvNhipCanhGac, 2000);
+    dvThuChayNgay();
+  }
 })();
 </script>
 </body>

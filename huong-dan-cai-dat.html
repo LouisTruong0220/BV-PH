@@ -319,7 +319,7 @@ hr{border:0;border-top:1px solid var(--vien);margin:0}
         <ol style="font-size:14.5px;padding-left:19px;margin-top:9px">
           <li>Mở link kho ở trên</li>
           <li>Bấm vào thư mục <code>apk</code></li>
-          <li>Bấm vào file <code>le-tan-benh-vien-hung-vuong-v1.0.apk</code></li>
+          <li>Bấm vào file <code>le-tan-benh-vien-hung-vuong-v1.1.apk</code></li>
           <li>Bấm nút <strong>Download</strong> (mũi tên tải xuống, góc phải)</li>
         </ol>
       </div>
@@ -405,7 +405,7 @@ hr{border:0;border-top:1px solid var(--vien);margin:0}
   <div class="than">
     <p>Vẫn trong cửa sổ PowerShell đó, gõ lệnh dưới đây. Thay
     <code>D:\Downloads\...</code> bằng đúng chỗ bạn để file APK.</p>
-    <div class="lenh"><button class="sao">Sao chép</button>&amp; "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r "D:\Downloads\le-tan-benh-vien-hung-vuong-v1.0.apk"</div>
+    <div class="lenh"><button class="sao">Sao chép</button>&amp; "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r "D:\Downloads\le-tan-benh-vien-hung-vuong-v1.1.apk"</div>
     <p>Chờ khoảng nửa phút. Xong sẽ hiện chữ <code>Success</code>.</p>
     <div class="luu luu-tin">
       <span class="dau">Cách nhanh hơn nếu bạn tải cả kho về</span>
@@ -504,7 +504,7 @@ hr{border:0;border-top:1px solid var(--vien);margin:0}
       <li>Chạy thử ít nhất một lượt dẫn đường thật, đi hết quãng đường</li>
     </ol>
 
-    <h3 style="font-size:19px;margin-top:26px;letter-spacing:-.015em">Mười điểm cần đặt — gõ đúng từng ký tự</h3>
+    <h3 style="font-size:19px;margin-top:26px;letter-spacing:-.015em">Mười điểm DẪN ĐƯỜNG — gõ đúng từng ký tự</h3>
     <div class="bang-boc"><table>
       <thead><tr><th>#</th><th>Gõ đúng tên này</th><th>Đặt ở đâu</th></tr></thead>
       <tbody>
@@ -530,6 +530,51 @@ hr{border:0;border-top:1px solid var(--vien);margin:0}
       <p><strong>3. Đúng một dấu cách</strong> giữa các chữ. Không thừa dấu cách ở đầu hay cuối.</p>
       <p>Sai bất kỳ điều nào ở trên, robot báo lỗi <code>ERROR_DESTINATION_NOT_EXIST</code> và
         <strong>đứng im</strong>, không giải thích gì thêm.</p>
+    </div>
+
+    <h3 style="font-size:19px;margin-top:26px;letter-spacing:-.015em">Năm điểm ĐI VÒNG — đặt thêm</h3>
+    <p>Robot không đứng một chỗ chờ khách. Nó <strong>đi liên tục</strong> theo vòng
+      <span class="ten-diem">Diem 1</span> → <span class="ten-diem">Diem 2</span> →
+      <span class="ten-diem">Diem 3</span> → <span class="ten-diem">Diem 4</span> →
+      <span class="ten-diem">Diem 5</span> → rồi quay lại điểm 1, vừa đi vừa chào khách.
+      Khách chạm màn hình thì robot dừng phục vụ; ba mươi giây không ai thao tác thì đi tiếp.</p>
+
+    <div class="bang-boc"><table>
+      <thead><tr><th>#</th><th>Gõ đúng tên này</th><th>Đặt ở đâu</th></tr></thead>
+      <tbody>
+        <tr><td class="stt">11</td><td><span class="ten-diem">Diem 1</span></td><td rowspan="5">Năm chỗ rải đều quanh khu vực đón khách, nối lại thành <strong>vòng khép kín</strong></td></tr>
+        <tr><td class="stt">12</td><td><span class="ten-diem">Diem 2</span></td></tr>
+        <tr><td class="stt">13</td><td><span class="ten-diem">Diem 3</span></td></tr>
+        <tr><td class="stt">14</td><td><span class="ten-diem">Diem 4</span></td></tr>
+        <tr><td class="stt">15</td><td><span class="ten-diem">Diem 5</span></td></tr>
+      </tbody>
+    </table></div>
+
+    <p><strong>Chữ D viết hoa, <code>iem</code> thường, một dấu cách trước số.</strong>
+      <code>Diem 1</code> — không phải <code>diem 1</code>, không phải <code>Điểm 1</code>,
+      không phải <code>Diem1</code>.</p>
+
+    <div class="luu luu-tin">
+      <span class="dau">Chọn chỗ đặt năm điểm này thế nào</span>
+      <p><strong>Vòng khép kín, không phải đường đi rồi quay đầu.</strong> Điểm 5 phải nằm gần
+        điểm 1. Đặt thành một đường thẳng thì robot đi tới cuối rồi quay ngoắt lại — nhìn rất kỳ,
+        và mỗi lần quay đầu robot đứng lại mấy giây.</p>
+      <p><strong>Tránh lối thoát hiểm và cửa ra vào.</strong> Robot dừng giữa lối thoát hiểm là
+        chuyện an toàn, không phải chuyện thẩm mỹ.</p>
+      <p><strong>Tránh cắt ngang khu chụp hình backdrop.</strong> Đại biểu đang chụp hình mà
+        robot đi ngang qua là hỏng ảnh của người ta.</p>
+      <p><strong>Cách tường và bàn ghi danh ít nhất một mét.</strong> Robot vòng qua điểm chứ
+        không đỗ vào đó.</p>
+      <p><strong>Sảnh nhỏ thì bớt xuống ba điểm.</strong> Không có luật nào bắt phải đủ năm —
+        báo đội kỹ thuật sửa danh sách, không phải cài lại app.</p>
+    </div>
+
+    <div class="luu luu-cam">
+      <span class="dau">Thiếu một điểm đi vòng là hỏng mà không ai biết</span>
+      <p>Gõ sai tên điểm dẫn đường thì robot báo lỗi ngay trước mặt khách — khó chịu nhưng
+        thấy được. Gõ sai tên một <strong>điểm đi vòng</strong> thì khác hẳn: robot vẫn đi bình
+        thường, chỉ lặng lẽ <strong>bỏ qua</strong> đúng cái điểm đó, không báo gì cả.</p>
+      <p>Nên đặt xong <strong>phải</strong> mở màn tự kiểm ở bước sau — nó soi cả mười lăm điểm.</p>
     </div>
 
     <div class="luu luu-tin">

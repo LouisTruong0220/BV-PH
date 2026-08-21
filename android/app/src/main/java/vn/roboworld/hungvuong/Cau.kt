@@ -278,6 +278,11 @@ object Cau {
             return
         }
 
+        /* Đang đi vòng mà khách bấm dẫn đường: phải dừng vòng đi TRƯỚC, không thì
+           RobotOS trả ACTION_RESPONSE_ALREADY_RUN và robot đứng im. Lớp web thường đã
+           gọi dungDiVong() ngay lúc khách chạm màn hình, nên chỗ này chỉ là lưới đỡ. */
+        if (DiVong.dangDi()) DiVong.dung("khách bấm dẫn đường")
+
         dangVeCho = false
         baoDanDuong("bat-dau", "")
         RobotHelper.doc("Xin mời đi theo tôi.") {}
@@ -342,6 +347,67 @@ object Cau {
     fun datDiemVeCho(ten: String?) {
         val t = ten.orEmpty().trim()
         if (t.isNotEmpty()) { tenDiemVeCho = t; Log.d(TAG, "Điểm về chỗ = '$t'") }
+    }
+
+    // ───────────────── Đi vòng quanh sự kiện ─────────────────
+    //
+    // Lớp web quyết định KHI NÀO robot được đi (đang ở màn chờ thì đi, có khách thì dừng)
+    // và tự lo phần chào khách dọc đường. Lớp này chỉ chuyển lệnh xuống DiVong.kt.
+    //
+    // ⚠ Danh sách điểm do LỚP WEB truyền xuống, lấy nguyên từ app-data.json → di_vong.diem.
+    //   Không ghi cứng "Diem 1".."Diem 5" trong Kotlin: bệnh viện đổi tên điểm hay thêm
+    //   điểm thứ sáu thì chỉ sửa JSON rồi chạy dung-app.py, KHÔNG phải build lại APK.
+
+    /** Bắt đầu đi vòng. Gọi lại khi đang chạy thì DiVong tự bỏ qua, không dựng lại vòng. */
+    @JavascriptInterface
+    fun batDauDiVong(dsJson: String?, tocThang: Double, tocXoay: Double, saiSo: Double) {
+        val ds = ArrayList<String>()
+        runCatching {
+            val a = org.json.JSONArray(dsJson.orEmpty())
+            for (i in 0 until a.length()) {
+                val t = a.optString(i).trim()
+                if (t.isNotEmpty()) ds.add(t)
+            }
+        }
+        if (ds.size < 2) { Log.w(TAG, "Danh sách điểm đi vòng không hợp lệ: $dsJson"); return }
+        DiVong.khiDoi = { trangThai, chiTiet -> baoDiVong(trangThai, chiTiet) }
+        DiVong.batDau(ds, tocThang, tocXoay, saiSo)
+    }
+
+    /** Dừng đi vòng — khách chạm màn hình, hoặc app rời tiền cảnh. */
+    @JavascriptInterface
+    fun dungDiVong(viSao: String?) = DiVong.dung(viSao.orEmpty().ifBlank { "không rõ" })
+
+    /** Robot có đang đi vòng không — lớp web dùng để khỏi ra lệnh chồng. */
+    @JavascriptInterface
+    fun dangDiVong(): Boolean = DiVong.dangDi()
+
+    /** Đang làm gì, viết bằng tiếng người — hiện ở góc màn chờ cho kỹ thuật viên soi. */
+    @JavascriptInterface
+    fun moTaDiVong(): String = DiVong.moTaHienTai()
+
+    /**
+     * Điểm đi vòng nào CHƯA CÓ trên bản đồ — cho màn tự kiểm lúc lắp đặt.
+     * Trả về chuỗi các tên cách nhau bằng dấu phẩy, rỗng nghĩa là đủ cả.
+     *
+     * ⚠ Thiếu điểm là kiểu hỏng im lặng nhất của tính năng này: robot vẫn đi, chỉ là
+     *   bỏ qua đúng cái điểm gõ sai tên, không ai biết cho tới lúc xem lại đường đi.
+     */
+    @JavascriptInterface
+    fun diemDiVongConThieu(dsJson: String?): String {
+        val ds = ArrayList<String>()
+        runCatching {
+            val a = org.json.JSONArray(dsJson.orEmpty())
+            for (i in 0 until a.length()) ds.add(a.optString(i).trim())
+        }
+        return DiVong.diemConThieu(ds.filter { it.isNotEmpty() }).joinToString(", ")
+    }
+
+    private fun baoDiVong(trangThai: String, chiTiet: String) {
+        val w = web ?: return
+        val js = "window.baoDiVong && window.baoDiVong(${JSONObject.quote(trangThai)}," +
+                 "${JSONObject.quote(chiTiet)})"
+        w.post { w.evaluateJavascript(js, null) }
     }
 
     /**

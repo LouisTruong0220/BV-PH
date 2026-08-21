@@ -20,11 +20,11 @@ Hùng Vương, TP. Hồ Chí Minh:
 
 **Chỉ cần cài lên robot, không cần build:**
 
-1. Tải `apk/le-tan-benh-vien-hung-vuong-v1.0.apk`
+1. Tải `apk/le-tan-benh-vien-hung-vuong-v1.1.apk`
 2. Nối cáp USB vào **đầu robot**, dùng **adb 1.0.41** của Android SDK
    (⚠ **không** dùng `C:\Windows\adb.exe` bản 1.0.39 của PUDU — hai bản giết tiến trình của nhau)
    ```powershell
-   adb install -r le-tan-benh-vien-hung-vuong-v1.0.apk
+   adb install -r le-tan-benh-vien-hung-vuong-v1.1.apk
    ```
    Hoặc để script làm hết (tự tìm adb, tự tìm APK, tự kiểm tra lại):
    ```powershell
@@ -32,7 +32,7 @@ Hùng Vương, TP. Hồ Chí Minh:
    ```
 3. **Mở app từ RobotOS Home**, tuyệt đối không dùng `am start` — dùng `am start` thì
    `RobotApi` trả `handleApiDisabled`, mất cả dẫn đường lẫn giọng nói mà app không báo lỗi gì.
-4. Quét bản đồ và đặt **10 điểm** theo [`huong-dan-dat-diem-ban-do.md`](huong-dan-dat-diem-ban-do.md)
+4. Quét bản đồ và đặt **15 điểm** (10 điểm dẫn đường + 5 điểm đi vòng) theo [`huong-dan-dat-diem-ban-do.md`](huong-dan-dat-diem-ban-do.md)
    — ⚠ đọc mục *"Quyết định phải chốt trước khi ra hiện trường"*, có một việc phải hỏi
    bệnh viện trước.
 5. Tự kiểm: ở màn hai lựa chọn, **bấm giữ biểu tượng 🏥 góc trên trái 1,2 giây** → màn
@@ -43,8 +43,8 @@ có giả lập robot, bấm được nút dẫn đường.
 
 | | |
 |---|---|
-| Trạng thái | **Bản demo + APK xong, 43/43 phép kiểm tự động đạt. CHƯA chạy trên robot thật, CHƯA khảo sát mặt bằng.** |
-| APK | `apk/le-tan-benh-vien-hung-vuong-v1.0.apk` (6,8 MB) |
+| Trạng thái | **Bản demo + APK xong, 64/64 phép kiểm tự động đạt. CHƯA chạy trên robot thật, CHƯA khảo sát mặt bằng.** |
+| APK | `apk/le-tan-benh-vien-hung-vuong-v1.1.apk` (6,8 MB) — bản 1.1, thêm tính năng đi vòng |
 | Package | `vn.roboworld.hungvuong` — khác app Uông Bí (`vn.roboworld.benhvien`), hai app cài chung một máy được |
 | appId OrionStar | `app_70eef22c4a6d4777af413ac942ea0153` |
 | Ngày | 21/08/2026 |
@@ -59,8 +59,10 @@ có giả lập robot, bấm được nút dẫn đường.
 ## Luồng màn hình
 
 ```
-màn chờ  (chiếu emoji_wink_2.mp4, lặp)
-   │  chạm bất kỳ đâu
+ĐI VÒNG  ⟳  robot đi liên tục qua Diem 1 → 2 → 3 → 4 → 5 → 1 …
+   │        KHÔNG dừng ở điểm nào · vừa đi vừa chào (5 câu ngẫu nhiên, cách nhau 10 giây)
+   │        màn hình chiếu biểu cảm emoji_wink_2.mp4
+   │  khách chạm bất kỳ đâu  → robot DỪNG ngay
    ▼
 HAI LỰA CHỌN ─────────────────────────────────────────────┐
    │                                                       │
@@ -69,7 +71,7 @@ HAI LỰA CHỌN ─────────────────────
    │      → chi tiết điểm (hiện sẵn lời robot sẽ nói)      │
    │      → đang dẫn — ROBOT IM LẶNG, chỉ chiếu biểu cảm   │
    │      → TỚI NƠI: đọc lời giới thiệu bệnh viện soạn     │
-   │      → tự về chỗ đứng đợi                             │
+   │      → đếm ngược rồi ĐI TIẾP vòng của nó              │
    │                                                       │
    └── 💬 GIAO TIẾP AI                                      │
           → chọn "Đại biểu" hay "Khách VIP"                │
@@ -79,6 +81,8 @@ HAI LỰA CHỌN ─────────────────────
    Hai nút bệnh viện yêu cầu thêm, ở hàng dưới ────────────┘
      📣 Mời khách vào hội trường  → đọc lời mời ổn định chỗ ngồi
      🔬 Tư vấn thực hiện HIFU     → 2 nhánh → hỏi có dẫn đường không → dẫn
+
+   ⟵ 30 GIÂY không ai thao tác → về màn chờ và ĐI TIẾP
 ```
 
 **Lời chào đại biểu luân phiên hai câu.** Bệnh viện cung cấp hai biến thể; app đổi qua lại
@@ -87,17 +91,92 @@ HAI LỰA CHỌN ─────────────────────
 **Màn chờ dùng `emoji_wink_2.mp4`** theo anh Trường chốt. Muốn xoay vòng nhiều clip thì
 thêm tên vào mảng `BIEU_CAM_CHO` trong `khung-app.html`.
 
+**Sáng khác chiều.** Ngày 22/08 có HAI sự kiện, và bệnh viện soạn lời riêng cho từng cái.
+App tự chọn theo **giờ máy** (mốc 12 giờ), lễ tân không phải bấm gì:
+
+| | Trước 12 giờ | Sau 12 giờ |
+|---|---|---|
+| Lời chào đại biểu | Lễ đón nhận danh hiệu Anh hùng Lao động | Hội thảo khoa học HIFU |
+| Câu chào lúc đi vòng | `di_vong.chao` | `di_vong.chao_chieu` |
+| Nút 📣 Mời khách | `moi_vao_hoi_truong` | `moi_vao_hoi_thao` |
+| Danh sách điểm dẫn đường | các đích `buoi: "sang"` | các đích `buoi: "chieu"` |
+
+⚠ Muốn thử lời buổi chiều mà đang là buổi sáng thì **đổi giờ máy tính**, đừng sửa mã.
+
+---
+
+## ⟳ Đi vòng quanh sự kiện
+
+Anh Trường chốt 21/08/2026. Robot không đứng một chỗ chờ khách tới nữa — nó đi liên tục
+quanh sảnh và chào khách dọc đường.
+
+**Cách chỉnh:** mọi con số nằm trong `DI_VONG` ở `dung-du-lieu.py`, sửa xong chạy
+`dung-du-lieu.py` rồi `dung-app.py`. **Không phải build lại APK** nếu chỉ đổi tên điểm,
+đổi câu chào hay đổi thời gian.
+
+| Khai báo | Đang đặt | Nghĩa |
+|---|---|---|
+| `diem` | `Diem 1`…`Diem 5` | Thứ tự trong danh sách **chính là lộ trình**. Đặt thành vòng khép kín, đừng đặt kiểu đi rồi quay đầu |
+| `cach_chao_giay` | 10 | Nghỉ bao lâu giữa hai câu chào — tính **từ lúc đọc xong**, không phải từ lúc bắt đầu đọc |
+| `cho_khach_giay` | 30 | Vắng người bao lâu thì bỏ màn hình mà đi tiếp |
+| `toc_do_thang` | 0,5 m/s | Mặc định hãng là 0,7 — nhanh so với sảnh đông người đứng nói chuyện |
+| `toc_do_xoay` | 0,8 rad/s | Mặc định hãng là 1,2 |
+| `sai_so_met` | 1,0 | Chỉ dùng cho lối dự phòng. Để 0,2 như dẫn khách là mỗi điểm robot khựng một nhịp thấy rõ |
+| `chao` / `chao_chieu` | 5 câu mỗi bộ | Bốc **ngẫu nhiên**, hết một lượt mới xáo lại, không để hai câu giống nhau liền nhau |
+
+### Hai lối đi, robot tự chọn
+
+**Lối 1 — `startCruise` của hãng.** Đọc bytecode `robotservice.jar` thấy nó gói tham số vào
+`CruiseParams`: `route` · `startPoint` · `dockingPoints` · `linearSpeed` · `angularSpeed` ·
+`multipleWaitTime`.
+
+> ⚠ **`dockingPoints` là danh sách chỉ số những điểm robot PHẢI DỪNG LẠI.** App để **rỗng**
+> — đó chính là cách làm được yêu cầu "không dừng ở mỗi điểm". Đừng nhét chỉ số vào đó
+> "cho đủ", nhét vào là robot đứng lại ở từng điểm.
+
+**Lối 2 — nối từng lệnh `startNavigation`.** Tới điểm là bắn ngay lệnh đi điểm kế, không
+nghỉ một nhịp nào. Robot vẫn khựng lại rất ngắn ở mỗi điểm vì SDK không có khái niệm
+"điểm đi ngang qua", nhưng để sai số một mét thì gần như không thấy.
+
+**Vì sao phải có lối 2:** `startCruise` **chưa từng chạy trên máy thật**. Cả OrionStar lẫn
+PUDU đều đã có tiền lệ nhận lệnh, trả mã dương, rồi không làm gì và cũng không báo lỗi.
+Nên `DiVong.kt` **không tin lời API nói mà đo**: cứ hai giây hỏi `getCurrentPose()`, hai
+mươi giây robot chưa nhích nổi 30 cm thì coi như lối 1 chết, tự chuyển sang lối 2. Người
+vận hành không phải biết gì về chuyện này — xem log `BVDiVong` nếu muốn biết đang đi lối nào.
+
+### Chia việc giữa hai tầng
+
+| | Lo chuyện gì |
+|---|---|
+| `DiVong.kt` (Kotlin) | Giữ cho robot còn đang đi. Chọn lối 1 / lối 2. Gặp lỗi thì bỏ qua điểm đó, thử điểm kế sau 12 giây; hỏng 5 lần liền thì nghỉ 1 phút |
+| `khung-app.html` (web) | Quyết định **khi nào** được đi (chỉ khi đang ở màn chờ) và **nói gì** dọc đường |
+
+Ở lớp web có một **đồng hồ canh gác** chạy 2 giây một nhịp (`dvNhipCanhGac`). Nó là thứ
+**duy nhất** ra lệnh cho robot đi, nên mọi cách robot có thể chết đứng đều tự hồi phục qua
+đó: RobotOS chưa kết nối xong lúc mới mở app · robot bị hệ thống treo rồi thả · Kotlin gặp
+lỗi tự tắt vòng đi. Không có nó thì mỗi chỗ phải tự đoán thời điểm — mà đoán là sai.
+
+### Đèn báo cho kỹ thuật viên
+
+Góc dưới trái màn chờ có một chấm nhỏ: **xanh nhấp nháy** = đang đi, **cam đứng yên** =
+chưa đi được. Bên cạnh là dòng chữ mờ cho biết đang tới điểm nào. Cố ý làm nhỏ và mờ —
+khách nhìn vào chỉ thấy một chấm sáng.
+
 ---
 
 ## Nguồn dữ liệu
 
 Toàn bộ nội dung robot nói **lấy nguyên văn từ tài liệu Bệnh viện Hùng Vương cung cấp
-ngày 20/08/2026**, chỉ chuẩn hoá cách viết số sang chữ (robot đọc chữ số sai nhịp):
+ngày 20–21/08/2026**, chỉ chuẩn hoá cách viết số sang chữ (robot đọc chữ số sai nhịp).
+**39 cặp hỏi đáp**, phủ cả hai sự kiện của ngày 22/08:
 
 | Tài liệu bệnh viện | Vào đâu trong app |
 |---|---|
 | `Noi dung cai dat Robot 4 HIFU edit 200826.docx` — PHẦN A | 10 kịch bản chào hỏi, lời chào đại biểu/VIP |
 | cùng file — PHẦN B1/B2/B3 | 25 cặp hỏi đáp (sự kiện · bệnh viện · kỹ thuật HIFU) |
+| **`Noi dung cai dat Robot - HTKH HIFU_s2.docx`** — PHẦN A | lời chào + lời mời riêng cho **hội thảo chiều** |
+| cùng file — PHẦN B1 | **12 cặp hỏi đáp về Hội thảo khoa học** (nhóm `hoi-thao`) |
+| cùng file — PHẦN B2 | 2 cặp: tiên phong HIFU · bệnh viện đầu tư thế nào |
 | cùng file — PHẦN C | 8 bước quy trình điều trị |
 | `Noi dung cai dat Robot_ địa điểm.docx` — PHẦN C | 9 đích dẫn đường + lời giới thiệu khi tới nơi |
 | cùng file — PHẦN D | Hai nút thêm: mời khách · tư vấn HIFU hai nhánh |
@@ -213,12 +292,16 @@ Sửa một bên phải sửa cả hai, không thì bản thử trên máy tính
 node tools\thu-app.mjs
 ```
 
-43 phép kiểm, chạy trọn tám bước của app trên bản giả lập, kiểm bằng **trạng thái thật**
+64 phép kiểm, chạy trọn mười bước của app trên bản giả lập, kiểm bằng **trạng thái thật**
 (màn nào đang hiện, robot đọc câu gì, lệnh nào gửi xuống Kotlin) chứ không chỉ chụp ảnh.
 Ảnh soi từng bước ra `demo/anh-soi/`.
 
 Nó bắt đúng loại lỗi hay dính trên Nova: nút bị co về kích thước 0, chồng hai màn cùng lúc,
 lời thoại còn sót chữ số, tên điểm bản đồ lỡ có dấu tiếng Việt.
+
+Phần 9 thử **cả vòng đi**: robot tự lăn bánh ở màn chờ · tới điểm là đi tiếp chứ không dừng ·
+khách chạm màn hình thì dừng ngay · đủ ba mươi giây vắng người thì đi tiếp. Bộ giả lập
+dựng lại đúng chữ ký và đúng trình tự báo trạng thái của `DiVong.kt`.
 
 Trong đó có **bộ thử hồi quy cho bộ tìm kiếm** — cặp câu *"mấy giờ khai mạc"* (buổi lễ) và
 *"mấy giờ khai trương"* (Đơn vị HIFU) chỉ khác nhau một tiếng, đã từng làm robot hỏi lại
@@ -267,17 +350,33 @@ docDapAn(10)                              // → định nghĩa HIFU nguyên vă
 
 ## ⚠ Việc còn treo
 
-1. **Chưa chạy trên robot thật, chưa khảo sát mặt bằng.** Toàn bộ 43 phép kiểm chạy trên
+1. **Chưa chạy trên robot thật, chưa khảo sát mặt bằng.** Toàn bộ 64 phép kiểm chạy trên
    giả lập — nó dựng lại đúng chữ ký hàm và trình tự báo trạng thái của `Cau.kt`, nhưng
    **không thay được một lần chạy thật**.
-2. **Chưa chốt robot đặt ở tầng nào** — xem
+2. **Chưa biết `startCruise` có chạy trên máy Nova không.** Đây là việc đầu tiên phải làm
+   khi có robot trong tay: mở app, để yên ở màn chờ, xem log `adb logcat -s BVDiVong`.
+   Thấy dòng *"Đo được robot đã đi … m"* là lối 1 chạy thật; thấy *"Hai mươi giây robot
+   không nhúc nhích"* là đã tự chuyển sang lối nối điểm — vẫn đi được, chỉ hơi khựng ở
+   mỗi điểm. Cả hai đều chấp nhận được, nhưng phải **biết** mình đang ở lối nào.
+3. **Năm điểm đi vòng đặt ở đâu là việc của khảo sát mặt bằng.** Chốt lộ trình vòng khép
+   kín quanh khu vực đón khách, tránh lối thoát hiểm và tránh cắt ngang chỗ chụp hình
+   backdrop. Sảnh chưa đủ rộng cho năm điểm thì bớt xuống ba — sửa `DI_VONG['diem']`.
+4. **Chưa chốt robot đặt ở tầng nào** — xem
    [`huong-dan-dat-diem-ban-do.md`](huong-dan-dat-diem-ban-do.md). Quyết định này chi phối
    toàn bộ danh sách điểm bản đồ.
-3. **Chưa có gì cho phần trình chiếu.** Câu trả lời về chương trình có nhắc *"Quý vị có thể
+5. **Chưa có gì cho phần trình chiếu.** Câu trả lời về chương trình có nhắc *"Quý vị có thể
    xem chương trình chi tiết trên màn hình của tôi"* — nhưng chưa có slide nào. Cần ảnh
    **1920×1080 nằm ngang**, nếu không robot nói một đằng màn hình một nẻo.
-4. **Chưa có nhóm hậu cần** — nhà vệ sinh, thang máy, bãi xe, wifi, căn tin. App đang trả
+6. **Chưa có nhóm hậu cần** — nhà vệ sinh, thang máy, bãi xe, wifi, căn tin. App đang trả
    lời "chưa có thông tin"; bệnh viện cung cấp thì thêm vào `HOI_DAP` trong `dung-du-lieu.py`.
-5. **Chưa nạp persona lên cổng OrionStar.** App tự tra cứu và tự đọc câu trả lời nên vẫn
+7. **Chưa nạp persona lên cổng OrionStar.** App tự tra cứu và tự đọc câu trả lời nên vẫn
    chạy đủ chức năng khi chưa nạp; persona chỉ là đường lui. Nạp thì lưu ý appId đang dùng
    chung với app Uông Bí (xem cảnh báo ở đầu trang).
+
+8. **Đã gỡ được một mâu thuẫn trong tài liệu gốc.** Bản 21/08 chỉ ghi *"không thu phí"*,
+   bản s2 lại ghi *"300.000 đồng cấp CME"* — nay thấy rõ là **hai câu hỏi khác nhau**:
+   dự hội thảo miễn phí, còn muốn lấy chứng chỉ CME (1,5 giờ tín chỉ) thì đóng ba trăm
+   nghìn. App tách thành hai mục hỏi đáp riêng và có phép kiểm bảo đảm chúng không lẫn
+   vào nhau. **Vẫn nên để bệnh viện xác nhận lại cách hiểu này trước sáng 22/08.**
+9. **Phần song ngữ tiếng Anh vẫn chưa bật.** Cả hai bản tài liệu đều có câu chào tiếng Anh
+   nhưng ghi rõ *"tuỳ chọn — nếu Ban Giám đốc kích hoạt"*. Chưa ai chốt nên chưa đưa vào app.
