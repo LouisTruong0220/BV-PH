@@ -20,11 +20,11 @@ Hùng Vương, TP. Hồ Chí Minh:
 
 **Chỉ cần cài lên robot, không cần build:**
 
-1. Tải `apk/le-tan-benh-vien-hung-vuong-v1.1.apk`
+1. Tải `apk/le-tan-benh-vien-hung-vuong-v1.2.apk`
 2. Nối cáp USB vào **đầu robot**, dùng **adb 1.0.41** của Android SDK
    (⚠ **không** dùng `C:\Windows\adb.exe` bản 1.0.39 của PUDU — hai bản giết tiến trình của nhau)
    ```powershell
-   adb install -r le-tan-benh-vien-hung-vuong-v1.1.apk
+   adb install -r le-tan-benh-vien-hung-vuong-v1.2.apk
    ```
    Hoặc để script làm hết (tự tìm adb, tự tìm APK, tự kiểm tra lại):
    ```powershell
@@ -43,8 +43,8 @@ có giả lập robot, bấm được nút dẫn đường.
 
 | | |
 |---|---|
-| Trạng thái | **Bản demo + APK xong, 64/64 phép kiểm tự động đạt. CHƯA chạy trên robot thật, CHƯA khảo sát mặt bằng.** |
-| APK | `apk/le-tan-benh-vien-hung-vuong-v1.1.apk` (6,8 MB) — bản 1.1, thêm tính năng đi vòng |
+| Trạng thái | **Bản demo + APK xong, 91/91 phép kiểm tự động đạt. CHƯA chạy trên robot thật, CHƯA khảo sát mặt bằng.** |
+| APK | `apk/le-tan-benh-vien-hung-vuong-v1.2.apk` (6,8 MB) — bản 1.2 |
 | Package | `vn.roboworld.hungvuong` — khác app Uông Bí (`vn.roboworld.benhvien`), hai app cài chung một máy được |
 | appId OrionStar | `app_70eef22c4a6d4777af413ac942ea0153` |
 | Ngày | 21/08/2026 |
@@ -59,9 +59,9 @@ có giả lập robot, bấm được nút dẫn đường.
 ## Luồng màn hình
 
 ```
-ĐI VÒNG  ⟳  robot đi liên tục qua Diem 1 → 2 → 3 → 4 → 5 → 1 …
-   │        KHÔNG dừng ở điểm nào · vừa đi vừa chào (5 câu ngẫu nhiên, cách nhau 10 giây)
-   │        màn hình chiếu biểu cảm emoji_wink_2.mp4
+MÀN CHỜ  ·  chiếu biểu cảm emoji_wink_2.mp4, robot ĐỨNG YÊN
+   │  ⟳ nếu đã bấm nút "Đi du hành": robot đi liên tục Diem 1 → 2 → 3 → 4 → 5 → 1 …
+   │     KHÔNG dừng ở điểm nào · vừa đi vừa đọc 3 câu bệnh viện soạn, cách nhau 10 giây
    │  khách chạm bất kỳ đâu  → robot DỪNG ngay
    ▼
 HAI LỰA CHỌN ─────────────────────────────────────────────┐
@@ -78,8 +78,9 @@ HAI LỰA CHỌN ─────────────────────
           → phát ĐÚNG lời chào của loại khách đó           │
           → trò chuyện: thẻ câu hỏi sẵn · gõ chữ · nói mic │
                                                            │
-   Hai nút bệnh viện yêu cầu thêm, ở hàng dưới ────────────┘
-     📣 Mời khách vào hội trường  → đọc lời mời ổn định chỗ ngồi
+   Ba nút ở hàng dưới ─────────────────────────────────────┘
+     📣 Mời khách vào hội trường  → đọc LẶP LẠI tới khi bấm lần nữa
+     🚶 Đi du hành                → bật/tắt vòng đi. Robot KHÔNG tự đi
      🔬 Tư vấn thực hiện HIFU     → 2 nhánh → hỏi có dẫn đường không → dẫn
 
    ⟵ 30 GIÂY không ai thao tác → về màn chờ và ĐI TIẾP
@@ -105,6 +106,42 @@ App tự chọn theo **giờ máy** (mốc 12 giờ), lễ tân không phải b�
 
 ---
 
+## 🔇 Cổng AI — mic và bộ não hãng chỉ sống ở màn Trò chuyện
+
+Anh Trường chốt 21/08/2026. Ngoài màn Trò chuyện, robot **không nghe, không nghĩ, không
+nói bằng giọng AI**. Vào màn đó thì mở, rời khỏi là đóng ngay — kể cả câu đang đọc dở.
+
+Mở/đóng đặt đúng **một chỗ**: hàm `ve()` trong `khung-app.html`. Nhờ vậy mọi đường ra vào
+đều đi qua nó — nút Giao tiếp AI, nút Quay lại, nút Back của máy, đồng hồ vắng người,
+pop-up gợi ý.
+
+> ⚠ **Đóng cổng không chỉ là tắt mic.** `isMicrophoneMuted = true` là lời đề nghị với
+> dịch vụ của hãng, không phải công tắc nguồn — đã đo được ở app Mông Dương: AgentOS vẫn
+> bắn `onASRResult` sau khi đặt cờ tắt tiếng. Nên tầng Kotlin còn **vứt luôn** mọi câu
+> ASR/TTS nghe được khi cổng đóng, ngay tại callback, không đi tiếp vào `TraLoi`. Đường gõ
+> chữ (`Cau.hoiRobot`) cũng qua đúng cái cổng đó.
+
+**Hệ quả cố ý:** app **không còn thăm dò mô hình lúc khởi động** — làm vậy là gọi lên đám
+mây của hãng khi khách chưa bấm nút nào. Việc thăm dò dời sang lần đầu mở cổng, nên nút
+micro chỉ hiện sau khi vào màn Trò chuyện chừng một giây, và app tự mở mic ngay khi biết
+mô hình trả lời được (xem `window.baoAISanSang`).
+
+---
+
+## 📣 Nút "Mời khách vào hội trường" — phát lặp
+
+Bấm một cái là robot đọc lời mời **lặp lại** cho tới khi bấm lần nữa. Nghỉ giữa hai lượt
+lấy từ `moi_lap_nghi_giay` (đang 5 giây) — để 0 là robot đọc nối đuôi, nghe như máy hỏng.
+
+> ⚠ Đang mời lặp thì **đồng hồ vắng người không kéo về màn chờ**. `veManCho()` gọi
+> `dungDoc()`, cắt câu đang đọc và đứt luôn chuỗi lặp — robot im bặt giữa chừng mà không
+> ai hiểu vì sao. Giữ ở màn chọn thì nút "Đang mời khách" còn sáng, nhìn là biết và bấm
+> tắt được. Bấm "✕ Kết thúc" thì dừng cả lời mời.
+
+Robot đứng yên mà mời: bật lời mời là tự tắt vòng du hành, và ngược lại.
+
+---
+
 ## ⟳ Đi vòng quanh sự kiện
 
 Anh Trường chốt 21/08/2026. Robot không đứng một chỗ chờ khách tới nữa — nó đi liên tục
@@ -122,7 +159,20 @@ quanh sảnh và chào khách dọc đường.
 | `toc_do_thang` | 0,5 m/s | Mặc định hãng là 0,7 — nhanh so với sảnh đông người đứng nói chuyện |
 | `toc_do_xoay` | 0,8 rad/s | Mặc định hãng là 1,2 |
 | `sai_so_met` | 1,0 | Chỉ dùng cho lối dự phòng. Để 0,2 như dẫn khách là mỗi điểm robot khựng một nhịp thấy rõ |
-| `chao` / `chao_chieu` | 5 câu mỗi bộ | Bốc **ngẫu nhiên**, hết một lượt mới xáo lại, không để hai câu giống nhau liền nhau |
+| `chao` / `chao_chieu` | 3 câu mỗi bộ | Nguyên văn lời bệnh viện, anh Trường gửi ảnh chốt 21/08. Bốc **ngẫu nhiên**, hết một lượt mới xáo lại, không để hai câu giống nhau liền nhau |
+| `bat` | `True` | Chỉ nghĩa là **có sẵn tính năng**. Robot vẫn chỉ đi khi người vận hành bấm nút |
+
+### ⚠ Robot KHÔNG tự đi
+
+Bản đầu ngày 21/08 cứ về màn chờ là robot lăn bánh. Anh Trường đổi lại ngay hôm đó: phải
+**bấm nút Đi du hành** ở màn chọn thì robot mới đi, bấm lần nữa thì dừng. Ở một buổi lễ có
+nghi thức, robot tự dưng đi ngang sân khấu là chuyện không sửa được bằng lời xin lỗi.
+
+Cờ `dvBat` sống suốt buổi: khách chạm màn hình thì robot dừng phục vụ, ba mươi giây vắng
+người là đi tiếp — nhưng chỉ khi người vận hành đã bật nó. Nút đổi hẳn màu nền khi đang
+bật, nhìn từ hai mét là biết.
+
+---
 
 ### Hai lối đi, robot tự chọn
 
@@ -350,7 +400,7 @@ docDapAn(10)                              // → định nghĩa HIFU nguyên vă
 
 ## ⚠ Việc còn treo
 
-1. **Chưa chạy trên robot thật, chưa khảo sát mặt bằng.** Toàn bộ 64 phép kiểm chạy trên
+1. **Chưa chạy trên robot thật, chưa khảo sát mặt bằng.** Toàn bộ 91 phép kiểm chạy trên
    giả lập — nó dựng lại đúng chữ ký hàm và trình tự báo trạng thái của `Cau.kt`, nhưng
    **không thay được một lần chạy thật**.
 2. **Chưa biết `startCruise` có chạy trên máy Nova không.** Đây là việc đầu tiên phải làm

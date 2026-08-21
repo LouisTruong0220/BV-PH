@@ -842,18 +842,15 @@
     "toc_do_xoay": 0.8,
     "sai_so_met": 1.0,
     "chao": [
-      "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự Lễ đón nhận danh hiệu Anh hùng Lao động.",
-      "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! Hôm nay là ngày hội lớn của bệnh viện chúng tôi.",
-      "Kính chào Quý vị! Chào mừng Quý vị đến dự Lễ khai trương Đơn vị điều trị HIFU của Bệnh viện Hùng Vương.",
-      "Bệnh viện Hùng Vương kính chúc Quý vị một ngày thật nhiều niềm vui! Quý vị cần hỗ trợ, xin chạm vào màn hình của tôi.",
-      "Tôi là robot lễ tân của Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị trong ngày trọng đại hôm nay!"
+      "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị điều trị HIFU. Kính chúc Quý vị một ngày thật nhiều niềm vui!",
+      "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! Hôm nay là ngày hội lớn của bệnh viện chúng tôi. Rất hân hạnh được phục vụ Quý vị!",
+      "Dạ, tôi xin thưa với Quý vị. Hôm nay bệnh viện Hùng Vương tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị HIFU, buổi chiều có Hội thảo khoa học. Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU."
     ],
     "chao_chieu": [
       "Bệnh viện Hùng Vương trân trọng kính chào Quý đại biểu! Chào mừng Quý vị đến tham dự Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ.",
       "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị!",
-      "Kính chúc Quý đại biểu một ngày thật nhiều niềm vui và có những trải nghiệm, kiến thức bổ ích tại Hội thảo!",
-      "Bệnh viện Hùng Vương kính chào Quý vị! Quý vị cần hỗ trợ, xin chạm vào màn hình của tôi.",
-      "Tôi là robot lễ tân của Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị tại Hội thảo khoa học hôm nay!"
+      "Dạ, tôi xin thưa với Quý vị. Hôm nay bệnh viện Hùng Vương tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị HIFU, buổi chiều có Hội thảo khoa học. Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU."
     ]
-  }
+  },
+  "moi_lap_nghi_giay": 5
 }

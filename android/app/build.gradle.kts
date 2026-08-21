@@ -11,8 +11,8 @@ android {
         applicationId = "vn.roboworld.hungvuong"
         minSdk = 26          // Android 8.0 — mức tối thiểu Agent SDK yêu cầu
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 3
+        versionName = "1.2"
     }
 
     compileOptions {

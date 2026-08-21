@@ -59,6 +59,49 @@ class MainApplication : Application() {
          */
         @Volatile private var agentSanSang = false
 
+        /**
+         * CỔNG AI — anh Trường chốt 21/08/2026: micro và bộ não hội thoại của hãng chỉ
+         * được sống khi khách ĐANG Ở màn Giao tiếp AI. Ra khỏi màn đó là tắt ngay.
+         *
+         * ⚠ Vì sao phải là một cái cổng ở TẦNG KOTLIN chứ không chỉ tắt mic ở lớp web:
+         *   `isMicrophoneMuted = true` là lời đề nghị với dịch vụ của hãng, không phải
+         *   cái công tắc nguồn. Đã đo được ở app Mông Dương: có lúc AgentOS vẫn bắn
+         *   `onASRResult` sau khi đã đặt cờ tắt tiếng — nghĩa là robot vẫn nghe lỏm và
+         *   vẫn nghĩ ra câu trả lời, chỉ là không ai bảo nó im. Ở giữa một hội trường
+         *   toàn bác sĩ, robot tự dưng lên tiếng là chuyện không sửa được bằng lời xin lỗi.
+         *
+         *   Nên ngoài việc tắt mic, mọi câu ASR/TTS nghe được khi cổng đóng đều bị VỨT
+         *   NGAY tại callback, không đi tiếp vào TraLoi, không hiện lên màn hình.
+         */
+        @Volatile private var congAIMo = false
+
+        /** Đã thăm dò mô hình lần nào chưa — chỉ làm ở lần đầu MỞ CỔNG, không làm lúc
+         *  khởi động app. Thăm dò lúc khởi động là gọi lên đám mây của hãng trong khi
+         *  khách còn chưa bấm nút nào. */
+        @Volatile private var daThamDo = false
+
+        /** Khách vào màn Giao tiếp AI. */
+        fun moCongAI() {
+            if (congAIMo) return
+            congAIMo = true
+            Log.d(TAG, "MỞ cổng AI — micro và bộ não hãng bắt đầu hoạt động")
+            batMicro()
+            if (!daThamDo) { daThamDo = true; thamDoAI() }
+        }
+
+        /** Khách rời màn Giao tiếp AI — tắt hẳn, kể cả câu đang nói dở. */
+        fun dongCongAI() {
+            if (!congAIMo) return
+            congAIMo = false
+            Log.d(TAG, "ĐÓNG cổng AI — tắt micro, vứt mọi câu nghe được từ đây")
+            tatMicro()
+            /* Cắt luôn câu mô hình đang đọc dở. Không cắt thì khách bấm "Quay lại" xong
+               robot vẫn nói nốt câu trả lời cho một màn hình đã biến mất. */
+            runCatching { AgentCore.stopTTS() }
+        }
+
+        fun congAIDangMo(): Boolean = congAIMo
+
         fun batMicro() = datMicro(false)
         fun tatMicro() = datMicro(true)
 
@@ -519,6 +562,15 @@ class MainApplication : Application() {
                         val chu = t.text
                         if (chu.isNullOrBlank()) return false
 
+                        /* CỔNG ĐÓNG = VỨT. Không đẩy vào TraLoi, không hiện lên màn hình,
+                           không đánh dấu AI sẵn sàng. Đây là chốt chặn cuối cùng cho yêu
+                           cầu "AI chỉ dùng trong chức năng Giao tiếp AI" — xem chú thích
+                           dài ở congAIMo. */
+                        if (!congAIMo) {
+                            if (t.final) Log.d(TAG, "Cổng AI đóng — bỏ qua câu nghe được")
+                            return false
+                        }
+
                         // Nghe được chữ nghĩa là đường dây thật sự thông.
                         if (!agentSanSang) { agentSanSang = true; Cau.baoAISanSang(true) }
 
@@ -539,6 +591,7 @@ class MainApplication : Application() {
                     override fun onTTSResult(t: Transcription): Boolean {
                         val chu = t.text
                         if (chu.isNullOrBlank()) return false
+                        if (!congAIMo) return false      // cổng đóng thì không hiện gì lên màn hình
                         /* Câu do chính app soạn thì đã hiện trên màn hình rồi — xem tuNoi.
                            ⚠ ĐỪNG xoá tuNoi ở đây khi t.final: robot đọc xong TỪNG CÂU là bắn
                            một gói final, nên xoá ngay câu đầu thì mấy câu sau lọt lưới và màn
@@ -554,6 +607,13 @@ class MainApplication : Application() {
             override fun onExecuteAction(action: Action, params: Bundle?): Boolean = false
         }
 
-        thamDoAI()
+        /* ⚠ KHÔNG thăm dò mô hình ở đây nữa.
+           Trước đây app gọi thamDoAI() ngay lúc khởi động để biết có nên hiện nút micro
+           không. Nhưng đó là gọi lên đám mây của hãng trong khi khách còn chưa bấm nút
+           nào — trái với yêu cầu "AI chỉ chạy khi vào chức năng Giao tiếp AI".
+           Giờ việc thăm dò dời sang lần đầu MỞ CỔNG (xem moCongAI). Hệ quả: nút micro
+           chỉ hiện sau khi khách vào màn Trò chuyện chừng một giây — mà cũng chỉ ở đó
+           mới cần tới nó. */
+        tatMicro()
     }
 }

@@ -115,6 +115,12 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   font-size:1.35rem;font-weight:700;text-align:left;transition:border-color .15s;
 }
 .nut-phu-lon:hover{border-color:var(--vang)}
+/* Nút đang BẬT — người vận hành phải nhìn từ xa là biết robot đang làm gì.
+   Không dùng riêng màu chữ: đứng cách hai mét thì chữ nhỏ không đọc được, chỉ
+   mảng màu mới nhận ra. */
+.nut-phu-lon.dang{background:var(--navy);border-color:var(--navy);color:#fff}
+.nut-phu-lon.dang i{color:rgba(255,255,255,.75)}
+.nut-phu-lon.dang .ic{animation:tho 1.6s ease-in-out infinite}
 .nut-phu-lon .ic{font-size:2.4rem;line-height:1;flex:none}
 .nut-phu-lon i{display:block;font-style:normal;font-size:1rem;font-weight:500;
   color:var(--chu-nhat);margin-top:.15rem}
@@ -233,7 +239,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 /* ═══════════ Trò chuyện AI ═══════════ */
 .chat-boc{flex:1;min-height:0;display:flex;gap:1.5rem;padding:1.25rem 1.75rem 1.5rem}
 .chat-trai{flex:1.25;min-width:0;display:flex;flex-direction:column}
-.chat-phai{flex:1;min-width:0;display:flex;flex-direction:column;gap:.85rem}
+.chat-phai{flex:1;min-width:0;display:flex;flex-direction:column;gap:1.1rem}
 .chat-ds{
   flex:1;min-height:0;overflow-y:auto;background:var(--the);border-radius:1.25rem;
   box-shadow:var(--bong);padding:1.35rem 1.5rem;display:flex;flex-direction:column;gap:.85rem;
@@ -258,7 +264,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .nut-tron.an{display:none}
 @keyframes dap{0%,100%{box-shadow:0 0 0 0 rgba(168,68,106,.55)}50%{box-shadow:0 0 0 .9rem rgba(168,68,106,0)}}
 .chat-goi{
-  flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;
+  flex:1;min-height:0;width:100%;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;
 }
 .chat-goi .nhom-ten{
   font-size:1rem;font-weight:700;color:var(--chu-nhat);letter-spacing:.03em;
@@ -271,10 +277,23 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   transition:border-color .15s;
 }
 .the-goi:hover{border-color:var(--navy-tuoi)}
-.khung-bc-nho{
-  flex:none;height:11rem;border-radius:1rem;overflow:hidden;position:relative;background:#000;
-  box-shadow:var(--bong);
+/* Ô biểu cảm ở màn Trò chuyện — anh Trường chốt 21/08/2026: Ô VUÔNG TO, nằm trên
+   cùng cột phải, danh sách câu hỏi xuống dưới.
+
+   ⚠ Cạnh khai bằng `rem` chứ KHÔNG dùng `aspect-ratio`. Cả bố cục app scale theo cỡ
+     chữ gốc (xem datCoChu), nên 26rem luôn là 416 px trên khung 1920×1080 — vuông
+     chằn chặn ở mọi màn. Dùng aspect-ratio thì WebView đời cũ của robot bỏ qua thuộc
+     tính đó, chiều cao rơi về 0 và ô biểu cảm BIẾN MẤT mà không báo lỗi gì. */
+.khung-bc-o{
+  flex:none;width:26rem;height:26rem;align-self:center;
+  border-radius:1.25rem;overflow:hidden;position:relative;background:#000;
+  box-shadow:var(--bong-cao);
 }
+.khung-bc-o video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
+  transition:opacity .28s linear;
+}
+.khung-bc-o video.tren{opacity:1}
 
 /* ═══════════ Tư vấn HIFU ═══════════ */
 #mh-tuvan .than{display:flex;flex-direction:column;justify-content:center}
@@ -370,9 +389,13 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
       </button>
     </div>
     <div class="chon-duoi">
-      <button class="nut-phu-lon" onclick="moiVaoHoiTruong()">
-        <span class="ic">📣</span>
-        <span>Mời khách vào hội trường<i>Robot đọc lời mời ổn định chỗ ngồi</i></span>
+      <button class="nut-phu-lon" id="nut-moi" onclick="moiVaoHoiTruong()">
+        <span class="ic" id="nut-moi-ic">📣</span>
+        <span id="nut-moi-chu">Mời khách vào hội trường<i>Đọc lặp lại cho tới khi bấm dừng</i></span>
+      </button>
+      <button class="nut-phu-lon" id="nut-vong" onclick="bamNutDuHanh()">
+        <span class="ic" id="nut-vong-ic">🚶</span>
+        <span id="nut-vong-chu">Đi du hành<i>Robot đi vòng quanh sảnh và chào khách</i></span>
       </button>
       <button class="nut-phu-lon" onclick="moTuVan()">
         <span class="ic">🔬</span>
@@ -482,7 +505,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
       </div>
     </div>
     <div class="chat-phai">
-      <div class="khung-bc-nho">
+      <div class="khung-bc-o">
         <video id="bc-e" muted playsinline preload="auto"></video>
         <video id="bc-f" muted playsinline preload="auto"></video>
       </div>
@@ -1388,20 +1411,17 @@ window.DU_LIEU={
     "toc_do_xoay": 0.8,
     "sai_so_met": 1.0,
     "chao": [
-      "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự Lễ đón nhận danh hiệu Anh hùng Lao động.",
-      "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! Hôm nay là ngày hội lớn của bệnh viện chúng tôi.",
-      "Kính chào Quý vị! Chào mừng Quý vị đến dự Lễ khai trương Đơn vị điều trị HIFU của Bệnh viện Hùng Vương.",
-      "Bệnh viện Hùng Vương kính chúc Quý vị một ngày thật nhiều niềm vui! Quý vị cần hỗ trợ, xin chạm vào màn hình của tôi.",
-      "Tôi là robot lễ tân của Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị trong ngày trọng đại hôm nay!"
+      "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị điều trị HIFU. Kính chúc Quý vị một ngày thật nhiều niềm vui!",
+      "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! Hôm nay là ngày hội lớn của bệnh viện chúng tôi. Rất hân hạnh được phục vụ Quý vị!",
+      "Dạ, tôi xin thưa với Quý vị. Hôm nay bệnh viện Hùng Vương tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị HIFU, buổi chiều có Hội thảo khoa học. Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU."
     ],
     "chao_chieu": [
       "Bệnh viện Hùng Vương trân trọng kính chào Quý đại biểu! Chào mừng Quý vị đến tham dự Hội thảo khoa học Điều trị không xâm lấn bằng sóng siêu âm hội tụ.",
       "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị!",
-      "Kính chúc Quý đại biểu một ngày thật nhiều niềm vui và có những trải nghiệm, kiến thức bổ ích tại Hội thảo!",
-      "Bệnh viện Hùng Vương kính chào Quý vị! Quý vị cần hỗ trợ, xin chạm vào màn hình của tôi.",
-      "Tôi là robot lễ tân của Bệnh viện Hùng Vương. Rất hân hạnh được phục vụ Quý vị tại Hội thảo khoa học hôm nay!"
+      "Dạ, tôi xin thưa với Quý vị. Hôm nay bệnh viện Hùng Vương tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị HIFU, buổi chiều có Hội thảo khoa học. Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng sóng siêu âm hội tụ HIFU."
     ]
-  }
+  },
+  "moi_lap_nghi_giay": 5
 };
 /* ═══════════════════════════════════════════════════════════════════════
    GIẢ LẬP ROBOT — chỉ dùng cho bản thử trên máy tính (demo/thu-nghiem.html).
@@ -1431,6 +1451,10 @@ window.DU_LIEU={
     dangDi: null,
     dangDoc: null,
     daNoi: [],             // mọi câu robot đã nói — bộ thử tự động đọc ở đây
+
+    /* ── Cổng AI ── */
+    congAI: false,        // mic + bo nao hang chi song khi cong mo
+    daThamDo: false,      // da tham do mo hinh lan nao chua
 
     /* ── Đi vòng ── */
     vongDangDi: false,
@@ -1710,10 +1734,37 @@ window.DU_LIEU={
       return ds.filter(function (t) { return DIEM_GIA.indexOf(t) < 0; }).join(', ');
     },
 
-    batMic: function () { GL.micMo = true; ghi('lenh', 'CAU.batMic()'); veBang(); },
+    /* ── Cổng AI ──
+       Tren may that day la cong that: cong dong thi tang Kotlin VUT LUON moi cau nghe
+       duoc, khong chi tat mic. Gia lap lai dung the de bo thu bat duoc loi "AI van chay
+       khi chua vao man Giao tiep AI". */
+    moCongAI: function () {
+      if (GL.congAI) return;
+      GL.congAI = true; GL.micMo = true;
+      ghi('lenh', 'CAU.moCongAI() — bat mic, cho bo nao hang chay');
+      if (!GL.daThamDo) {
+        GL.daThamDo = true;
+        setTimeout(function () {
+          if (window.baoAISanSang) window.baoAISanSang(GL.aiSanSang);
+        }, 700);                                  // mo phong do tre tham do mo hinh
+      }
+      veBang();
+    },
+    dongCongAI: function () {
+      if (!GL.congAI) return;
+      GL.congAI = false; GL.micMo = false;
+      ghi('lenh', 'CAU.dongCongAI() — tat mic, vut moi cau nghe duoc');
+      veBang();
+    },
+
+    batMic: function () {
+      if (!GL.congAI) { ghi('loi', 'CAU.batMic() bi bo qua — cong AI dang dong'); return; }
+      GL.micMo = true; ghi('lenh', 'CAU.batMic()'); veBang();
+    },
     tatMic: function () { GL.micMo = false; ghi('lenh', 'CAU.tatMic()'); veBang(); },
     micDangMo: function () { return GL.micMo; },
     hoiRobot: function (c) {
+      if (!GL.congAI) { ghi('loi', 'CAU.hoiRobot() bi bo qua — cong AI dang dong'); return; }
       ghi('lenh', 'CAU.hoiRobot("' + c + '") → TraLoi.hoi()');
       setTimeout(function () { traLoi(c); }, 900);   // mô phỏng độ trễ gọi mô hình
     },
@@ -1974,11 +2025,26 @@ function ve(id){
   if(id === 'mh-cho')  mayCho.bat();  else mayCho.dung();
   if(id === 'mh-dan')  mayDan.bat();  else mayDan.dung();
   if(id === 'mh-chat') mayChat.bat(); else mayChat.dung();
-  if(id !== 'mh-chat' && micChatMo) dongMicChat();
+  /* ═══ CỔNG AI ═══
+     Micro và bộ não hội thoại của hãng CHỈ sống ở màn Trò chuyện. Anh Trường chốt
+     21/08/2026. Mở/đóng đặt đúng một chỗ này để không sót đường nào — vào bằng nút
+     Giao tiếp AI, thoát bằng nút Quay lại, bằng nút Back của máy, bằng đồng hồ vắng
+     người, hay bằng pop-up nào đó, tất cả đều đi qua ve().
+
+     ⚠ Đóng cổng KHÔNG chỉ là tắt mic. Tầng Kotlin còn vứt luôn mọi câu nghe được —
+       xem chú thích ở MainApplication.congAIMo: cờ isMicrophoneMuted là lời đề nghị
+       với dịch vụ hãng, không phải công tắc nguồn. */
+  if(id === 'mh-chat'){
+    try{ if(coCau() && CAU.moCongAI) CAU.moCongAI(); }catch(e){}
+  }else{
+    if(micChatMo) dongMicChat();
+    try{ if(coCau() && CAU.dongCongAI) CAU.dongCongAI(); }catch(e){}
+  }
   if(id === 'mh-cho') clearTimeout(henCho); else hoatDong();
   /* Rời màn chờ là robot phải đứng lại — kể cả khi tới đây bằng đường nào khác thoiCho()
      (nút Back của hệ thống, pop-up gợi ý từ AI…). Một chỗ chặn, không phải nhiều chỗ. */
   if(id !== 'mh-cho' && dvDangDi) dvDung('rời màn chờ');
+  if(id === 'mh-chon'){ veNutMoi(); veNutDuHanh(); }
   dvVeDen();
   keManHinhChoAI(id);
 }
@@ -2002,10 +2068,14 @@ function hoatDong(){ clearTimeout(henCho); henCho = setTimeout(hetGio, CHO_SAU);
 function hetGio(){
   /* Robot đang nói dở hoặc đang dẫn khách thì chưa tính là vắng người — hẹn lại.
      Mic đang mở cũng vậy: khách có thể đang nghĩ xem hỏi gì. */
-  if(dangDoc || dangDanDuong || micChatMo){ henCho = setTimeout(hetGio, 10000); return; }
+  /* Đang mời lặp thì KHÔNG về màn chờ: veManCho() gọi dungDoc(), cắt câu đang đọc và
+     đứt luôn chuỗi lặp. Giữ ở màn chọn để nút "Đang mời khách" còn sáng, người vận hành
+     nhìn là biết và bấm tắt được. */
+  if(dangDoc || dangDanDuong || micChatMo || moiLap){ henCho = setTimeout(hetGio, 10000); return; }
   veManCho();
 }
 function veManCho(){
+  dungMoiLap();          /* bấm "Kết thúc" là dừng cả lời mời đang lặp */
   dungDoc();
   huyVeCho();
   if(dangDanDuong){ try{ CAU.dungDanDuong(); }catch(e){} dangDanDuong = false; }
@@ -2056,15 +2126,51 @@ function xongLuot(){
    ═══════════════════════════════════════════════════════════════════ */
 const DV = D.di_vong || {};
 
-let dvHang = [];          /* túi câu chào đã xáo, bốc dần cho hết mới xáo lại */
+let dvHang = [];          /* túi câu đã xáo, bốc dần cho hết mới xáo lại */
 let dvChaoCuoi = '';      /* câu vừa đọc — để túi mới không mở đầu trùng câu cũ */
 let dvHenChao = null;
 let dvDangDi = false;     /* Kotlin đã nhận lệnh đi chưa */
 let dvCanhGac = null;
 
-function dvCoBat(){
+/* NGƯỜI ĐÃ BẤM NÚT "ĐI DU HÀNH" HAY CHƯA — anh Trường chốt 21/08/2026 (bản 2):
+   robot KHÔNG tự đi. Bản trước cứ về màn chờ là robot lăn bánh; ở một buổi lễ có
+   nghi thức, robot tự dưng đi ngang sân khấu là chuyện không đùa được.
+   Cờ này sống suốt buổi: khách chạm màn hình thì robot dừng phục vụ, xong ba mươi
+   giây vắng người là đi tiếp — nhưng chỉ khi người vận hành đã bật nó. */
+let dvBat = false;
+
+/* Có sẵn tính năng không (dữ liệu đủ + đang chạy trên robot thật). */
+function dvSanSang(){
   return !!(DV.bat && DV.diem && DV.diem.length >= 2
             && coCau() && typeof CAU.batDauDiVong === 'function');
+}
+/* Có được phép đi lúc này không = có sẵn VÀ người đã bấm nút. */
+function dvCoBat(){ return dvSanSang() && dvBat; }
+
+/* ── Nút "Đi du hành" ở màn chọn ── */
+function bamNutDuHanh(){
+  if(!dvSanSang()){
+    /* Không giấu nút đi — người vận hành cần biết VÌ SAO nó không chạy. */
+    $('#nut-vong-chu').innerHTML =
+      'Chưa đi được<i>' + thoat(lyDoChuaDanDuoc() || 'Bản xem trên máy tính, không có robot') + '</i>';
+    return;
+  }
+  if(dvBat){ dvBat = false; dvDung('người vận hành bấm dừng'); veNutDuHanh(); return; }
+  dvBat = true;
+  dungMoiLap();          /* không vừa đi vừa lặp lời mời */
+  veNutDuHanh();
+  /* Về màn chờ luôn: robot chỉ được đi khi màn hình đang ở màn chờ (xem dvNhipCanhGac),
+     nên đứng lại ở màn chọn thì bấm nút xong chẳng thấy gì xảy ra. */
+  veManCho();
+}
+
+function veNutDuHanh(){
+  const n = $('#nut-vong'); if(!n) return;
+  n.classList.toggle('dang', dvBat);
+  $('#nut-vong-ic').textContent = dvBat ? '⏹' : '🚶';
+  $('#nut-vong-chu').innerHTML = dvBat
+    ? 'Đang du hành — bấm để dừng<i>Robot đi vòng và chào khách</i>'
+    : 'Đi du hành<i>Robot đi vòng quanh sảnh và chào khách</i>';
 }
 
 /* ── Bật / tắt ── */
@@ -2507,6 +2613,12 @@ let aiSanSang = false, micChatMo = false;
 window.baoAISanSang = function(s){
   aiSanSang = !!s;
   $('#nut-mic').classList.toggle('an', !(aiSanSang && coMicRobot()));
+  /* ⚠ Tin này giờ về MUỘN HƠN trước. App không còn thăm dò mô hình lúc khởi động
+     (làm vậy là gọi lên đám mây hãng khi khách chưa bấm nút nào) — nó thăm dò ở lần
+     đầu MỞ CỔNG AI, tức là sau khi khách đã vào màn Trò chuyện chừng một giây.
+     Nên phải tự mở mic ở đây, không thì khách vào màn Trò chuyện xong nút mic mọc ra
+     nhưng chưa ai bấm, robot ngồi im trong khi khách đang nói. */
+  if(aiSanSang && manDang === 'mh-chat' && !micChatMo && coMicRobot()) moMicChat();
 };
 function moMicChat(){
   if(!coMicRobot()) return;
@@ -2673,14 +2785,60 @@ window.moManCapCuuTuAI = function(){
    ═══════════════════════════════════════════════════════════════════ */
 
 /* Nút "Mời khách" — PHẦN D mục 1 tài liệu địa điểm. */
-function moiVaoHoiTruong(){
-  dungDoc();
+/* ── Nút "Mời khách vào hội trường" — PHÁT LẶP cho tới khi bấm lại ──
+   Anh Trường chốt 21/08/2026. Lễ tân bấm một cái rồi để robot đứng mời, không phải
+   đứng canh bấm lại từng lượt.
+
+   ⚠ Đang mời lặp thì đồng hồ vắng người KHÔNG được kéo về màn chờ (xem hetGio).
+     Về màn chờ là veManCho() gọi dungDoc(), cắt mất câu đang đọc và đứt luôn chuỗi
+     lặp — robot im bặt giữa chừng mà không ai hiểu vì sao. Giữ nguyên ở màn chọn thì
+     nút vẫn sáng, người vận hành nhìn là biết và bấm tắt được. */
+let moiLap = false;
+let henMoi = null;
+
+function cauMoiKhach(){
   /* Cùng một nút, hai câu: buổi sáng mời vào buổi lễ, buổi chiều mời vào hội thảo.
      Bệnh viện soạn riêng từng câu, không được lấy câu này đọc cho sự kiện kia. */
-  const cau = (buoiHienTai() === 'chieu' && D.cau.moi_vao_hoi_thao)
-              ? D.cau.moi_vao_hoi_thao : D.cau.moi_vao_hoi_truong;
-  doc(cau, ()=> hoatDong());
+  return (buoiHienTai() === 'chieu' && D.cau.moi_vao_hoi_thao)
+         ? D.cau.moi_vao_hoi_thao : D.cau.moi_vao_hoi_truong;
+}
+
+function moiVaoHoiTruong(){
+  if(moiLap){ dungMoiLap(); return; }
+  dvDung('bật lời mời vào hội trường');   /* robot đứng yên mà mời, không vừa đi vừa mời */
+  moiLap = true;
+  veNutMoi();
+  dungDoc();
+  doMoiMotLuot();
+}
+
+function doMoiMotLuot(){
+  if(!moiLap) return;
   hoatDong();
+  /* Nghỉ giữa hai lượt tính TỪ LÚC ĐỌC XONG. Nối đuôi không ngắt thì nghe như máy hỏng. */
+  doc(cauMoiKhach(), function(){
+    if(!moiLap) return;
+    clearTimeout(henMoi);
+    henMoi = setTimeout(doMoiMotLuot, (D.moi_lap_nghi_giay || 5) * 1000);
+  });
+}
+
+function dungMoiLap(){
+  if(!moiLap) return;
+  moiLap = false;
+  clearTimeout(henMoi); henMoi = null;
+  dungDoc();
+  veNutMoi();
+  hoatDong();
+}
+
+function veNutMoi(){
+  const n = $('#nut-moi'); if(!n) return;
+  n.classList.toggle('dang', moiLap);
+  $('#nut-moi-ic').textContent = moiLap ? '⏹' : '📣';
+  $('#nut-moi-chu').innerHTML = moiLap
+    ? 'Đang mời khách — bấm để dừng<i>Robot đọc lặp lại lời mời</i>'
+    : 'Mời khách vào hội trường<i>Đọc lặp lại cho tới khi bấm dừng</i>';
 }
 
 /* Nút "Tư vấn thực hiện HIFU" — PHẦN D mục 2. Hai nhánh, mỗi nhánh hỏi có dẫn đường không. */
@@ -2867,11 +3025,15 @@ window.addEventListener('resize', datCoChu);
 
   /* Đồng hồ canh gác vòng đi — thứ duy nhất ra lệnh cho robot đi. Chạy suốt buổi.
      Đặt ở đây, sau ve('mh-cho'), để nhịp đầu tiên đã thấy đúng màn hình đang hiện. */
-  if(dvCoBat()){
+  /* ⚠ Điều kiện là dvSanSang() chứ KHÔNG phải dvCoBat(): đồng hồ phải chạy sẵn từ đầu
+     buổi, còn việc có cho robot lăn bánh hay không thì mỗi nhịp nó tự hỏi lại cờ dvBat.
+     Viết dvCoBat() ở đây là đồng hồ không bao giờ được dựng (lúc khởi động chưa ai bấm
+     nút), rồi bấm nút xong robot đứng im mà không có lấy một dòng log. */
+  if(dvSanSang()){
     clearInterval(dvCanhGac);
     dvCanhGac = setInterval(dvNhipCanhGac, 2000);
-    dvThuChayNgay();
   }
+  veNutMoi(); veNutDuHanh();
 })();
 </script>
 </body>

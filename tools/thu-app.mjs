@@ -89,7 +89,7 @@ const nutLon = await trang.$$eval('.the-lon b', ns => ns.map(n => n.textContent.
 kiem(nutLon.length === 2 && nutLon.includes('Dẫn đường') && nutLon.includes('Giao tiếp AI'),
      'Có ĐÚNG hai lựa chọn lớn: ' + nutLon.join(' · '));
 const nutPhu = await trang.$$eval('.nut-phu-lon', ns => ns.length);
-kiem(nutPhu === 2, 'Có hai nút bệnh viện yêu cầu thêm (mời khách · tư vấn HIFU)');
+kiem(nutPhu === 3, 'Có ba nút hàng dưới (mời khách · đi du hành · tư vấn HIFU)');
 /* Nút bị co về chiều cao 0 là lỗi kinh điển trên Nova — không báo lỗi, chỉ biến mất. */
 const beDep = await trang.$$eval('.the-lon, .nut-phu-lon', ns =>
   ns.filter(n => { const r = n.getBoundingClientRect(); return r.height < 40 || r.width < 40; }).length);
@@ -256,13 +256,15 @@ await trang.evaluate(() => window.veManCho());
 await trang.waitForTimeout(250);
 await trang.click('#mh-cho'); await trang.waitForTimeout(200);
 await trang.evaluate(() => { window.GIA_LAP.cauDaDoc.length = 0; });
-await trang.click('.nut-phu-lon');
+await trang.click('#nut-moi');
 await trang.waitForTimeout(400);
 const moi = (await daDoc())[0] || '';
 kiem(moi.includes('Hội trường lầu mười một') && moi.includes('ổn định'),
      'Nút "Mời khách" đọc đúng câu mời vào hội trường');
 
-await trang.click('.chon-duoi .nut-phu-lon:nth-child(2)');
+/* ⚠ Chọn theo id, KHÔNG theo nth-child: hàng dưới đã từ hai nút lên ba, mỗi lần thêm
+   nút là bộ thử báo hỏng oan ở một chỗ không liên quan. */
+await trang.click('.chon-duoi .nut-phu-lon:not(#nut-moi):not(#nut-vong)');
 await trang.waitForTimeout(300);
 kiem(await manDang() === 'mh-tuvan', 'Nút "Tư vấn thực hiện HIFU" mở màn hai nhánh');
 const soNhanh = await trang.$$eval('.the-tv', ns => ns.length);
@@ -298,18 +300,27 @@ console.log('\n═══ 9. ĐI VÒNG QUANH SỰ KIỆN ═══');
    giây để cả vòng năm điểm chạy trong năm giây. */
 await trang.evaluate(() => { window.GIA_LAP.giayMoiDiem = 1; });
 
-/* Về màn chờ rồi chờ đồng hồ canh gác (nhịp hai giây) cho robot lăn bánh. */
-await trang.evaluate(() => window.veManCho());
-await trang.waitForTimeout(3200);
-
 const dangDiVong = () => trang.evaluate(() => window.GIA_LAP.vongDangDi);
 const soDiem     = () => trang.evaluate(() => (window.DU_LIEU.di_vong || {}).diem || []);
+
+/* ⚠ ROBOT KHÔNG TỰ ĐI. Anh Trường chốt 21/08/2026 (bản 2): phải bấm nút "Đi du hành".
+   Đây là phép kiểm quan trọng nhất của cả mục — ở một buổi lễ có nghi thức, robot tự
+   dưng lăn bánh ngang sân khấu là chuyện không sửa được bằng lời xin lỗi. */
+await trang.evaluate(() => window.veManCho());
+await trang.waitForTimeout(3200);
+kiem(!(await dangDiVong()), 'Chưa bấm nút thì robot ĐỨNG YÊN ở màn chờ (không tự đi)');
 
 const dsDiem = await soDiem();
 kiem(dsDiem.length >= 2, 'Có danh sách điểm đi vòng (' + dsDiem.length + ' điểm)');
 kiem(dsDiem.every(t => /^[\x20-\x7E]+$/.test(t)),
      'Tên điểm đi vòng KHÔNG dấu tiếng Việt: ' + dsDiem.join(' · '));
-kiem(await dangDiVong(), 'Ở màn chờ, robot TỰ ĐỘNG đi vòng (không cần ai bấm)');
+/* Bấm nút "Đi du hành" ở màn chọn — robot mới lăn bánh. */
+await trang.click('#mh-cho'); await trang.waitForTimeout(200);
+kiem(await manDang() === 'mh-chon', 'Chạm màn chờ vào được màn chọn');
+await trang.click('#nut-vong');
+await trang.waitForTimeout(3000);
+kiem(await manDang() === 'mh-cho', 'Bấm "Đi du hành" thì tự về màn chờ');
+kiem(await dangDiVong(), 'Bấm nút xong robot BẮT ĐẦU đi vòng');
 
 /* Robot phải ĐỔI ĐIỂM chứ không đứng lại ở điểm đầu — đây là cả cái yêu cầu
    "đi liên tục, không dừng ở mỗi điểm". */
@@ -390,6 +401,115 @@ kiem(h5.includes('thứ hai trên cả nước'), '"tiên phong HIFU" → lần 
 const h6 = await hoiKho('thời tiết hôm nay thế nào');
 kiem(h6.includes('ngoài thông tin tôi được cung cấp'),
      'Câu vô nghĩa VẪN bị chặn sau khi nạp thêm mười bốn mục');
+
+
+console.log('\n═══ 11. CỔNG AI — chỉ sống trong màn Giao tiếp AI ═══');
+const congAI = () => trang.evaluate(() => window.GIA_LAP.congAI);
+const micMo  = () => trang.evaluate(() => window.GIA_LAP.micMo);
+
+await trang.evaluate(() => window.veManCho());
+await trang.waitForTimeout(400);
+kiem(!(await congAI()) && !(await micMo()), 'Ở màn chờ: cổng AI ĐÓNG, mic TẮT');
+
+await trang.click('#mh-cho'); await trang.waitForTimeout(250);
+kiem(!(await congAI()), 'Ở màn chọn: cổng AI vẫn ĐÓNG');
+
+await trang.click('.the-ai'); await trang.waitForTimeout(250);
+kiem(!(await congAI()), 'Màn chọn loại khách: cổng AI vẫn ĐÓNG (chưa cần nghe)');
+
+await trang.click('.the-loai'); await trang.waitForTimeout(400);
+kiem(await manDang() === 'mh-chat', 'Vào được màn Trò chuyện');
+kiem(await congAI(), 'Vào màn Trò chuyện: cổng AI MỞ');
+kiem(await micMo(), 'Vào màn Trò chuyện: mic BẬT');
+
+/* Gõ chữ khi cổng đóng phải bị vứt — dựng lại đúng chốt chặn ở Cau.hoiRobot. */
+await trang.evaluate(() => window.ve('mh-chon'));
+await trang.waitForTimeout(300);
+kiem(!(await congAI()), 'Bấm Quay lại: cổng AI ĐÓNG NGAY');
+kiem(!(await micMo()), 'Bấm Quay lại: mic TẮT NGAY');
+const truocKhiHoi = (await daDoc()).length;
+await trang.evaluate(() => { try { CAU.hoiRobot('hifu là gì'); } catch (e) {} });
+await trang.waitForTimeout(1200);
+kiem((await daDoc()).length === truocKhiHoi,
+     'Cổng đóng thì hoiRobot() KHÔNG chạy — robot im lặng');
+
+/* Đi xem Quy trình HIFU rồi quay lại: cổng phải đóng rồi mở lại đúng nhịp */
+await trang.evaluate(() => window.ve('mh-chat'));
+await trang.waitForTimeout(300);
+kiem(await congAI(), 'Quay lại màn Trò chuyện: cổng MỞ lại');
+await trang.evaluate(() => window.moQuyTrinh());
+await trang.waitForTimeout(300);
+kiem(!(await congAI()), 'Mở màn Quy trình HIFU: cổng ĐÓNG');
+await trang.evaluate(() => window.veManCho());
+await trang.waitForTimeout(300);
+
+console.log('\n═══ 12. NÚT MỜI KHÁCH — phát lặp tới khi bấm dừng ═══');
+await trang.click('#mh-cho'); await trang.waitForTimeout(250);
+await trang.evaluate(() => { window.GIA_LAP.cauDaDoc.length = 0; });
+await trang.click('#nut-moi');
+await trang.waitForTimeout(400);
+kiem(await trang.evaluate(() => moiLap), 'Bấm một cái: bật chế độ mời lặp');
+kiem(await trang.evaluate(() => document.querySelector('#nut-moi').classList.contains('dang')),
+     'Nút đổi hình dạng để nhìn từ xa biết đang bật');
+const chuNut = await trang.evaluate(() => document.querySelector('#nut-moi-chu').textContent);
+kiem(chuNut.includes('bấm để dừng'), 'Nút hiện chữ "bấm để dừng"');
+
+/* Đọc câu mời mất ~9 giây trên giả lập (15 ký tự/giây) + 5 giây nghỉ.
+   Chờ đủ hai lượt rồi đếm — phải nghe câu đó ít nhất HAI lần. */
+await trang.waitForTimeout(16000);
+const cauMoi = await trang.evaluate(() => window.cauMoiKhach());
+const soLanMoi = (await daDoc()).filter(c => c === cauMoi).length;
+kiem(soLanMoi >= 2, 'Đọc LẶP LẠI, không phải một lần rồi thôi (đã nghe ' + soLanMoi + ' lượt)');
+
+/* Đang mời lặp thì đồng hồ vắng người KHÔNG được kéo về màn chờ — về là đứt chuỗi lặp */
+await trang.evaluate(() => window.hetGio());
+await trang.waitForTimeout(400);
+kiem(await manDang() === 'mh-chon', 'Đang mời lặp thì KHÔNG bị kéo về màn chờ');
+
+await trang.click('#nut-moi');
+await trang.waitForTimeout(400);
+kiem(!(await trang.evaluate(() => moiLap)), 'Bấm lần nữa: TẮT lời mời');
+await trang.evaluate(() => { window.GIA_LAP.cauDaDoc.length = 0; });
+await trang.waitForTimeout(7000);
+kiem((await daDoc()).filter(c => c === cauMoi).length === 0,
+     'Tắt rồi thì im hẳn, không còn lượt nào lọt ra');
+await anh('13-nut-moi-lap');
+await trang.evaluate(() => window.veManCho());
+await trang.waitForTimeout(300);
+
+console.log('\n═══ 13. BỐ CỤC MÀN TRÒ CHUYỆN ═══');
+await trang.click('#mh-cho'); await trang.waitForTimeout(200);
+await trang.click('.the-ai'); await trang.waitForTimeout(200);
+await trang.click('.the-loai'); await trang.waitForTimeout(500);
+const oVuong = await trang.evaluate(() => {
+  const e = document.querySelector('#mh-chat .khung-bc-o');
+  if (!e) return null;
+  const r = e.getBoundingClientRect();
+  return { w: Math.round(r.width), h: Math.round(r.height), t: Math.round(r.top) };
+});
+kiem(!!oVuong, 'Màn Trò chuyện có ô biểu cảm');
+kiem(oVuong && Math.abs(oVuong.w - oVuong.h) <= 2,
+     'Ô biểu cảm là Ô VUÔNG (' + (oVuong ? oVuong.w + '×' + oVuong.h : '?') + ')');
+kiem(oVuong && oVuong.w >= 300,
+     'Ô biểu cảm TO, không phải dải mỏng như trước (' + (oVuong ? oVuong.w : 0) + ' px)');
+
+/* Ô vuông phải nằm TRÊN danh sách câu hỏi, đúng bố cục anh Trường gửi */
+const viTri = await trang.evaluate(() => {
+  const o = document.querySelector('#mh-chat .khung-bc-o').getBoundingClientRect();
+  const g = document.querySelector('#mh-chat .chat-goi').getBoundingClientRect();
+  const c = document.querySelector('#mh-chat .chat-trai').getBoundingClientRect();
+  return { oDay: o.bottom, goiDinh: g.top, chatPhai: c.right, oTrai: o.left };
+});
+kiem(viTri.oDay <= viTri.goiDinh + 2, 'Ô biểu cảm nằm TRÊN danh sách câu hỏi');
+kiem(viTri.oTrai >= viTri.chatPhai, 'Ô biểu cảm ở CỘT PHẢI, khung hội thoại ở cột trái');
+
+/* Video phải thật sự có khung hình, không phải ô đen rỗng */
+const bcChay = await trang.evaluate(() => {
+  const vs = document.querySelectorAll('#mh-chat .khung-bc-o video');
+  return Array.prototype.some.call(vs, v => v.getAttribute('src') || v.src);
+});
+kiem(bcChay, 'Video biểu cảm đã được nạp vào ô vuông');
+await anh('14-bo-cuc-tro-chuyen');
 
 await trinh.close();
 

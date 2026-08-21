@@ -699,13 +699,15 @@ CHUA_CO = [
 #       ở đây rồi chạy lại hai script — KHÔNG phải build lại APK.
 # ════════════════════════════════════════════════════════════════════
 DI_VONG = {
+    # Tính năng có sẵn hay không. Robot KHÔNG tự đi — anh Trường chốt 21/08/2026 (bản 2):
+    # phải bấm nút "Đi du hành" ở màn chọn thì robot mới lăn bánh, bấm lần nữa thì dừng.
     "bat": True,
 
     # Thứ tự trong danh sách CHÍNH LÀ LỘ TRÌNH: 1→2→3→4→5 rồi quay về 1.
     # Đặt điểm thành vòng khép kín quanh sảnh, đừng đặt kiểu đi rồi quay đầu.
     "diem": ["Diem 1", "Diem 2", "Diem 3", "Diem 4", "Diem 5"],
 
-    "cach_chao_giay": 10,     # khoảng nghỉ giữa hai câu chào
+    "cach_chao_giay": 10,     # khoảng nghỉ giữa hai câu, tính TỪ LÚC ĐỌC XONG
     "cho_khach_giay": 30,     # không ai thao tác bao lâu thì robot đi tiếp
     "dem_di_tiep_giay": 8,    # đếm ngược hiện trên màn hình sau khi khách bấm "Xong"
 
@@ -719,24 +721,30 @@ DI_VONG = {
     # Để 0,2 như dẫn đường khách là mỗi điểm robot khựng lại một nhịp thấy rõ.
     "sai_so_met": 1.0,
 
+    # ── BA CÂU ROBOT ĐỌC LÚC ĐI DU HÀNH ──────────────────────────────────────────
+    # Anh Trường gửi ảnh chốt nội dung 21/08/2026 (bản 2). Hai câu đầu là NGUYÊN VĂN
+    # lời chào đại biểu bệnh viện soạn ở PHẦN A — giống hệt CHAO['dai-bieu']['cau'],
+    # không phải bản rút gọn như lần trước.
+    #
+    # Câu thứ ba anh Trường gửi riêng — dài hơn hẳn hai câu kia (khoảng hai mươi lăm
+    # giây đọc) và nhắc CẢ HAI sự kiện trong ngày, nên dùng chung cho cả sáng lẫn chiều.
     "chao": [
-        "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự "
-        "Lễ đón nhận danh hiệu Anh hùng Lao động.",
+        "Bệnh viện Hùng Vương xin kính chào Quý đại biểu! Chào mừng Quý vị đến dự Lễ đón nhận "
+        "danh hiệu Anh hùng Lao động và Lễ khai trương Đơn vị điều trị HIFU. "
+        "Kính chúc Quý vị một ngày thật nhiều niềm vui!",
 
         "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương! "
-        "Hôm nay là ngày hội lớn của bệnh viện chúng tôi.",
+        "Hôm nay là ngày hội lớn của bệnh viện chúng tôi. Rất hân hạnh được phục vụ Quý vị!",
 
-        "Kính chào Quý vị! Chào mừng Quý vị đến dự Lễ khai trương Đơn vị điều trị HIFU "
-        "của Bệnh viện Hùng Vương.",
-
-        "Bệnh viện Hùng Vương kính chúc Quý vị một ngày thật nhiều niềm vui! "
-        "Quý vị cần hỗ trợ, xin chạm vào màn hình của tôi.",
-
-        "Tôi là robot lễ tân của Bệnh viện Hùng Vương. "
-        "Rất hân hạnh được phục vụ Quý vị trong ngày trọng đại hôm nay!",
+        "Dạ, tôi xin thưa với Quý vị. Hôm nay bệnh viện Hùng Vương tổ chức Lễ đón nhận danh "
+        "hiệu Anh hùng Lao động và Lễ khai trương Đơn vị HIFU, buổi chiều có Hội thảo khoa học. "
+        "Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, "
+        "Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do "
+        "Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng "
+        "sóng siêu âm hội tụ HIFU.",
     ],
 
-    # Buổi chiều là Hội thảo khoa học — chào theo đúng sự kiện đang diễn ra.
+    # Buổi chiều là Hội thảo khoa học — ba câu tương ứng, nguyên văn bản s2 (20/08/2026).
     # App tự chọn theo giờ máy, xem buoiHienTai() trong khung-app.html.
     "chao_chieu": [
         "Bệnh viện Hùng Vương trân trọng kính chào Quý đại biểu! Chào mừng Quý vị đến tham dự "
@@ -745,14 +753,12 @@ DI_VONG = {
         "Xin nồng nhiệt chào đón Quý đại biểu đến với Bệnh viện Hùng Vương. "
         "Rất hân hạnh được phục vụ Quý vị!",
 
-        "Kính chúc Quý đại biểu một ngày thật nhiều niềm vui và có những trải nghiệm, "
-        "kiến thức bổ ích tại Hội thảo!",
-
-        "Bệnh viện Hùng Vương kính chào Quý vị! "
-        "Quý vị cần hỗ trợ, xin chạm vào màn hình của tôi.",
-
-        "Tôi là robot lễ tân của Bệnh viện Hùng Vương. "
-        "Rất hân hạnh được phục vụ Quý vị tại Hội thảo khoa học hôm nay!",
+        "Dạ, tôi xin thưa với Quý vị. Hôm nay bệnh viện Hùng Vương tổ chức Lễ đón nhận danh "
+        "hiệu Anh hùng Lao động và Lễ khai trương Đơn vị HIFU, buổi chiều có Hội thảo khoa học. "
+        "Hôm nay, thứ Bảy ngày hai mươi hai tháng tám năm hai nghìn không trăm hai mươi sáu, "
+        "Bệnh viện Hùng Vương long trọng tổ chức Lễ đón nhận danh hiệu Anh hùng Lao động do "
+        "Đảng và Nhà nước trao tặng, kết hợp Lễ khai trương Đơn vị điều trị không xâm lấn bằng "
+        "sóng siêu âm hội tụ HIFU.",
     ],
 }
 
@@ -856,9 +862,16 @@ def kiem_tra():
                 # eleven_v3 và giọng robot đều đọc ~18 ký tự/giây. Câu dài hơn 220 ký tự
                 # là robot nói hơn mười hai giây liền trong lúc đang di chuyển — quá dài,
                 # khách đi ngang chỉ nghe được nửa câu.
-                if len(cau) > 220:
-                    loi.append("Câu chào đi vòng %s [%d] dài %d ký tự, quá mười hai giây đọc: %s…"
+                # eleven_v3 và giọng robot đọc ~18 ký tự/giây.
+                # Trần 500 ký tự ~ hai mươi tám giây đọc. Câu thứ ba anh Trường chốt dài
+                # khoảng bốn trăm năm mươi ký tự nên trần cũ (220) chặn nhầm.
+                if len(cau) > 500:
+                    loi.append("Câu chào đi vòng %s [%d] dài %d ký tự, quá hai mươi tám giây đọc: %s…"
                                % (khoa, i, len(cau), cau[:50]))
+                elif len(cau) > 260:
+                    print("  ! Câu chào đi vòng %s [%d] dài %d ký tự (~%d giây đọc) — "
+                          "robot đang đi, câu dài thì khách đi ngang chỉ nghe được nửa câu."
+                          % (khoa, i, len(cau), len(cau) // 18))
 
         if dv.get("cach_chao_giay", 0) < 5:
             loi.append("cach_chao_giay phải từ năm giây trở lên")
@@ -907,6 +920,11 @@ def main():
         "quy_trinh": QUY_TRINH,
         "chua_co": CHUA_CO,
         "di_vong": DI_VONG,
+
+        # Nút "Mời khách vào hội trường" phát LẶP cho tới khi bấm lần nữa
+        # (anh Trường chốt 21/08/2026 bản 2). Nghỉ bấy nhiêu giây giữa hai lượt đọc —
+        # để 0 là robot đọc nối đuôi không ngắt, nghe như máy hỏng.
+        "moi_lap_nghi_giay": 5,
     }
 
     os.makedirs(os.path.dirname(RA), exist_ok=True)

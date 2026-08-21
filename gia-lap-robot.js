@@ -27,6 +27,10 @@
     dangDoc: null,
     daNoi: [],             // mọi câu robot đã nói — bộ thử tự động đọc ở đây
 
+    /* ── Cổng AI ── */
+    congAI: false,        // mic + bo nao hang chi song khi cong mo
+    daThamDo: false,      // da tham do mo hinh lan nao chua
+
     /* ── Đi vòng ── */
     vongDangDi: false,
     vongDiem: [],
@@ -305,10 +309,37 @@
       return ds.filter(function (t) { return DIEM_GIA.indexOf(t) < 0; }).join(', ');
     },
 
-    batMic: function () { GL.micMo = true; ghi('lenh', 'CAU.batMic()'); veBang(); },
+    /* ── Cổng AI ──
+       Tren may that day la cong that: cong dong thi tang Kotlin VUT LUON moi cau nghe
+       duoc, khong chi tat mic. Gia lap lai dung the de bo thu bat duoc loi "AI van chay
+       khi chua vao man Giao tiep AI". */
+    moCongAI: function () {
+      if (GL.congAI) return;
+      GL.congAI = true; GL.micMo = true;
+      ghi('lenh', 'CAU.moCongAI() — bat mic, cho bo nao hang chay');
+      if (!GL.daThamDo) {
+        GL.daThamDo = true;
+        setTimeout(function () {
+          if (window.baoAISanSang) window.baoAISanSang(GL.aiSanSang);
+        }, 700);                                  // mo phong do tre tham do mo hinh
+      }
+      veBang();
+    },
+    dongCongAI: function () {
+      if (!GL.congAI) return;
+      GL.congAI = false; GL.micMo = false;
+      ghi('lenh', 'CAU.dongCongAI() — tat mic, vut moi cau nghe duoc');
+      veBang();
+    },
+
+    batMic: function () {
+      if (!GL.congAI) { ghi('loi', 'CAU.batMic() bi bo qua — cong AI dang dong'); return; }
+      GL.micMo = true; ghi('lenh', 'CAU.batMic()'); veBang();
+    },
     tatMic: function () { GL.micMo = false; ghi('lenh', 'CAU.tatMic()'); veBang(); },
     micDangMo: function () { return GL.micMo; },
     hoiRobot: function (c) {
+      if (!GL.congAI) { ghi('loi', 'CAU.hoiRobot() bi bo qua — cong AI dang dong'); return; }
       ghi('lenh', 'CAU.hoiRobot("' + c + '") → TraLoi.hoi()');
       setTimeout(function () { traLoi(c); }, 900);   // mô phỏng độ trễ gọi mô hình
     },

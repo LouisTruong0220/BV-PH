@@ -183,9 +183,28 @@ object Cau {
     // error=not-allowed ngay lập tức, nghĩa là nút micro chưa từng hoạt động một lần nào.
     // Xem chú thích dài ở MainApplication.setOnTranscribeListener.
 
-    /** Mở mic robot — người dân nói là AI của hãng nghe và tự trả lời. */
+    /**
+     * MỞ CỔNG AI — lớp web gọi khi khách vừa vào màn Giao tiếp AI.
+     * Đây là chỗ DUY NHẤT bật micro và cho bộ não hãng hoạt động.
+     */
     @JavascriptInterface
-    fun batMic() = MainApplication.batMicro()
+    fun moCongAI() = MainApplication.moCongAI()
+
+    /** ĐÓNG CỔNG AI — gọi khi rời màn Giao tiếp AI. Tắt mic, cắt câu đang đọc dở,
+     *  và mọi câu nghe được từ lúc này đều bị vứt ngay tại tầng Kotlin. */
+    @JavascriptInterface
+    fun dongCongAI() = MainApplication.dongCongAI()
+
+    /** Mở mic robot — người dân nói là AI của hãng nghe và tự trả lời.
+     *  ⚠ Chỉ có tác dụng khi cổng AI đang mở; ngoài màn Trò chuyện thì gọi cũng vô ích. */
+    @JavascriptInterface
+    fun batMic() {
+        if (!MainApplication.congAIDangMo()) {
+            Log.w(TAG, "batMic() bị bỏ qua — cổng AI đang đóng")
+            return
+        }
+        MainApplication.batMicro()
+    }
 
     /** Tắt mic — dùng khi rời màn trò chuyện, khi dẫn đường, khi về màn chờ. */
     @JavascriptInterface
@@ -207,6 +226,12 @@ object Cau {
      */
     @JavascriptInterface
     fun hoiRobot(cau: String?) {
+        /* Gõ chữ cũng phải qua CỔNG AI. Không chặn ở đây thì một cú chạm nhầm vào ô nhập
+           còn sót chữ, ở một màn hình khác, vẫn kéo cả bộ máy hội thoại chạy. */
+        if (!MainApplication.congAIDangMo()) {
+            Log.w(TAG, "hoiRobot() bị bỏ qua — cổng AI đang đóng")
+            return
+        }
         TraLoi.hoi(cau.orEmpty())
     }
 
