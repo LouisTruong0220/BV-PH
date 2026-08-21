@@ -171,7 +171,14 @@ kbd{
   background:var(--nen-2);border:1px solid var(--vien);border-bottom-width:2px;border-radius:5px;
   padding:1px 6px;font-size:13px;font-weight:500;
 }
-code:not(.lenh code){background:var(--nen-2);border-radius:5px;padding:1.5px 6px;font-size:14px}
+/* ⚠ Để selector này ở độ ưu tiên THẤP NHẤT (chỉ một thẻ), đừng viết thành
+   `code:not(.lenh code)`. Viết kiểu đó thì `:not()` cộng thêm độ ưu tiên của
+   `.lenh code`, thành 0-1-2 và ĐÈ mất luật `.luu-cam code` (0-1-1) bên dưới —
+   chữ trong khối đỏ sẫm bị tô nền trắng, thành hồng nhạt trên trắng, không đọc
+   được. Đã dính một lần rồi. Muốn loại trừ chỗ nào thì đặt luật riêng cho chỗ
+   đó, như `.lenh code` ngay dưới đây. */
+code{background:var(--nen-2);border-radius:5px;padding:1.5px 6px;font-size:14px}
+.lenh code{background:none;padding:0;font-size:inherit;color:inherit}
 hr{border:0;border-top:1px solid var(--vien);margin:0}
 
 .cuoi{margin-top:64px;padding-top:26px;border-top:1px solid var(--vien);font-size:14px;color:var(--muc-2)}
@@ -179,10 +186,31 @@ hr{border:0;border-top:1px solid var(--vien);margin:0}
 
 @media print{
   nav.rail,.sao{display:none}
-  .luoi{grid-template-columns:1fr}
-  body{font-size:11pt;background:#fff}
-  .buoc{page-break-inside:avoid;padding-top:26px}
-  .lenh{background:#f4f4f4;color:#000;border:1px solid #ccc}
+  .luoi{grid-template-columns:1fr;gap:0}
+  .boc{max-width:none;padding:0}
+  body{font-size:10.5pt;background:#fff}
+  .mao{padding-top:0}
+  h1{font-size:26pt}
+  .sapo{font-size:11.5pt}
+
+  /* ⚠ KHÔNG đặt break-inside:avoid trên cả .buoc — bước 8 dài hơn một trang giấy,
+     ép nguyên khối là trình duyệt đẩy sang trang mới rồi vẫn tràn, để lại một
+     trang trắng ở giữa. Chỉ giữ nguyên khối những đơn vị NGẮN, và cấm tiêu đề
+     đứng lẻ ở cuối trang. */
+  .buoc{padding-top:20px;break-inside:auto}
+  .buoc-mao{break-after:avoid;break-inside:avoid}
+  h2,h3{break-after:avoid}
+  .luu,.pa,.lenh,.that > div{break-inside:avoid}
+  .bang-boc{break-inside:auto}
+  tr{break-inside:avoid}
+  thead{display:table-header-group}   /* đầu bảng lặp lại ở mỗi trang */
+
+  /* Khối lệnh in ra nền sáng cho đỡ tốn mực, vẫn giữ viền để không lẫn vào thân bài. */
+  .lenh{background:#F2EFED;color:#141010;border:1px solid #C9BFB9}
+  .lenh .nhac{color:#6B5D57}
+
+  .bang-boc,.that > div,.pa{box-shadow:none}
+  a{text-decoration:underline}
 }
 </style>
 
